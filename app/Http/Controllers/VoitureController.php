@@ -21,6 +21,7 @@ class VoitureController extends Controller
             'kilometrage' => 'required|numeric',
             'etat' => 'required|string|max:255',
             'statut' => 'required|in:En boutique,En location',
+            /*'userid' => 'required|exists:users,id',*/
         ]);
 
         $voiture = Voiture::create($validated);

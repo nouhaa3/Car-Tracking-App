@@ -14,7 +14,7 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
         $user = User::create([
@@ -24,7 +24,7 @@ class AuthController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'User registered successfully',
+            'message' => 'Utilisateur enregistré avec succés. Bienvenue.',
             'user' => $user
         ], 201);
     }
@@ -40,14 +40,14 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json(['message' => 'Désolé. Une erreur est produite.'], 401);
         }
 
         // Créer un token Sanctum
         $token = $user->createToken('api_token')->plainTextToken;
 
         return response()->json([
-            'message' => 'Login successful',
+            'message' => 'Retrouvaille.',
             'token' => $token,
             'user' => $user
         ]);
@@ -58,6 +58,6 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logged out successfully']);
+        return response()->json(['message' => 'Merci pour partager votre expérience. A bientot.']);
     }
 }

@@ -1,111 +1,56 @@
 <template>
-  <div class="home-page">
-    <!-- Navbar -->
-    <header class="navbar">
-      <h1>CarTrackingApp</h1>
-      <nav>
-        <ul>
-          <li><a href="#">Dashboard</a></li>
-          <li><a href="#">Vehicles</a></li>
-          <li><a href="#">Reports</a></li>
-          <li><a href="#">Settings</a></li>
-        </ul>
-      </nav>
-    </header>
+    <div class="home-page">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <!-- Hero / Welcome Section -->
-    <section class="hero">
-      <h2>Welcome to Car Tracking App 🚗</h2>
-      <p>Monitor, manage and analyze your vehicles in real-time.</p>
-      <button @click="goToDashboard">Get Started</button>
-    </section>
+        <!-- Navbar -->
+        <header class="navbar">
+            <h1>CarTrackingApp</h1>
+            <nav>
+                <ul>
+                    <li><a href="/login">Se connecter</a></li>
+                    <li><a href="/register">S'enregistrer</a></li>
+                </ul>
+            </nav>
+        </header>
 
-    <!-- Dashboard Preview Section -->
-    <section class="features">
-      <div class="card">
-        <h3>📍 Real-time Tracking</h3>
-        <p>See where your vehicles are at any moment.</p>
-      </div>
-      <div class="card">
-        <h3>📊 Reports</h3>
-        <p>Generate performance and usage reports.</p>
-      </div>
-      <div class="card">
-        <h3>⚙️ Maintenance</h3>
-        <p>Track and schedule vehicle maintenance.</p>
-      </div>
-    </section>
-  </div>
+        <!-- Welcome Section -->
+        <section class="hero">
+            <h2 class="text-4xl font-bold mb-4">Gérez vos véhicules en toute simplicité</h2>
+            <p class="text-lg max-w-2xl mx-auto leading-relaxed">
+                Notre plateforme centralise toutes vos opérations : suivi, maintenance et gestion de flotte automobile.
+                Gagnez du temps, améliorez votre efficacité et assurez la disponibilité de vos véhicules.
+            </p>
+        </section>
+
+        <!-- Propreties Section -->
+        <section class="features">
+            <div class="card">
+                <i class="bi bi-lock"></i>
+                <h3>Sécurisé</h3>
+                <p>Vos données sont protégées grâce à des normes de sécurité avancées.</p>
+            </div>
+            <div class="card">
+                <i class="bi bi-check-circle"></i>
+                <h3>Fiable</h3>
+                <p>Une plateforme stable et toujours disponible pour vos besoins.</p>
+            </div>
+            <div class="card">
+                <i class="bi bi-lightbulb"></i>
+                <h3>Intitutif</h3>
+                <p>Une interface claire et facile à utiliser, même pour les débutants.</p>
+            </div>
+            <div class="card">
+                <i class="bi bi-lightning"></i>
+                <h3>Rapide</h3>
+                <p>Des performances optimisées pour un gain de temps maximal.</p>
+            </div>
+            <div class="card">
+                <i class="bi bi-clock"></i>
+                <h3>Accessibilité 24/7</h3>
+                <p>Accédez à la plateforme à tout moment, où que vous soyez.</p>
+            </div>
+        </section>
+
+    </div>
 </template>
 
-<script setup>
-import { useRouter } from "vue-router";
-
-const router = useRouter();
-
-function goToDashboard() {
-  router.push("/dashboard");
-}
-</script>
-
-<style scoped>
-.home-page {
-  font-family: Arial, sans-serif;
-}
-
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #1a73e8;
-  padding: 1rem 2rem;
-  color: #fff;
-}
-
-.navbar ul {
-  display: flex;
-  list-style: none;
-  gap: 1rem;
-}
-
-.navbar a {
-  color: white;
-  text-decoration: none;
-}
-
-.hero {
-  text-align: center;
-  padding: 4rem 2rem;
-  background: #f4f7fc;
-}
-
-.hero h2 {
-  font-size: 2rem;
-}
-
-.hero button {
-  margin-top: 1rem;
-  padding: 0.7rem 1.5rem;
-  background: #1a73e8;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.features {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  padding: 3rem 2rem;
-}
-
-.card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  width: 250px;
-  text-align: center;
-}
-</style>

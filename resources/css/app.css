@@ -1,0 +1,64 @@
+.home-page {
+    font-family: Arial, sans-serif;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #314de9ff;
+    padding: 1rem 2rem;
+    color: #ffffff;
+}
+
+.navbar ul {
+    display: flex;
+    list-style: none;
+    gap: 1rem;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+}
+
+.hero {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #f4f7fc;
+}
+
+.hero h2 {
+    font-size: 2rem;
+}
+
+.features {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    padding: 40px;
+    background: #f8f9fa;
+    flex-wrap: wrap;
+}
+
+.features .card {
+    flex: 1 1 200px;
+    max-width: 220px;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.features .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.features .icon {
+    color: #9B8269;
+    margin-bottom: 10px;
+
+}

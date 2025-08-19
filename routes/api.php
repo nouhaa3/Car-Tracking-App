@@ -17,8 +17,10 @@ use App\Http\Controllers\AlerteController;
 |--------------------------------------------------------------------------
 */
 
-// ✅ Auth routes (communes à tout le monde)
-Route::post('/register', [UserController::class, 'store']); // si tu veux laisser l'admin seul, tu peux le mettre ailleurs
+Route::post('/voitures', [VoitureController::class, 'store']);
+
+// Auth routes (communes à tout le monde)
+Route::post('/register', [UserController::class, 'store']); 
 Route::post('/login', [UserController::class, 'login']);
 
 // Routes protégées (auth obligatoire)
