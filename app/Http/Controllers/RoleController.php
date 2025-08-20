@@ -16,7 +16,6 @@ class RoleController extends Controller
     {
         $validated = $request->validate([
             'nomRole' => 'required|string|max:255',
-            'permissions' => 'nullable|array',
         ]);
 
         $role = Role::create($validated);
@@ -35,7 +34,6 @@ class RoleController extends Controller
 
         $validated = $request->validate([
             'nomRole' => 'sometimes|required|string|max:255',
-            'permissions' => 'nullable|array',
         ]);
 
         $role->update($validated);

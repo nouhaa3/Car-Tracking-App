@@ -4,7 +4,7 @@ import './bootstrap';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';*/
 
 import { createApp } from 'vue'
-import HomePage from './components/HomePage.vue'
+import HomePage from './components/home.vue'
 
 
 createApp(HomePage).mount('#app')

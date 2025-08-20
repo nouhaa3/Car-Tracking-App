@@ -7,8 +7,8 @@
             <h1>CarTrackingApp</h1>
             <nav>
                 <ul>
-                    <li><a href="/login">Se connecter</a></li>
-                    <li><a href="/register">S'enregistrer</a></li>
+                    <li><router-link to="/login">Se connecter</router-link></li>
+                    <li><router-link to="/register">S'enregistrer</router-link></li>
                 </ul>
             </nav>
         </header>
@@ -53,4 +53,11 @@
 
     </div>
 </template>
+
+<script>
+export default {
+  name: 'HomePage'
+}
+</script>
+
 

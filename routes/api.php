@@ -17,7 +17,9 @@ use App\Http\Controllers\AlerteController;
 |--------------------------------------------------------------------------
 */
 
-Route::post('/voitures', [VoitureController::class, 'store']);
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+
 
 // Auth routes (communes à tout le monde)
 Route::post('/register', [UserController::class, 'store']); 
