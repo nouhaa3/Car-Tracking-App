@@ -27,7 +27,7 @@ class RoleMiddleware
     public function handle(Request $request, Closure $next, $role): Response
     {
         if (!$request->user() || $request->user()->role->nom !== $role) {
-            return response()->json(['message' => 'Accés réfusé !'], 403);
+            return response()->json(['message' => 'Accès réfusé !'], 403);
         }
 
         return $next($request);

@@ -7,8 +7,8 @@
             <h1>CarTrackingApp</h1>
             <nav>
                 <ul>
-                    <li><router-link to="/login">Se connecter</router-link></li>
-                    <li><router-link to="/register">S'enregistrer</router-link></li>
+                    <router-link to="/login">Login</router-link>
+                    <router-link to="/register">Register</router-link>
                 </ul>
             </nav>
         </header>
