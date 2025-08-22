@@ -19,7 +19,7 @@ class UserController extends Controller
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
+            'password' => 'required|string|min:8',
             'role_id' => 'required|exists:roles,idRole',
         ]);
 
@@ -64,7 +64,7 @@ class UserController extends Controller
             'nom' => 'sometimes|string|max:255',
             'prenom' => 'sometimes|string|max:255',
             'email' => 'sometimes|email|unique:users,email,' . $id,
-            'password' => 'sometimes|string|min:6',
+            'password' => 'sometimes|string|min:8',
             'role_id' => 'sometimes|exists:roles,idRole',
         ]);
 
