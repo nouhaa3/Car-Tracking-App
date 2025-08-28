@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -84,4 +86,26 @@ class UserController extends Controller
 
         return response()->json(null, 204);
     }
+
+    public function me()
+    {
+        $user = Auth::user(); // récupère l'utilisateur connecté
+
+        return response()->json([
+            'nom'   => $user->nom,
+            'prenom'=> $user->prenom,
+            'role'  => $user->role->nomRole, // relation User -> Role
+        ]);
+    }
+
+    public function countByRole()
+    {
+        $stats = User::join('roles', 'users.role_id', '=', 'roles.idRole')
+            ->select('roles.nomRole as role', DB::raw('count(users.id) as total'))
+            ->groupBy('roles.nomRole')
+            ->get();
+
+        return response()->json($stats);
+    }
+
 }

@@ -11,6 +11,10 @@ class Voiture extends Model
 
     protected $primaryKey = 'idVoiture';
     protected $fillable = ['marque', 'modele', 'annee', 'kilometrage', 'etat', 'statut', 'user_id'];
+    public function getImageUrlAttribute()
+    {
+        return $this->image ? asset('storage/'.$this->image) : asset('images/default-car.png');
+    }
 
     public function user() {
         return $this->belongsTo(User::class, 'user_id');

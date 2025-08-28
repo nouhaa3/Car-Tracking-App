@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->year('annee');
             $table->double('kilometrage');
             $table->string('etat');
-            $table->enum('statut', ['En boutique', 'En location']);
+            $table->enum('statut', ['En boutique', 'En location', 'En maintenance']);
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });

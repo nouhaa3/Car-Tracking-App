@@ -20,10 +20,14 @@ class VoitureController extends Controller
             'annee' => 'required|integer',
             'kilometrage' => 'required|numeric',
             'etat' => 'required|string|max:255',
-            'statut' => 'required|in:En boutique,En location',
-            /*'userid' => 'required|exists:users,id',*/
+            'statut' => 'required|in:En boutique,En location,En maintenance',
+            'userid' => 'required|exists:users,id',
+            'image' => 'nullable|image|max:2048',
         ]);
 
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('voitures', 'public');
+        }
         $voiture = Voiture::create($validated);
 
         return response()->json($voiture, 201);
@@ -44,7 +48,7 @@ class VoitureController extends Controller
             'annee' => 'sometimes|required|integer',
             'kilometrage' => 'sometimes|required|numeric',
             'etat' => 'sometimes|required|string|max:255',
-            'statut' => 'sometimes|required|in:En boutique,En location',
+            'statut' => 'sometimes|required|in:En boutique,En location,En maintenance',
         ]);
 
         $voiture->update($validated);
@@ -59,4 +63,15 @@ class VoitureController extends Controller
 
         return response()->json(null, 204);
     }
+
+    public function countByStatus()
+    {
+        $data = \App\Models\Voiture::select('statut', \DB::raw('count(*) as total'))
+            ->groupBy('statut')
+            ->get();
+
+        return response()->json($data);
+    }
+
+
 }

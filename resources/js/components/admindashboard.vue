@@ -3,8 +3,14 @@
     <!-- Theme Toggle Button -->
     <button @click="toggleTheme" class="theme-btn">
       <i v-if="isDark" class="bi bi-sun"></i>
-      <i v-else class="bi bi-moon"></i>
+      <i v-else class="bi bi-moon-stars"></i>
     </button>
+
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    />
 
     <!-- Navbar -->
     <nav class="navbar">
@@ -18,100 +24,205 @@
         {{ item.label }}
       </router-link>
     </nav>
-    <br />
 
-    <!-- Title -->
-    <h1>Hello !</h1>
-    <br />
+    <!-- Dashboard -->
+    <div class="dashboard-container">
+      <!-- Header -->
+      <header class="dashboard-header">
+        <h4>Bonjour {{ userName }},</h4>
+      </header>
 
-    <!-- Grid Layout -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Vehicles Overview -->
-      <div class="bg-black rounded-2xl shadow p-4" style="height: 300px;">
-        <h2>Vehicles Overview</h2>
-        <PieChart :chart-data="vehicleChartData" :chart-options="chartOptions" />
-      </div>
+      <!-- Top stats -->
+      <section class="dashboard-top">
+            <div class="card chart-card">
+                <h5>Total des véhicules</h5>
+                <div class="chart-wrapper">
+                    <canvas ref="carsChart"></canvas>
+                </div>
+            </div>
+            <div class="card chart-card">
+                <h5>Utilisateurs actifs</h5>
+                <div class="chart-wrapper">
+                    <canvas ref="usersChart"></canvas>
+                </div>
+            </div>
+            <div class="card chart-card">
+                <h5>Coût global de maintenance</h5>
+            </div>
+            <div class="card chart-card">
+                <h5>Coût de maintenance par mois</h5>
+            </div>
+      </section>
 
-      <!-- Upcoming Reminders -->
-      <div class="bg-black rounded-2xl shadow p-4">
-        <h2>Upcoming Reminders</h2>
-        <ul class="divide-y text-sm">
-          <li class="py-2">
-            Oil change for Car #12 - <span class="font-bold">25 Aug</span>
-          </li>
-          <li class="py-2">
-            Insurance renewal for Car #45 - <span class="font-bold">28 Aug</span>
-          </li>
-          <li class="py-2">
-            Inspection for Car #77 - <span class="font-bold">30 Aug</span>
-          </li>
-        </ul>
-      </div>
+      <!-- Middle + Bottom -->
+      <section class="dashboard-main">
+        <!-- Left -->
+        <div class="card">
+            <h5>Exporter le rapport</h5>
+        </div>
 
-      <!-- Recent Logs -->
-      <div class="bg-black rounded-2xl shadow p-4" style="height: 300px;">
-        <h2>Recent Logs</h2>
-        <BarChart :chart-data="logsChartData" :chart-options="chartOptions" />
-      </div>
+        <!-- Center -->
+        <div class="center-panel">
+          <div class="card large">
+            Top 5 des véhicules les plus coûteux en entretien
+          </div>
+        </div>
+
+        <!-- Right -->
+        <div class="right-panel">
+          <div class="card large">
+            <h3>Alertes globales</h3>
+            <p>Total non traitées</p>
+            <p>Liste des plus urgentes</p>
+          </div>
+        </div>
+      </section>
     </div>
+    <!-- Vue component logout button -->
+    <button @click="logout" class="logout-btn">
+        <i class="bi bi-box-arrow-right"></i>
+    </button>
+
   </div>
 </template>
 
 <script>
-import PieChart from "./PieChart.vue";
-import BarChart from "./BarChart.vue";
+import axios from "axios";
+import { Chart, PieController, ArcElement, Tooltip, Legend } from "chart.js";
+
+Chart.register(PieController, ArcElement, Tooltip, Legend);
 
 export default {
   name: "AdminDashboard",
-  components: { PieChart, BarChart },
   data() {
     return {
+      userName: "",
+      chart: null,
+      usersChart: null,
       isDark: false,
       menuItems: [
         { label: "Acceuil", to: "/" },
-        { label: "Tableau de board", to: "/admindashboard" },
-        { label: "Catalogue", to: "/cataloguevoitures" },
+        { label: "Tableau de bord", to: "/admindashboard" },
+        { label: "Catalogue", to: "/voitures/cataloguevoitures" },
         { label: "Interventions", to: "/interventions" },
         { label: "Alertes", to: "/alertes" },
       ],
-      // Vehicles chart data
-      vehicleChartData: {
-        labels: ["En boutique", "En location"],
-        datasets: [
-          {
-            data: [95, 25],
-            backgroundColor: ["#6d3316", "#e46e25"],
-          },
-        ],
-      },
-      // Logs chart data
-      logsChartData: {
-        labels: ["19 Aug", "20 Aug", "21 Aug"],
-        datasets: [
-          {
-            label: "Logs",
-            data: [1, 1, 1],
-            backgroundColor: "#3b82f6",
-          },
-        ],
-      },
-      chartOptions: {
-        responsive: true,
-        maintainAspectRatio: false,
-      },
     };
+  },
+  async mounted() {
+    // Get logged user
+    try {
+      const resUser = await axios.get("http://127.0.0.1:8000/api/me", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      this.userName = resUser.data.nom;
+    } catch {
+      this.$router.push("/login");
+    }
+
+    // Get cars stats
+    try {
+        const res = await axios.get("http://127.0.0.1:8000/api/voitures/count-by-status", {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+
+        console.log("Car stats response:", res.data);
+
+        const labels = res.data.map(item => item.statut);
+        const values = res.data.map(item => item.total);
+
+        this.chart = new Chart(this.$refs.carsChart, {
+            type: "doughnut", 
+            data: {
+            labels,
+            datasets: [
+                {
+                data: values,
+                backgroundColor: ["#6d3316", "#e46e25", "#FF6384"],
+                cutout: "60%",
+                },
+            ],
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: false, // hides the legend
+                    },
+                    tooltip: {
+                        callbacks: {
+                        label: function (context) {
+                            return context.label; // only show the label on hover
+                        },
+                    },
+                },
+            },
+        }
+    });
+    } catch (err) {
+        console.error("Failed to load car stats", err);
+    }
+
+    // Get users stats
+    try {
+        const usersRes = await axios.get("http://127.0.0.1:8000/api/users/count-by-role", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+
+        const userLabels = usersRes.data.map(item => item.role);
+        const userValues = usersRes.data.map(item => item.total);
+
+        this.usersChart = new Chart(this.$refs.usersChart, {
+            type: "doughnut",
+            data: {
+                labels: userLabels,
+                datasets: [
+                    {
+                        data: userValues,
+                        backgroundColor: ["#6d3316", "#e46e25", "#FF6384", "#36A2EB"],
+                        cutout: "60%",
+                    },
+                ],
+            },
+            options: {
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                        label: function (context) {
+                            return context.label;
+                        },
+                        },
+                    },
+                },
+            },
+        });
+
+    } catch (err) {
+        console.error("Failed to load users stats", err);
+    }
+
+    // Load theme
+    const saved = localStorage.getItem("theme");
+    if (saved) this.isDark = saved === "dark";
   },
   methods: {
     toggleTheme() {
       this.isDark = !this.isDark;
       localStorage.setItem("theme", this.isDark ? "dark" : "light");
     },
-  },
-  mounted() {
-    const saved = localStorage.getItem("theme");
-    if (saved) this.isDark = saved === "dark";
+    async logout() {
+      try {
+        await axios.post("http://127.0.0.1:8000/api/logout", {}, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+      } catch (error) {
+        console.warn("Logout failed or token expired:", error);
+      } finally {
+        localStorage.removeItem("token");
+        this.$router.push({ name: "Login" });
+      }
+    },
   },
 };
 </script>
-
 

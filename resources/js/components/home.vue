@@ -3,7 +3,7 @@
         <!-- Theme Toggle Button -->
         <button @click="toggleTheme" class="theme-btn">
         <i v-if="isDark" class="bi bi-sun"></i>
-        <i v-else class="bi bi-moon"></i>
+        <i v-else class="bi bi-moon-stars"></i>
         </button>
 
         <!-- Navbar -->
@@ -40,27 +40,27 @@
         <section class="features grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
             <div class="card bg-white shadow-md rounded-xl p-4 text-center">
                 <i class="bi bi-shield-lock text-4xl text-blue-600 mb-2"></i>
-                <h3 class="font-bold">Sécurisé</h3>
+                <h3 class="fontbold">Sécurisé</h3>
                 <p>Vos données sont protégées grâce à des normes de sécurité avancées.</p>
             </div>
             <div class="card bg-white shadow-md rounded-xl p-4 text-center">
                 <i class="bi bi-check-circle text-4xl text-green-600 mb-2"></i>
-                <h3 class="font-bold">Fiable</h3>
+                <h3 class="fontbold">Fiable</h3>
                 <p>Une plateforme stable et toujours disponible pour vos besoins.</p>
             </div>
             <div class="card bg-white shadow-md rounded-xl p-4 text-center">
                 <i class="bi bi-lightbulb text-4xl text-yellow-500 mb-2"></i>
-                <h3 class="font-bold">Intuitif</h3>
+                <h3 class="fontbold">Intuitif</h3>
                 <p>Une interface claire et facile à utiliser, même pour les débutants.</p>
             </div>
             <div class="card bg-white shadow-md rounded-xl p-4 text-center">
                 <i class="bi bi-lightning text-4xl text-orange-500 mb-2"></i>
-                <h3 class="font-bold">Rapide</h3>
+                <h3 class="fontbold">Rapide</h3>
                 <p>Des performances optimisées pour un gain de temps maximal.</p>
             </div>
             <div class="card bg-white shadow-md rounded-xl p-4 text-center">
                 <i class="bi bi-clock-history text-4xl text-purple-600 mb-2"></i>
-                <h3 class="font-bold">Accessibilité 24/7</h3>
+                <h3 class="fontbold">Accessibilité 24/7</h3>
                 <p>Accédez à la plateforme à tout moment, où que vous soyez.</p>
             </div>
         </section>
@@ -76,7 +76,7 @@ export default {
       menuItems: [
         { label: "Accueil", to: "/" },
         { label: "Tableau de bord", to: "/admindashboard" },
-        { label: "Catalogue", to: "/cataloguevoitures" },
+        { label: "Catalogue", to: "/voitures/cataloguevoitures" },
         { label: "Interventions", to: "/interventions" },
         { label: "Alertes", to: "/alertes" },
       ],

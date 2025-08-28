@@ -8,6 +8,7 @@ use App\Http\Controllers\VoitureController;
 use App\Http\Controllers\InterventionController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\AlerteController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,10 +21,23 @@ use App\Http\Controllers\AlerteController;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
+Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
+    return response()->json([
+        'nom' => $request->user()->nom,
+    ]);
+});
+
+// routes/api.php
+Route::get('/voitures/count-by-status', [VoitureController::class, 'countByStatus']);
+Route::get('/users/count-by-role', [UserController::class, 'countByRole']);
+
+
+
 
 // Auth routes (communes à tout le monde)
 Route::post('/register', [UserController::class, 'store']); 
 Route::post('/login', [UserController::class, 'login']);
+
 
 // Routes protégées (auth obligatoire)
 Route::middleware('auth:sanctum')->group(function () {
@@ -86,7 +100,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Marquer une alerte comme traitée
         Route::patch('/alertes/{id}/traitee', [AlerteController::class, 'marquerTraitee']);
 
-        // Dashboard (à toi de créer le controller)
+        // Dashboard 
         Route::get('/dashboard', function () {
             return response()->json(['message' => 'Statistiques et KPIs']);
         });
@@ -105,5 +119,8 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
-    Route::post('/logout', [UserController::class, 'logout']);
+    Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+
+
 });
+
