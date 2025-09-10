@@ -1,37 +1,56 @@
 <template>
   <div class="home-page">
     <div class="register-card">
-      <h2 class="register-title">S'enregistrer</h2>
+      <!-- Bootstrap Icons -->
+        <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        />
+
+      <h2 class="section-title">S'enregistrer</h2>
 
       <form @submit.prevent="addUser" class="register-form">
-        <!-- Nom -->
-        <div class="form-group">
-          <label class="form-label">Nom</label>
-          <input v-model="user.nom" type="text" class="form-input" required />
-        </div>
+        <!-- Nom & prenom -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nom" class="form-label">Nom</label>
+            <input v-model="user.nom" id="nom" type="text" class="form-input" required />
+          </div>
 
-        <!-- Prénom -->
-        <div class="form-group">
-          <label class="form-label">Prénom</label>
-          <input v-model="user.prenom" type="text" class="form-input" required />
+          <div class="form-group">
+            <label for="prenom" class="form-label">Prénom</label>
+            <input v-model="user.prenom" id="prenom" type="text" class="form-input" required />
+          </div>
         </div>
-
         <!-- Email -->
         <div class="form-group">
-          <label class="form-label">Email</label>
-          <input v-model="user.email" type="email" class="form-input" required />
+          <label for="email" class="form-label">Email</label>
+          <input v-model="user.email" id="email" type="email" class="form-input" required />
         </div>
 
-        <!-- Password -->
-        <div class="form-group">
-          <label class="form-label">Mot de passe</label>
-          <input v-model="user.password" type="password" class="form-input" required />
+        <!-- Password with eye toggle -->
+        <div class="form-group password-wrapper">
+          <label for="password" class="form-label">Mot de passe</label>
+          <div class="input-with-icon">
+            <input
+              v-model="user.password"
+              :type="showPassword ? 'text' : 'password'"
+              id="password"
+              class="form-input"
+              required
+            />
+            <i
+              class="bi"
+              :class="showPassword ? 'bi-eye-slash' : 'bi-eye'"
+              @click="togglePassword"
+            ></i>
+          </div>
         </div>
 
         <!-- Rôle -->
         <div class="form-group">
-          <label class="form-label">Rôle</label>
-          <select v-model="user.role" class="form-input" required>
+          <label for="role" class="form-label">Rôle</label>
+          <select v-model="user.role_id" id="role" class="form-input" required>
             <option value="" disabled>Sélectionnez votre rôle</option>
             <option value="1">Admin</option>
             <option value="2">Agent</option>
@@ -39,8 +58,13 @@
           </select>
         </div>
 
+        <!-- Already have an account -->
+        <p class="no-account">
+          Vous avez déjà un compte ? <a href="/login">Se connecter.</a>
+        </p>
+
         <!-- Button -->
-        <button type="submit" class="register-btn">Ajouter</button>
+        <button type="submit" class="register-btn">Créer</button>
       </form>
 
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
@@ -55,33 +79,55 @@ export default {
   name: "RegisterPage",
   data() {
     return {
-      user: { nom: "", prenom: "", email: "", password: "", role: "" },
-      errorMessage: ""
+      user: { nom: "", prenom: "", email: "", password: "", role_id: "" },
+      errorMessage: "",
+      showPassword: false
     };
   },
   methods: {
+    togglePassword() {
+      this.showPassword = !this.showPassword;
+    },
     async addUser() {
       try {
-        const response = await axios.post("http://127.0.0.1:8000/api/register", this.user);
+        const response = await axios.post("http://127.0.0.1:8000/api/register", {
+          nom: this.user.nom,
+          prenom: this.user.prenom,
+          email: this.user.email,
+          password: this.user.password,
+          role_id: this.user.role_id,
+        });
 
-        // Save user in localStorage
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+        // sécuriser la récupération
+        const apiUser = response.data.user ?? response.data;
+        const token = response.data.token;
 
-        // Redirect based on role
-        const role = response.data.user.role.nomRole; 
-        if (role === "admin") {
-          this.$router.push("/admindashboard");
-        } else if (role === "agent") {
-          this.$router.push("/agentdashboard");
-        } else if (role === "technicien") {
-          this.$router.push("/techniciendashboard");
-        } else {
-          this.$router.push("/");
+        if (!apiUser) {
+          console.error("Réponse API inattendue:", response.data);
+          return;
         }
 
-      } catch (error) {
-        this.errorMessage = error.response?.data?.message || "Erreur d'enregistrement";
-        console.error(error.response?.data || error);
+        // stocker et configurer axios
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        localStorage.setItem("user", JSON.stringify(apiUser));
+        if (token) localStorage.setItem("token", token);
+
+        // redirection selon role_id
+        switch (parseInt(apiUser.role_id)) {
+          case 1:
+            this.$router.push("/admindashboard");
+            break;
+          case 2:
+            this.$router.push("/agentdashboard");
+            break;
+          case 3:
+            this.$router.push("/techniciendashboard");
+            break;
+          default:
+            this.$router.push("/");
+        }
+      } catch (err) {
+        console.error("Erreur register:", err);
       }
     }
   }

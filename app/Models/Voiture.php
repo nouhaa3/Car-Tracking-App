@@ -13,7 +13,7 @@ class Voiture extends Model
     protected $fillable = ['marque', 'modele', 'annee', 'kilometrage', 'etat', 'statut', 'user_id'];
     public function getImageUrlAttribute()
     {
-        return $this->image ? asset('storage/'.$this->image) : asset('images/default-car.png');
+        return $this->image ? asset('storage/'.$this->image) : asset('images/default.png');
     }
 
     public function user() {

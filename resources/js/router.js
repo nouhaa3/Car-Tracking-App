@@ -9,6 +9,7 @@ import DashboardAgent from './components/agentdashboard.vue';
 import CatalogueVoiture from './components/voitures/cataloguevoitures.vue';
 //import Interventions from './components/interventions.vue';
 //import Alertes from './components/alertes.vue';
+import ProfilePage from './components/profile.vue';
 
 
 const routes = [
@@ -22,6 +23,7 @@ const routes = [
   { path: '/techniciendashboard', name: 'DashboardTechnicien', component: DashboardTechnicien},
   //{ path: '/interventions', name: 'Interventions', component: Interventions },
   //{ path: '/alertes', name: 'Alertes', component: Alertes },
+  {path: '/profile', name: 'ProfilePage', component: ProfilePage},
 ];
 
 const router = createRouter({

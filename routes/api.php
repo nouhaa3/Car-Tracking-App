@@ -22,25 +22,25 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
-    return response()->json([
-        'nom' => $request->user()->nom,
-    ]);
+    return $request->user()->load('role');
 });
 
-// routes/api.php
+// Auth routes
+Route::post('/register', [AuthController::class, 'register']); 
+Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+
+
+// routes de calcul des statistiques
 Route::get('/voitures/count-by-status', [VoitureController::class, 'countByStatus']);
 Route::get('/users/count-by-role', [UserController::class, 'countByRole']);
 
-
-
-
-// Auth routes (communes à tout le monde)
-Route::post('/register', [UserController::class, 'store']); 
-Route::post('/login', [UserController::class, 'login']);
+// routes ajoutées pour les tests
+Route::get('/voitures', [VoitureController::class, 'index']);
 
 
 // Routes protégées (auth obligatoire)
-Route::middleware('auth:sanctum')->group(function () {
+/*Route::middleware('auth:sanctum')->group(function () {
 
     // =====================================================
     // ADMIN
@@ -110,7 +110,7 @@ Route::middleware('auth:sanctum')->group(function () {
             return response()->json(['message' => 'Rapport exporté avec succès']);
         });
     });
-
+*/
 
     // =====================================================
     // ROUTES COMMUNES (tous les rôles authentifiés)
@@ -119,8 +119,4 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
-    Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
-
-
-});
 

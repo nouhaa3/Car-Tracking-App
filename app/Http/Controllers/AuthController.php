@@ -12,60 +12,62 @@ class AuthController extends Controller
     // REGISTER
     public function register(Request $request)
     {
-       $request->validate([
+        $validated = $request->validate([
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'role_id' => 'required|exists:roles,id',
+            'role_id' => 'required|integer',
         ]);
 
         $user = User::create([
-            'nom' => $request->nom,
-            'prenom' => $request->prenom,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role_id' => $request->role_id,
+            'nom' => $validated['nom'],
+            'prenom' => $validated['prenom'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role_id' => $validated['role_id'],
         ]);
 
-        $token = $user->createToken('api_token')->plainTextToken;
+        // créer un token
+        $token = $user->createToken('API Token')->plainTextToken;
 
         return response()->json([
-            'message' => 'Utilisateur enregistré avec succès',
-            'user'    => $user,
-            'token'   => $token,
-            'redirect'=> $this->redirectPath($user->role),
-        ], 201);
+            'user' => $user,
+            'token' => $token
+        ]);
     }
 
     // LOGIN
-    public function login(Request $request)
-    {
+    public function login(Request $request) {
         $request->validate([
-            'email'    => 'required|string|email',
-            'password' => 'required|string',
+            'email' => 'required|email',
+            'password' => 'required'
         ]);
 
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Email ou mot de passe incorrect'], 401);
+            return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        $token = $user->createToken('api_token')->plainTextToken;
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
-            'message' => 'Connexion réussie',
-            'user'    => $user,
-            'token'   => $token,
-            'redirect'=> $this->redirectPath($user->role), 
+            'user' => $user,
+            'token' => $token
         ]);
-    }
+
+}
+
 
     // LOGOUT
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $user = $request->user();
+        $token = $user->currentAccessToken();
+        if ($token) {
+            $user->tokens()->where('id', $token->id)->delete();
+        }
 
         return response()->json(['message' => 'Déconnexion réussie']);
     }
