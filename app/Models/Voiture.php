@@ -4,13 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Voiture extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $primaryKey = 'idVoiture';
-    protected $fillable = ['marque', 'modele', 'annee', 'kilometrage', 'etat', 'statut', 'user_id'];
+    protected $fillable = [
+        'marque',
+        'modele',
+        'annee',
+        'kilometrage',
+        'etat',
+        'statut',
+        'user_id',
+        'image',
+    ];
     public function getImageUrlAttribute()
     {
         return $this->image ? asset('storage/'.$this->image) : asset('images/default.png');
@@ -26,5 +36,9 @@ class Voiture extends Model
 
     public function interventions() {
         return $this->hasMany(Intervention::class, 'voiture_id');
+    }
+
+    public function documentsVehicule() {
+        return $this->hasMany(DocumentVehicule::class, 'voiture_id', 'idVoiture');
     }
 }

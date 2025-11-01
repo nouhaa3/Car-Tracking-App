@@ -62,21 +62,47 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
+        // Check if user is updating their own profile
+        $isOwnProfile = Auth::check() && Auth::id() == $id;
+
         $validated = $request->validate([
             'nom' => 'sometimes|string|max:255',
             'prenom' => 'sometimes|string|max:255',
             'email' => 'sometimes|email|unique:users,email,' . $id,
-            'password' => 'sometimes|string|min:8',
+            'current_password' => 'sometimes|string',
+            'password' => 'sometimes|string|min:8|confirmed',
             'role_id' => 'sometimes|exists:roles,idRole',
         ]);
 
+        // If password is being changed, verify current password
         if (isset($validated['password'])) {
+            if ($isOwnProfile) {
+                // User must provide current password when updating their own profile
+                if (!isset($validated['current_password'])) {
+                    return response()->json([
+                        'message' => 'Le mot de passe actuel est requis pour changer le mot de passe.'
+                    ], 422);
+                }
+
+                // Verify current password
+                if (!Hash::check($validated['current_password'], $user->password)) {
+                    return response()->json([
+                        'message' => 'Le mot de passe actuel est incorrect.'
+                    ], 422);
+                }
+            }
+
             $validated['password'] = Hash::make($validated['password']);
         }
 
+        // Remove current_password from validated data before update
+        unset($validated['current_password']);
+        unset($validated['password_confirmation']);
+
         $user->update($validated);
 
-        return response()->json($user);
+        // Return user with role relationship
+        return response()->json($user->load('role'));
     }
 
     public function destroy(string $id)
@@ -106,6 +132,45 @@ class UserController extends Controller
             ->get();
 
         return response()->json($stats);
+    }
+
+    public function uploadAvatar(Request $request, string $id)
+    {
+        $user = User::findOrFail($id);
+
+        // Verify the authenticated user is updating their own avatar or is an admin
+        $isOwnProfile = Auth::id() == $id;
+        $isAdmin = Auth::user()->role && Auth::user()->role->nomRole === 'admin';
+        
+        if (!$isOwnProfile && !$isAdmin) {
+            return response()->json([
+                'message' => 'Non autorisé à modifier cet avatar.'
+            ], 403);
+        }
+
+        $validated = $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB max
+        ]);
+
+        // Delete old avatar if exists
+        if ($user->avatar && file_exists(public_path($user->avatar))) {
+            unlink(public_path($user->avatar));
+        }
+
+        // Store new avatar
+        $file = $request->file('avatar');
+        $filename = 'avatar_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path('images/avatars'), $filename);
+
+        // Update user avatar path
+        $avatarPath = '/images/avatars/' . $filename;
+        $user->update(['avatar' => $avatarPath]);
+
+        return response()->json([
+            'message' => 'Avatar mis à jour avec succès',
+            'avatar' => $avatarPath,
+            'user' => $user->load('role')
+        ]);
     }
 
 }

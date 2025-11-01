@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Intervention;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class InterventionController extends Controller
 {
@@ -57,5 +58,60 @@ class InterventionController extends Controller
         $intervention->delete();
 
         return response()->json(null, 204);
+    }
+
+    public function getRecentHistory()
+    {
+        $interventions = Intervention::with('voiture')
+            ->select('interventions.*')
+            ->orderBy('date', 'desc')
+            ->limit(5)
+            ->get()
+            ->map(function ($intervention) {
+                return [
+                    'id' => $intervention->idIntervention,
+                    'type' => $intervention->type,
+                    'date' => $intervention->date,
+                    'cout' => $intervention->cout,
+                    'vehicule' => $intervention->voiture 
+                        ? "{$intervention->voiture->marque} {$intervention->voiture->modele}"
+                        : 'N/A'
+                ];
+            });
+
+        return response()->json($interventions);
+    }
+
+    /**
+     * Retourne le nombre d'interventions pour le mois courant
+     */
+    public function countByMonth()
+    {
+        $now = Carbon::now();
+        $year = $now->year;
+        $month = $now->month;
+
+        $count = Intervention::whereYear('date', $year)
+            ->whereMonth('date', $month)
+            ->count();
+
+        return response()->json(['total' => $count]);
+    }
+
+    /**
+     * Duplicate an existing intervention
+     */
+    public function duplicate($id)
+    {
+        $intervention = Intervention::findOrFail($id);
+        
+        $newIntervention = $intervention->replicate();
+        $newIntervention->date = now();
+        $newIntervention->save();
+
+        return response()->json([
+            'message' => 'Intervention dupliquée avec succès',
+            'intervention' => $newIntervention->load('voiture')
+        ], 201);
     }
 }

@@ -1,61 +1,97 @@
 <template>
-  <div class="home-page">
-    <div class="register-card">
-      <!-- Bootstrap Icons -->
-        <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-        />
-        
-      <!-- Title -->
-      <h2 class="section-title">Se connecter</h2>
+  <div class="auth-page">
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+    />
 
-      <form @submit.prevent="login" class="register-form">
-        <!-- Email -->
-        <div class="form-group">
-          <label for="email" class="form-label">Email</label>
-          <input v-model="credentials.email" id="email" type="email" class="form-input" required />
-        </div>
-
-        <!-- Password with eye toggle -->
-        <div class="form-group password-wrapper">
-          <label for="password" class="form-label">Mot de passe</label>
-          <div class="input-with-icon">
-            <input
-              v-model="credentials.password"
-              :type="showPassword ? 'text' : 'password'"
-              class="form-input"
-              id="password"
-              required
-            />
-            <i
-              class="bi"
-              :class="showPassword ? 'bi-eye-slash' : 'bi-eye'"
-              @click="togglePassword"
-            ></i>
+    <div class="auth-container">
+      <div class="auth-card">
+        <!-- Logo & Title -->
+        <div class="auth-header">
+          <div class="auth-logo">
+            <i class="bi bi-car-front-fill"></i>
           </div>
-          <small class="forgot-password">Mot de passe oublié ?</small>
+          <h2 class="auth-title">{{ t('auth.welcome') }}</h2>
+          <p class="auth-subtitle">{{ t('auth.loginSubtitle') }}</p>
         </div>
 
-        <!-- No account yet -->
-        <p class="no-account">
-          Vous n'avez de compte ? <a href="/register">Créer un nouveau.</a>
-        </p>
+        <form @submit.prevent="login" class="auth-form">
+          <!-- Email -->
+          <div class="form-group-auth">
+            <label for="email" class="form-label-auth">
+              <i class="bi bi-envelope"></i>
+              {{ t('auth.email') }}
+            </label>
+            <input 
+              v-model="credentials.email" 
+              id="email" 
+              type="email" 
+              class="form-input-auth" 
+              :placeholder="t('auth.emailPlaceholder')"
+              required 
+            />
+          </div>
 
-        <!-- Button -->
-        <button type="submit" class="register-btn">Connexion</button>
-      </form>
+          <!-- Password with eye toggle -->
+          <div class="form-group-auth">
+            <label for="password" class="form-label-auth">
+              <i class="bi bi-lock"></i>
+              {{ t('auth.password') }}
+            </label>
+            <div class="input-with-icon-auth">
+              <input
+                v-model="credentials.password"
+                :type="showPassword ? 'text' : 'password'"
+                class="form-input-auth"
+                id="password"
+                :placeholder="t('auth.passwordPlaceholder')"
+                required
+              />
+              <i
+                class="toggle-password"
+                :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"
+                @click="togglePassword"
+              ></i>
+            </div>
+            <a href="/forgot-password" class="forgot-link">{{ t('auth.forgotPassword') }}</a>
+          </div>
 
-      <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+          <!-- Error Message -->
+          <p v-if="errorMessage" class="error-message-auth">
+            <i class="bi bi-exclamation-circle"></i>
+            {{ errorMessage }}
+          </p>
+
+          <!-- Button -->
+          <button type="submit" class="auth-btn">
+            <span>{{ t('auth.login') }}</span>
+            <i class="bi bi-arrow-right"></i>
+          </button>
+        </form>
+
+        <!-- Footer -->
+        <div class="auth-footer">
+          <p>{{ t('auth.noAccount') }} <a href="/register" class="auth-link">{{ t('auth.createAccount') }}</a></p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import axios from "axios";
+import { inject } from 'vue';
 
 export default {
   name: "LoginPage",
+  setup() {
+    const theme = inject("theme");
+    const { t } = useI18n();
+    return { theme, t };
+  },
   data() {
     return {
       credentials: { email: "", password: "" },
@@ -76,8 +112,8 @@ export default {
         const user = response.data.user ?? response.data;
 
         if (!token || !user) {
-          console.error("Réponse API inattendue:", response.data);
-          this.errorMessage = "Erreur serveur, réessayez.";
+          console.error(this.t('errors.unexpectedResponse'), response.data);
+          this.errorMessage = this.t('errors.serverError');
           return;
         }
 
@@ -110,7 +146,7 @@ export default {
         else this.$router.push("/");
 
       } catch (error) {
-        this.errorMessage = "Email ou mot de passe incorrect";
+        this.errorMessage = this.t('auth.errors.invalidCredentials');
         console.error(error.response?.data || error);
       }
     }

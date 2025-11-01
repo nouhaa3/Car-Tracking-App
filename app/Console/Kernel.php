@@ -12,7 +12,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Generate alerts daily at 6:00 AM
+        $schedule->command('alerts:generate')->dailyAt('06:00');
+        
+        // Clean up old resolved alerts weekly on Sunday at 2:00 AM
+        $schedule->command('alerts:generate --cleanup')->weeklyOn(0, '02:00');
     }
 
     /**

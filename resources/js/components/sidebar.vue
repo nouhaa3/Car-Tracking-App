@@ -1,5 +1,5 @@
 <template>
-  <div :class="['sidebar', { expanded: isExpanded, dark: isDark }]">
+  <div :class="['sidebar', { expanded: isExpanded, dark: theme.isDark }]">
     <!-- Logo + App name -->
     <div class="sidebar-header" @click="toggleSidebar">
       <i class="bi bi-app-indicator logo"></i>
@@ -8,7 +8,7 @@
     <!-- Search (optional, shown when expanded) -->
     <div v-if="isExpanded" class="sidebar-search">
       <i class="bi bi-search"></i>
-      <input type="text" placeholder="Rechercher ..." />
+      <input type="text" :placeholder="t('common.search') + ' ...'" />
     </div>
 
     <!-- Main Menu -->
@@ -33,18 +33,24 @@
       </li>
     </ul>
 
-    <!-- Footer with settings + dark mode + profile -->
+    <!-- Footer with settings + dark mode + logout -->
     <div class="sidebar-footer">
       <router-link to="/settings" class="menu-link">
         <i class="bi bi-gear"></i>
-        <span v-if="isExpanded">Paramètres</span>
+        <span v-if="isExpanded">{{ t('nav.settings') }}</span>
       </router-link>
 
       <!-- Dark mode toggle -->
       <button @click="toggleTheme" class="menu-link theme-toggle">
-        <i v-if="isDark" class="bi bi-sun"></i>
+        <i v-if="theme.isDark" class="bi bi-sun"></i>
         <i v-else class="bi bi-moon-stars"></i>
-        <span v-if="isExpanded">{{ isDark ? "Light Mode" : "Dark Mode" }}</span>
+        <span v-if="isExpanded">{{ theme.isDark ? t('nav.lightMode') : t('nav.darkMode') }}</span>
+      </button>
+
+      <!-- Logout button -->
+      <button @click="logout" class="menu-link logout-link">
+        <i class="bi bi-box-arrow-right"></i>
+        <span v-if="isExpanded">{{ t('nav.logout') }}</span>
       </button>
 
     </div>
@@ -52,44 +58,64 @@
 </template>
 
 <script>
+import { inject, onMounted, computed } from "vue";
+import { useI18n } from 'vue-i18n';
+
 export default {
   name: "Sidebar",
+  setup() {
+    const { t } = useI18n();
+    const theme = inject("theme"); // inject global reactive theme
+
+    const toggleTheme = () => {
+      theme.isDark = !theme.isDark;
+      localStorage.setItem("theme", theme.isDark ? "dark" : "light");
+
+      if (theme.isDark) document.body.classList.add("dark");
+      else document.body.classList.remove("dark");
+    };
+
+    onMounted(() => {
+      // ensure body has the correct class on mount
+      if (theme.isDark) document.body.classList.add("dark");
+      else document.body.classList.remove("dark");
+    });
+
+    // Reactive menu items that update with language changes
+    const mainMenu = computed(() => [
+      { label: t('nav.users'), to: "/users", icon: "bi bi-people" },
+      { label: t('nav.reports'), to: "/rapports", icon: "bi bi-file-earmark-bar-graph" },
+      { label: t('nav.messages'), to: "/chats", icon: "bi bi-chat-dots" },
+    ]);
+
+    const personalMenu = computed(() => [
+      { label: t('nav.notifications'), to: "/alertes", icon: "bi bi-bell" },
+      { label: t('nav.help'), to: "/help", icon: "bi bi-question-circle" },
+      { label: t('nav.trash'), to: "/corbeille", icon: "bi bi-trash" },
+    ]);
+
+    return { t, theme, toggleTheme, mainMenu, personalMenu };
+  },
   data() {
     return {
       isExpanded: false,
-      isDark: false,
       user: null,
-      mainMenu: [
-        { label: "Utilisateurs", to: "/users", icon: "bi bi-people" },
-        { label: "Messages", to: "/chats", icon: "bi bi-chat-dots" },
-        { label: "Rapports", to: "/rapports", icon: "bi bi-bar-chart" },
-      ],
-      personalMenu: [
-        { label: "Notifications", to: "/notifications", icon: "bi bi-bell" },
-        { label: "Historique", to: "/historique", icon: "bi bi-clock-history" },
-        { label: "Aide", to: "/help", icon: "bi bi-question-circle" },
-      ],
     };
   },
   methods: {
     toggleSidebar() {
       this.isExpanded = !this.isExpanded;
     },
-    toggleTheme() {
-      this.isDark = !this.isDark;
-      localStorage.setItem("theme", this.isDark ? "dark" : "light");
+    logout() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      this.$router.push("/login");
     },
   },
   mounted() {
-    // restore theme
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) this.isDark = savedTheme === "dark";
-
     // restore user (saved at login)
     const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      this.user = JSON.parse(savedUser);
-    }
+    if (savedUser) this.user = JSON.parse(savedUser);
   },
 };
 </script>
