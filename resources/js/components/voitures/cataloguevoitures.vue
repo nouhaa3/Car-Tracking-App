@@ -45,6 +45,25 @@
                 </button>
               </div>
               <div class="header-actions">
+                <button @click="exportToExcel" class="export-btn" title="Exporter vers Excel">
+                  <i class="bi bi-file-earmark-excel"></i>
+                  {{ t('catalog.export') }}
+                </button>
+                <button @click="triggerFileInput" class="import-btn" title="Importer depuis Excel">
+                  <i class="bi bi-upload"></i>
+                  {{ t('catalog.import') }}
+                </button>
+                <input 
+                  ref="fileInput" 
+                  type="file" 
+                  accept=".xlsx,.xls,.csv" 
+                  @change="importFromExcel" 
+                  style="display: none;"
+                />
+                <button @click="downloadTemplate" class="template-btn" title="Télécharger le modèle">
+                  <i class="bi bi-download"></i>
+                  {{ t('catalog.template') }}
+                </button>
                 <button @click="toggleFilter" class="filter-toggle-btn" :class="{ active: showFilter }">
                   <i class="bi bi-funnel-fill"></i>
                   {{ t('catalog.filters') }}
@@ -86,41 +105,48 @@
                 :key="voiture.idVoiture"
                 class="car-card"
               >
-                <!-- Status badge -->
+                <!-- Status badge - Shows on hover -->
                 <span 
-                  class="status-badge" 
+                  class="status-badge-hover"
                   :class="{
                     'status-available': voiture.statut === 'En boutique',
                     'status-rented': voiture.statut === 'En location',
                     'status-maintenance': voiture.statut === 'En maintenance'
                   }"
                 >
+                  <i class="bi bi-circle-fill"></i>
                   {{ voiture.statut }}
                 </span>
 
-                <img 
-                  :src="voiture.image ? `http://127.0.0.1:8000/storage/${voiture.image}` : '/images/default.png'" 
-                  :alt="`${voiture.marque} ${voiture.modele}`"
-                  @error="handleImageError"
-                />
-
-                <div class="car-info">
-                  <div class="car-info-left">
-                    <p class="marque">{{ voiture.marque }}</p>
-                    <p class="modele">{{ voiture.modele }}</p>
-                  </div>
-                  <span class="car-info-right">{{ voiture.annee }}</span>
+                <!-- Vehicle image -->
+                <div class="vehicle-image-wrapper">
+                  <img 
+                    :src="voiture.image ? `http://127.0.0.1:8000/storage/${voiture.image}` : '/images/default.png'" 
+                    :alt="`${voiture.marque} ${voiture.modele}`"
+                    @error="handleImageError"
+                  />
                 </div>
 
-                <!-- Additional info -->
-                <div class="car-meta">
-                  <span class="meta-item" v-if="voiture.couleur">
-                    {{ voiture.couleur }}
-                  </span>
-                  <span class="meta-item" v-if="voiture.etat">
+                <!-- Vehicle name -->
+                <div class="vehicle-name-header">
+                  <h3 class="vehicle-brand">{{ voiture.marque }}</h3>
+                  <p class="vehicle-model">{{ voiture.modele }}</p>
+                </div>
+
+                <!-- Vehicle details -->
+                <div class="vehicle-details">
+                  <div class="detail-item">
+                    <i class="bi bi-calendar3"></i>
+                    <span>{{ voiture.annee }}</span>
+                  </div>
+                  <div class="detail-item" v-if="voiture.couleur">
+                    <i class="bi bi-palette-fill"></i>
+                    <span>{{ voiture.couleur }}</span>
+                  </div>
+                  <div class="detail-item" v-if="voiture.kilometrage">
                     <i class="bi bi-speedometer2"></i>
-                    {{ voiture.etat }}
-                  </span>
+                    <span>{{ formatNumber(voiture.kilometrage) }} km</span>
+                  </div>
                 </div>
 
                 <button class="car-btn-voir-plus" @click="voirPlus(voiture)">
@@ -498,6 +524,110 @@ export default {
 
     handleImageError(event) {
       event.target.src = '/images/default.png';
+    },
+
+    formatNumber(num) {
+      if (!num) return '0';
+      return new Intl.NumberFormat('fr-FR').format(num);
+    },
+    
+    async exportToExcel() {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://127.0.0.1:8000/api/voitures/export/excel', {
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: 'blob'
+        });
+        
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `vehicules_${new Date().toISOString().split('T')[0]}.xlsx`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        
+        await this.$swal.fire({
+          icon: 'success',
+          title: this.t('catalog.exportSuccess'),
+          timer: 2000,
+          showConfirmButton: false
+        });
+      } catch (error) {
+        console.error('Export error:', error);
+        await this.$swal.fire({
+          icon: 'error',
+          title: this.t('common.error'),
+          text: this.t('catalog.exportError')
+        });
+      }
+    },
+    
+    triggerFileInput() {
+      this.$refs.fileInput.click();
+    },
+    
+    async importFromExcel(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      try {
+        const token = localStorage.getItem('token');
+        await axios.post('http://127.0.0.1:8000/api/voitures/import/excel', formData, {
+          headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        
+        await this.$swal.fire({
+          icon: 'success',
+          title: this.t('catalog.importSuccess'),
+          timer: 2000,
+          showConfirmButton: false
+        });
+        
+        // Refresh the list
+        await this.fetchVoitures();
+      } catch (error) {
+        console.error('Import error:', error);
+        await this.$swal.fire({
+          icon: 'error',
+          title: this.t('common.error'),
+          text: error.response?.data?.error || this.t('catalog.importError')
+        });
+      } finally {
+        // Reset file input
+        event.target.value = '';
+      }
+    },
+    
+    async downloadTemplate() {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://127.0.0.1:8000/api/voitures/import/template', {
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: 'blob'
+        });
+        
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'template_import_vehicules.xlsx');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } catch (error) {
+        console.error('Template download error:', error);
+        await this.$swal.fire({
+          icon: 'error',
+          title: this.t('common.error'),
+          text: this.t('catalog.templateError')
+        });
+      }
     },
 
     async logout() {

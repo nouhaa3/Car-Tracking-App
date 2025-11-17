@@ -116,63 +116,43 @@
               <div
                 v-for="alerte in filteredAlertes"
                 :key="alerte.idAlerte"
-                class="car-card alerte-card"
+                class="car-card"
               >
-                <!-- Critique Badge - Shows only on hover -->
+                <!-- Status badge - Shows on hover -->
                 <span 
-                  v-if="alerte.priorite.toLowerCase() === 'critique'"
-                  class="critique-badge-hover"
+                  class="status-badge-hover"
+                  :class="alerte.statut === 'En attente' ? 'status-pending' : 'status-treated'"
                 >
-                  <i class="bi bi-exclamation-triangle-fill"></i>
-                  {{ t('alerts.critical').toUpperCase() }}
+                  <i class="bi bi-circle-fill"></i>
+                  {{ alerte.statut === 'En attente' ? t('alerts.pending') : t('alerts.treated') }}
                 </span>
 
-                <!-- Top bar with status badge only -->
-                <div class="card-top-bar">
-                  <span class="badge-status" :class="alerte.statut === 'En attente' ? 'status-pending' : 'status-treated'">
-                    <i class="bi bi-circle-fill"></i>
-                    {{ alerte.statut === 'En attente' ? t('alerts.pending') : t('alerts.treated') }}
-                  </span>
+                <!-- Type badge at top -->
+                <div class="alerte-type-header">
+                  <i class="bi" :class="getTypeIcon(alerte.type)"></i>
+                  <span class="type-label">{{ getTypeLabel(alerte.type) }}</span>
                 </div>
 
-                <!-- Alerte header -->
-                <div class="alerte-header">
-                  <div class="type-icon-wrapper">
-                    <i class="bi" :class="getTypeIcon(alerte.type)"></i>
-                  </div>
-                  <div class="type-info">
-                    <h3 class="type-name">{{ getTypeLabel(alerte.type) }}</h3>
-                    <p class="vehicle-name">
-                      <i class="bi bi-car-front"></i>
-                      {{ alerte.voiture ? `${alerte.voiture.marque} ${alerte.voiture.modele}` : t('common.notAvailable') }}
-                    </p>
-                  </div>
+                <!-- Vehicle info -->
+                <div class="alerte-vehicle">
+                  <i class="bi bi-car-front"></i>
+                  <span>{{ alerte.voiture ? `${alerte.voiture.marque} ${alerte.voiture.modele}` : t('common.notAvailable') }}</span>
                 </div>
 
-                <!-- Info section -->
-                <div class="alerte-info">
-                  <div class="info-row">
-                    <div class="info-icon">
-                      <i class="bi bi-calendar-event"></i>
-                    </div>
-                    <div class="info-content">
-                      <span class="info-label">{{ t('alerts.dueDate') }}</span>
-                      <span class="info-value">{{ formatDate(alerte.dateEchance) }}</span>
-                    </div>
+                <!-- Info details -->
+                <div class="alerte-details">
+                  <div class="detail-item">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>{{ formatDate(alerte.dateEchance) }}</span>
                   </div>
-                  <div class="info-row" v-if="alerte.kilometrageEchance">
-                    <div class="info-icon">
-                      <i class="bi bi-speedometer2"></i>
-                    </div>
-                    <div class="info-content">
-                      <span class="info-label">{{ t('alerts.mileage') }}</span>
-                      <span class="info-value">{{ formatNumber(alerte.kilometrageEchance) }} km</span>
-                    </div>
+                  <div class="detail-item" v-if="alerte.kilometrageEchance">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>{{ formatNumber(alerte.kilometrageEchance) }} km</span>
                   </div>
                 </div>
 
-                <!-- Urgency message -->
-                <div v-if="getDaysMessage(alerte)" class="urgency-badge" :class="getUrgencyClass(alerte)">
+                <!-- Urgency badge if applicable -->
+                <div v-if="getDaysMessage(alerte)" class="urgency-message" :class="getUrgencyClass(alerte)">
                   <i class="bi bi-clock-history"></i>
                   <span>{{ getDaysMessage(alerte) }}</span>
                 </div>
@@ -369,7 +349,6 @@ export default {
         voiture_id: ""
       },
       menuItems: [
-        { label: this.t('menu.home'), to: "/" },
         { label: this.t('menu.dashboard'), to: "/admindashboard" },
         { label: this.t('menu.catalog'), to: "/voitures/cataloguevoitures" },
         { label: this.t('menu.interventions'), to: "/interventions/catalogue" },

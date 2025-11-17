@@ -180,6 +180,7 @@ import {
 } from "chart.js";
 import { inject } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { getDashboardRoute } from '../utils/navigation.js';
 
 Chart.register(
   PieController, 
@@ -206,8 +207,7 @@ export default {
   computed: {
     menuItems() {
       return [
-        { label: this.t('nav.home'), to: "/" },
-        { label: this.t('nav.dashboard'), to: "/admindashboard" },
+        { label: this.t('nav.dashboard'), to: getDashboardRoute() },
         { label: this.t('nav.catalog'), to: "/voitures/cataloguevoitures" },
         { label: this.t('nav.interventions'), to: "/interventions/catalogue" },
         { label: this.t('nav.alerts'), to: "/alertes" },

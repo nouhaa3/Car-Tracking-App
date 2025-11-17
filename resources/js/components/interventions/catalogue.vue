@@ -116,42 +116,40 @@
               <div
                 v-for="intervention in filteredInterventions"
                 :key="intervention.idIntervention"
-                class="car-card intervention-card"
+                class="car-card"
               >
-                <!-- Type badge with icon -->
-                <span class="status-badge intervention-type-badge" :class="getTypeClass(intervention.type)">
+                <!-- Type header -->
+                <div class="intervention-type-header">
                   <i :class="getTypeIcon(intervention.type)"></i>
-                  {{ getTypeLabel(intervention.type) }}
-                </span>
+                  <span class="type-label">{{ getTypeLabel(intervention.type) }}</span>
+                </div>
 
-                <!-- Intervention details -->
-                <div class="intervention-main">
-                  <div class="intervention-vehicle">
-                    <i class="bi bi-car-front"></i>
-                    <span class="vehicle-name">
-                      {{ intervention.voiture?.marque }} {{ intervention.voiture?.modele }}
-                    </span>
-                  </div>
+                <!-- Vehicle info -->
+                <div class="intervention-vehicle-info">
+                  <i class="bi bi-car-front"></i>
+                  <span>{{ intervention.voiture?.marque }} {{ intervention.voiture?.modele }}</span>
+                </div>
 
-                  <div class="intervention-info">
-                    <div class="info-row">
-                      <i class="bi bi-calendar3"></i>
-                      <span>{{ formatDate(intervention.date) }}</span>
-                    </div>
-                    <div class="info-row">
-                      <i class="bi bi-shop"></i>
-                      <span>{{ intervention.garage }}</span>
-                    </div>
-                    <div class="info-row cost-row">
-                      <i class="bi bi-cash-coin"></i>
-                      <span class="cost-value">{{ formatCurrency(intervention.cout) }}</span>
-                    </div>
+                <!-- Details -->
+                <div class="intervention-details">
+                  <div class="detail-item">
+                    <i class="bi bi-calendar3"></i>
+                    <span>{{ formatDate(intervention.date) }}</span>
                   </div>
+                  <div class="detail-item">
+                    <i class="bi bi-shop"></i>
+                    <span>{{ intervention.garage }}</span>
+                  </div>
+                  <div class="detail-item cost-item">
+                    <i class="bi bi-cash-coin"></i>
+                    <span class="cost-value">{{ formatCurrency(intervention.cout) }}</span>
+                  </div>
+                </div>
 
-                  <div v-if="intervention.remarques" class="intervention-remarks">
-                    <i class="bi bi-chat-left-text"></i>
-                    <span>{{ truncateText(intervention.remarques, 80) }}</span>
-                  </div>
+                <!-- Remarks if available -->
+                <div v-if="intervention.remarques" class="intervention-remarks-box">
+                  <i class="bi bi-chat-left-text"></i>
+                  <span>{{ truncateText(intervention.remarques, 80) }}</span>
                 </div>
 
                 <!-- Voir plus button - Bottom right -->
@@ -351,7 +349,6 @@ export default {
         coutMax: ""
       },
       menuItems: [
-        { label: this.t('menu.home'), to: "/" },
         { label: this.t('menu.dashboard'), to: "/admindashboard" },
         { label: this.t('menu.catalog'), to: "/voitures/cataloguevoitures" },
         { label: this.t('menu.interventions'), to: "/interventions/catalogue" },

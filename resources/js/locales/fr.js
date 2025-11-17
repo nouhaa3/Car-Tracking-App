@@ -1,4 +1,4 @@
-export default {
+﻿export default {
   // Navigation
   nav: {
     home: 'Accueil',
@@ -18,6 +18,54 @@ export default {
     darkMode: 'Mode Sombre',
     lightMode: 'Mode Clair',
     documents: 'Documents',
+    history: 'Historique',
+  },
+
+  // Navbar
+  navbar: {
+    dashboard: 'Tableau de bord',
+    interventions: 'Interventions',
+    alerts: 'Alertes',
+    vehicles: 'Véhicules',
+    reports: 'Rapports',
+  },
+
+  // Menu items
+  menu: {
+    home: 'Accueil',
+    dashboard: 'Tableau de bord',
+    catalog: 'Catalogue',
+    interventions: 'Interventions',
+    alerts: 'Alertes',
+    reports: 'Rapports',
+  },
+
+  // Notifications System
+  notifications: {
+    title: 'Notifications',
+    unreadMessages: 'messages non lus',
+    loading: 'Chargement...',
+    noNotifications: 'Aucune notification',
+    noNotificationsDesc: 'Vous êtes à jour !',
+    markRead: 'Marquer comme lu',
+    markAllRead: 'Tout marquer comme lu',
+    allMarkedRead: 'Toutes les notifications marquées comme lues',
+    viewDetails: 'Voir les détails',
+    delete: 'Supprimer',
+    confirmDelete: 'Supprimer la notification ?',
+    confirmDeleteText: 'Cette action est irréversible.',
+    deleted: 'Notification supprimée',
+    cancel: 'Annuler',
+    error: 'Erreur',
+    errorFetching: 'Erreur lors du chargement des notifications',
+    errorMarking: 'Erreur lors du marquage comme lu',
+    errorDeleting: 'Erreur lors de la suppression',
+    all: 'Toutes',
+    unread: 'Non lues',
+    justNow: 'À l\'instant',
+    minutesAgo: 'Il y a {count} min',
+    hoursAgo: 'Il y a {count}h',
+    daysAgo: 'Il y a {count}j',
   },
 
   // Common
@@ -115,6 +163,7 @@ export default {
     unauthorized: 'Non autorisé',
     inputError: 'Erreur de saisie',
     other: 'Autre',
+    filters: 'Filtres',
   },
 
   // Settings
@@ -216,10 +265,12 @@ export default {
       contactSupport: 'Contacter le support',
       rateApp: 'Noter l\'application',
       license: 'Informations sur la licence',
+      comingSoon: 'Bientôt disponible',
+      unableToCheck: 'Impossible de vérifier les mises à jour',
     },
   },
 
-  // Catalog
+  // Catalog (kept for backward compatibility)
   catalog: {
     addFirstVehicle: 'Ajoutez votre premier véhicule',
     addNewCar: 'Ajouter une nouvelle voiture',
@@ -251,7 +302,7 @@ export default {
     yearPlaceholder: 'Sélectionner l\'année',
   },
 
-  // Cars
+  // Cars (kept for backward compatibility)
   cars: {
     addError: 'Erreur lors de l\'ajout',
     adding: 'Ajout en cours...',
@@ -307,14 +358,14 @@ export default {
     yearPlaceholder: 'Ex: 2024',
   },
 
-  // Charts
+  // Charts (kept for backward compatibility)
   charts: {
-    costCurrency: 'Coût (€)',
+    costCurrency: 'Coût (DT)',
     costLabel: 'Coût',
     vehiclesLabel: 'Véhicules',
   },
 
-  // Menu
+  // Menu (kept for backward compatibility)
   menu: {
     alerts: 'Alertes',
     catalog: 'Catalogue',
@@ -322,6 +373,7 @@ export default {
     home: 'Accueil',
     interventions: 'Interventions',
     messages: 'Messages',
+    reports: 'Rapports',
   },
 
   // Validation
@@ -423,14 +475,16 @@ export default {
 
   // History
   history: {
-    currency: 'Devise',
-    historySubtitle: 'Historique des interventions',
-    loadError: 'Erreur de chargement',
-    loading: 'Chargement...',
-    noHistory: 'Aucun historique',
-    pending: 'En attente',
     title: 'Historique',
     year: 'Année',
+    mileage: 'Kilométrage',
+    currency: 'DT',
+    loading: 'Chargement...',
+    loadError: 'Erreur lors du chargement de l\'historique',
+    noHistory: 'Aucun historique disponible',
+    historySubtitle: 'Aucune maintenance ou intervention enregistrée pour le moment',
+    pending: 'En attente',
+    resolved: 'Résolue',
   },
 
   // Agent Dashboard
@@ -464,6 +518,7 @@ export default {
     catalog: 'Catalogue des Véhicules',
     add: 'Ajouter un véhicule',
     addNew: 'Ajouter nouvelle voiture',
+    newIntervention: 'Nouvelle intervention',
     edit: 'Modifier le véhicule',
     delete: 'Supprimer le véhicule',
     details: 'Détails du véhicule',
@@ -605,11 +660,10 @@ export default {
     },
     validationIntro: 'Introduction à la validation',
     remarks: 'Remarques',
-  },
     type: 'Type d\'intervention',
     date: 'Date d\'intervention',
     cost: 'Coût',
-    costEuro: 'Coût (€)',
+    costEuro: 'Coût (DT)',
     mechanic: 'Mécanicien',
     description: 'Description',
     parts: 'Pièces utilisées',
@@ -676,30 +730,94 @@ export default {
   // Alerts
   alerts: {
     title: 'Alertes',
+    catalog: 'Catalogue des Alertes',
     alertDeleted: 'Alerte supprimée',
     alertDeletedSuccess: 'Alerte supprimée avec succès',
     alertInformation: 'Informations de l\'alerte',
     alertType: 'Type d\'alerte',
+    alertInfo: 'Informations de l\'alerte',
+    alertNumber: 'Alerte #',
     backToCatalog: 'Retour au catalogue',
     cannotEditTreated: 'Impossible de modifier une alerte traitée',
+    cannotEdit: 'Impossible de modifier une alerte déjà traitée',
     dueToday: 'Échéance aujourd\'hui',
     editFeatureComing: 'Fonctionnalité d\'édition à venir',
+    editingComingSoon: 'Fonctionnalité d\'édition à venir',
+    editDescription: 'Vous pourrez modifier la date d\'échéance et la priorité.',
     generateAlerts: 'Générer des alertes',
+    generate: 'Générer Alertes',
+    generateNew: 'Ajouter nouvelles alertes',
+    addNewAlerts: 'Ajouter nouvelles alertes',
     generateConfirmation: 'Générer une confirmation',
-    generated: 'Généré',
+    generateConfirm: 'Voulez-vous générer de nouvelles alertes pour tous les véhicules ?',
+    generated: 'Généré!',
     generating: 'Génération...',
+    great: 'Génial ! Aucune alerte en attente.',
     highPriority: 'Haute priorité',
     loadingDetails: 'Chargement des détails...',
+    loading: 'Chargement des alertes...',
     markAsTreated: 'Marquer comme traitée',
+    markTreated: 'Marquer comme traitée',
     markAsTreatedConfirmation: 'Marquer comme traitée - confirmation',
+    markTreatedConfirm: 'Marquer cette alerte comme traitée ?',
     markedAsTreated: 'Marquée comme traitée',
+    markedTreated: 'Alerte marquée comme traitée',
     mileageDue: 'Kilométrage échéance',
+    mileage: 'KILOMÉTRAGE',
     noAlertsFound: 'Aucune alerte trouvée',
+    noAlerts: 'Aucune alerte trouvée',
     noPendingAlerts: 'Aucune alerte en attente',
+    notAvailable: 'Non disponible',
+    newAlertsGenerated: 'nouvelle(s) alerte(s) générée(s)',
     searchPlaceholder: 'Rechercher par type ou véhicule...',
     thisAlert: 'Cette alerte',
     totalAlerts: 'Total des alertes',
     tryAdjustingFilters: 'Essayez d\'ajuster les filtres',
+    comingSoon: 'Bientôt disponible',
+    createdOn: 'Créée le',
+    lastModified: 'Dernière modification',
+    // Status
+    active: 'Alertes actives',
+    resolved: 'Alertes résolues',
+    treated: 'Traité',
+    pending: 'En attente',
+    // Priority
+    priority: 'Priorité',
+    high: 'Haute',
+    medium: 'Moyenne',
+    low: 'Basse',
+    critical: 'Critique',
+    urgency: 'Urgence',
+    // Dates
+    expirationDate: 'Date d\'échéance',
+    dueDate: 'ÉCHÉANCE',
+    daysRemaining: '{days} jours restants',
+    daysRemainingShort: 'jour(s) restant(s)',
+    daysLeft: '{days} jour(s) restant(s)',
+    daysLeftUrgent: '{days} jour(s) restant(s) (urgent)',
+    overdueBy: 'En retard de {days} jour(s)',
+    expired: 'Expiré',
+    expiredBy: 'Dépassée de',
+    // Actions
+    resolve: 'Résoudre',
+    // Vehicle
+    vehicle: 'Véhicule',
+    relatedVehicle: 'Véhicule concerné',
+    viewVehicle: 'Voir le véhicule',
+    allVehicles: 'Tous les véhicules',
+    allAlerts: 'Toutes',
+    urgent: 'Urgent:',
+    // Alert types
+    type: 'Type d\'alerte',
+    insurance: 'Assurance',
+    taxVignette: 'Vignette',
+    technicalControl: 'Contrôle technique',
+    maintenance: 'Maintenance',
+    criticalVehicle: 'État véhicule critique',
+    extendedMaintenance: 'Maintenance prolongée',
+    highCosts: 'Coûts élevés',
+    recurringProblem: 'Problème récurrent',
+    annualService: 'Révision annuelle',
     types: {
       annualRevision: 'Révision annuelle',
       batteryReplacement: 'Remplacement de la batterie',
@@ -713,78 +831,14 @@ export default {
       technicalControl: 'Contrôle technique',
       tireChange: 'Changement de pneus',
     },
-    catalog: 'Catalogue des Alertes',
-    active: 'Alertes actives',
-    resolved: 'Alertes résolues',
-    priority: 'Priorité',
-    high: 'Élevée',
-    medium: 'Moyenne',
-    low: 'Basse',
-    critical: 'Critique',
-    high: 'Haute',
-    urgency: 'Urgence',
-    type: 'Type d\'alerte',
-    insurance: 'Assurance',
-    taxVignette: 'Vignette',
-    technicalControl: 'Contrôle technique',
-    maintenance: 'Maintenance',
-    expirationDate: 'Date d\'échéance',
-    dueDate: 'ÉCHÉANCE',
-    mileage: 'KILOMÉTRAGE',
-    mileageDue: 'Kilométrage échéance',
-    daysRemaining: '{days} jours restants',
-    daysRemainingShort: 'jour(s) restant(s)',
-    expired: 'Expiré',
-    expiredBy: 'Dépassée de',
-    resolve: 'Résoudre',
-    treated: 'Traité',
-    pending: 'En attente',
-    markTreated: 'Marquer comme traitée',
-    markTreatedConfirm: 'Marquer cette alerte comme traitée ?',
-    vehicle: 'Véhicule',
-    relatedVehicle: 'Véhicule concerné',
-    viewVehicle: 'Voir le véhicule',
-    alertInfo: 'Informations de l\'alerte',
-    alertNumber: 'Alerte #',
-    createdOn: 'Créée le',
-    lastModified: 'Dernière modification',
-    dueToday: 'Échéance aujourd\'hui !',
-    urgent: 'Urgent:',
-    allAlerts: 'Toutes',
-    allVehicles: 'Tous les véhicules',
-    generate: 'Générer Alertes',
-    generateNew: 'Ajouter nouvelles alertes',
-    generating: 'Génération...',
-    generateConfirm: 'Voulez-vous générer de nouvelles alertes pour tous les véhicules ?',
-    generated: 'Généré!',
-    newAlertsGenerated: 'nouvelle(s) alerte(s) générée(s)',
-    // Status messages
-    great: 'Génial ! Aucune alerte en attente.',
-    noAlerts: 'Aucune alerte trouvée',
-    loading: 'Chargement des alertes...',
-    searchPlaceholder: 'Rechercher par type ou véhicule...',
-    backToCatalog: 'Retour au catalogue',
-    loadingDetails: 'Chargement des détails...',
-    notAvailable: 'Non disponible',
-    cannotEdit: 'Impossible de modifier une alerte déjà traitée',
-    comingSoon: 'Bientôt disponible',
-    editingComingSoon: 'Fonctionnalité d\'édition à venir',
-    editDescription: 'Vous pourrez modifier la date d\'échéance et la priorité.',
     // Success messages
     treatedSuccess: 'Traitée!',
-    markedTreated: 'Alerte marquée comme traitée',
     deleted: 'Alerte supprimée avec succès!',
     // Error messages
     errorGenerating: 'Erreur lors de la génération des alertes',
     errorResolving: 'Erreur lors de la résolution de l\'alerte',
     errorDeleting: 'Erreur lors de la suppression de l\'alerte.',
     errorDeletingShort: 'Erreur lors de la suppression',
-    // Alert types
-    criticalVehicle: 'État véhicule critique',
-    extendedMaintenance: 'Maintenance prolongée',
-    highCosts: 'Coûts élevés',
-    recurringProblem: 'Problème récurrent',
-    annualService: 'Révision annuelle',
   },
 
   // Reports
@@ -817,6 +871,12 @@ export default {
     globalDesc: 'Tous les rapports combinés en un seul document',
     customReport: 'Rapport Personnalisé',
     customDesc: 'Créez votre propre rapport avec des filtres',
+    format: 'Format',
+    entries: 'entrées',
+    preview: 'Aperçu',
+    multiSection: 'Rapport multi-sections',
+    withCharts: 'Avec graphiques',
+    filenamePrefix: 'rapport',
     // Stats
     totalVehicles: 'Véhicules Total',
     available: 'disponibles',
@@ -824,32 +884,62 @@ export default {
     inProgress: 'en cours',
     completed: 'terminées',
     totalCost: 'Coût Total',
-    interventionsThisMonth: 'Interventions ce mois',
+    thisMonthInterventions: 'Interventions ce mois',
     admins: 'admins',
     agents: 'agents',
-    // Periods
-    last7Days: '7 derniers jours',
-    last30Days: '30 derniers jours',
-    last3Months: '3 derniers mois',
-    thisYear: 'Cette année',
-    allData: 'Toutes les données',
+    // Types structure
+    types: {
+      vehicles: {
+        title: 'Véhicules',
+        description: 'Rapport complet de la flotte avec tous les détails des véhicules',
+      },
+      interventions: {
+        title: 'Interventions',
+        description: 'Historique complet des maintenances et interventions',
+      },
+      users: {
+        title: 'Utilisateurs',
+        description: 'Liste de tous les utilisateurs et leurs rôles',
+      },
+      financial: {
+        title: 'Financier',
+        description: 'Analyse des coûts et dépenses',
+      },
+      complete: {
+        title: 'Rapport Complet',
+        description: 'Toutes les données combinées avec graphiques et analyse détaillée',
+      },
+      custom: {
+        title: 'Rapport Personnalisé',
+        description: 'Créez un rapport personnalisé avec vos filtres',
+      },
+    },
+    // Periods structure
+    periods: {
+      last7Days: '7 derniers jours',
+      last30Days: '30 derniers jours',
+      last3Months: '3 derniers mois',
+      thisYear: 'Cette année',
+      allData: 'Toutes les données',
+    },
     monthly: 'Mensuel',
     realTime: 'Temps réel',
+    updated: 'Mis à jour',
     // Formats
     formatPdf: 'Format: PDF',
     formatCsv: 'Format: CSV',
     pdf: 'PDF',
     csv: 'CSV',
-    multiSections: 'Multi-sections',
-    withCharts: 'Avec graphiques',
-    updated: 'Mis à jour:',
-    updatedRealTime: 'Mis à jour: Temps réel',
-    periodMonthly: 'Période: Mensuel',
     // Messages
     loading: 'Chargement des données...',
     loadingError: 'Erreur de chargement',
     generating: 'Génération du rapport en cours...',
-    generatingDesc: 'Veuillez patienter pendant que nous préparons votre document',
+    generatingMessage: 'Veuillez patienter pendant que nous préparons votre document',
+    previewComingSoon: 'Aperçu pour le rapport {type} bientôt disponible',
+    // Errors
+    errors: {
+      selectData: 'Veuillez sélectionner au moins un type de données',
+    },
   },
 
   // Auth
@@ -859,9 +949,15 @@ export default {
     logout: 'Déconnexion',
     register: 'Inscription',
     createAccount: 'Créer un compte',
+    firstName: 'Prénom',
+    lastName: 'Nom',
     email: 'Email',
-    emailPlaceholder: 'votre@email.com',
     password: 'Mot de passe',
+    role: 'Rôle',
+    firstNamePlaceholder: 'Entrez votre prénom',
+    lastNamePlaceholder: 'Entrez votre nom',
+    emailPlaceholder: 'votre{\'@\'}email.com',
+    passwordPlaceholder: 'Entrez votre mot de passe',
     oldPassword: 'Ancien mot de passe',
     currentPassword: 'Ancien mot de passe',
     newPassword: 'Nouveau mot de passe',
@@ -874,6 +970,8 @@ export default {
     rememberMe: 'Se souvenir de moi',
     welcome: 'Bienvenue',
     signInMessage: 'Connectez-vous pour accéder à votre compte',
+    loginSubtitle: 'Connectez-vous pour accéder à votre compte',
+    registerSubtitle: 'Créez un compte pour commencer',
     createAccountMessage: 'Rejoignez FleetManager et optimisez votre flotte',
     forgotPasswordMessage: 'Entrez votre email et nous vous enverrons un lien pour réinitialiser votre mot de passe',
     resetPasswordMessage: 'Créez un nouveau mot de passe sécurisé',
@@ -887,18 +985,24 @@ export default {
     passwordMinLength: 'Le mot de passe doit contenir au moins 6 caractères',
     // Success messages
     resetSuccess: 'Votre mot de passe a été réinialisé avec succès',
-    // Error messages
-    incorrectCredentials: 'Email ou mot de passe incorrect',
-    noAccountFound: 'Aucun compte trouvé avec cet email',
-    errorOccurred: 'Une erreur s\'est produite. Veuillez réessayer',
-    passwordsNotMatch: 'Les mots de passe ne correspondent pas',
-    invalidLink: 'Le lien de réinitialisation est invalide ou a expiré',
-    invalidLinkShort: 'Lien de réinitialisation invalide ou expiré',
     // Roles
-    admin: 'Admin',
-    agent: 'Agent',
-    technician: 'Technicien',
-    user: 'Utilisateur',
+    roles: {
+      admin: 'Administrateur',
+      agent: 'Agent',
+      technician: 'Technicien',
+      user: 'Utilisateur',
+    },
+    // Error messages
+    errors: {
+      incorrectCredentials: 'Email ou mot de passe incorrect',
+      invalidCredentials: 'Email ou mot de passe invalide',
+      noAccountFound: 'Aucun compte trouvé avec cet email',
+      errorOccurred: 'Une erreur s\'est produite. Veuillez réessayer',
+      registrationFailed: 'L\'inscription a échoué. Veuillez réessayer',
+      passwordsNotMatch: 'Les mots de passe ne correspondent pas',
+      invalidLink: 'Le lien de réinitialisation est invalide ou a expiré',
+      invalidLinkShort: 'Lien de réinitialisation invalide ou expiré',
+    },
   },
 
   // Dashboard
@@ -912,6 +1016,7 @@ export default {
     distributionByYear: 'Répartition par année',
     top5Expensive: 'Top 5 véhicules coûteux',
     maintenanceCost6Months: 'Coût de maintenance (6 mois)',
+    urgentAlerts: 'Alertes urgentes',
     recentUrgentAlerts: 'Alertes urgentes récentes',
     recentInterventions: 'Dernières interventions',
     noUrgentAlerts: 'Aucune alerte urgente',
@@ -936,6 +1041,27 @@ export default {
     delete: 'Supprimer',
     noMessages: 'Aucun message',
     noMessagesDesc: 'Vous n\'avez reçu aucun message pour le moment',
+    replyTo: 'Répondre à {name} bientôt disponible',
+    deleteConfirm: 'Supprimer le message de {name} ?',
+    deleteSuccess: 'Message supprimé avec succès',
+    deleteError: 'Erreur lors de la suppression du message',
+    filters: {
+      all: 'Tous',
+      unread: 'Non lus',
+      read: 'Lus',
+    },
+    status: {
+      read: 'Lu',
+      unread: 'Non lu',
+    },
+    actions: {
+      reply: 'Répondre',
+      delete: 'Supprimer',
+    },
+    empty: {
+      title: 'Aucun message',
+      description: 'Vous n\'avez reçu aucun message pour le moment',
+    },
   },
 
   // Trash
@@ -954,6 +1080,10 @@ export default {
     garage: 'Garage',
     noVehicles: 'Aucun véhicule dans la corbeille',
     noInterventions: 'Aucune intervention dans la corbeille',
+    empty: {
+      vehicles: 'Aucun véhicule dans la corbeille',
+      interventions: 'Aucune intervention dans la corbeille',
+    },
     restoreVehicleConfirm: 'Restaurer ce véhicule ?',
     restoreVehicleDesc: 'Le véhicule sera restauré et réapparaîtra dans la liste',
     vehicleRestored: 'Véhicule restauré avec succès',
@@ -963,6 +1093,15 @@ export default {
     deleteDesc: 'Cette action est irréversible et toutes les données associées seront perdues',
     vehicleDeletedPermanently: 'Véhicule supprimé définitivement',
     interventionDeletedPermanently: 'Intervention supprimée définitivement',
+  },
+
+  // Time Ago
+  timeAgo: {
+    seconds: 'il y a {count} secondes',
+    minutes: 'il y a {count} minutes',
+    hours: 'il y a {count} heures',
+    days: 'il y a {count} jours',
+    weeks: 'il y a {count} semaines',
   },
 
   // Help
@@ -987,40 +1126,182 @@ export default {
 
   // Home Page
   home: {
-    title: 'Solution de gestion de flotte N°1',
-    subtitle: 'Gérez votre flotte automobile en toute simplicité et efficacité',
-    hero: 'Optimisez la gestion de vos véhicules',
-    startFree: 'Démarrer gratuitement',
-    learnMore: 'En savoir plus',
-    companies: 'Entreprises',
-    vehiclesManaged: 'Véhicules gérés',
-    availability: 'Disponibilité',
-    features: 'Fonctionnalités',
-    featuresTitle: 'Tout ce dont vous avez besoin',
-    featuresSubtitle: 'Une suite complète d\'outils',
-    realtimeTracking: 'Suivi en temps réel',
-    preventiveMaintenance: 'Maintenance préventive',
-    detailedReports: 'Rapports détaillés',
-    enhancedSecurity: 'Sécurité renforcée',
-    teamManagement: 'Gestion d\'équipe',
-    mobileApp: 'Application mobile',
-    benefits: 'Avantages',
-    benefitsTitle: 'Pourquoi choisir FleetManager ?',
-    costReduction: 'Réduction des coûts',
-    saveUpTo: 'Économisez jusqu\'à 30%',
-    timeSavings: 'Gain de temps',
-    informedDecisions: 'Décisions éclairées',
-    support247: 'Support 24/7',
-    contact: 'Contact',
-    contactTitle: 'Parlons de votre projet',
-    firstName: 'Prénom',
-    lastName: 'Nom',
-    phone: 'Téléphone',
-    message: 'Message',
-    messagePlaceholder: 'Décrivez votre besoin...',
-    sendMessage: 'Envoyer le message',
-    address: 'Adresse',
-    allRightsReserved: 'Tous droits réservés',
+    brandName: 'FleetManager',
+    getStarted: 'Commencer',
+    
+    // Navigation
+    nav: {
+      home: 'Accueil',
+      features: 'Fonctionnalités',
+      benefits: 'Avantages',
+      contact: 'Contact',
+    },
+    
+    // Hero Section
+    hero: {
+      badge: 'Solution de gestion de flotte N°1',
+      title: 'La solution complète pour une gestion intelligente de votre flotte automobile',
+      description: 'Optimisez la performance, réduisez vos coûts et prenez le contrôle total de vos véhicules avec une plateforme unique, intuitive et sécurisée.',
+      startFree: 'Démarrer Gratuitement',
+      requestDemo: 'Demander une Démo',
+      learnMore: 'En Savoir Plus',
+    },
+    
+    // Stats
+    stats: {
+      vehiclesManaged: '10 000+ véhicules gérés en Tunisie',
+      companies: '500+ entreprises font confiance à FleetManager',
+      availability: '99,9% de disponibilité garantie',
+    },
+    
+    // Features Section
+    features: {
+      title: 'Fonctionnalités',
+      subtitle: 'Des outils puissants pour une gestion sans effort',
+      description: 'Toutes les fonctionnalités dont vous avez besoin pour superviser et faire croître votre flotte.',
+      items: {
+        realTimeTracking: {
+          title: 'Suivi en Temps Réel',
+          description: 'Surveillez vos véhicules avec un suivi GPS précis et des alertes instantanées.',
+        },
+        preventiveMaintenance: {
+          title: 'Maintenance Préventive',
+          description: 'Planifiez les entretiens, évitez les pannes et optimisez la durée de vie de vos véhicules.',
+        },
+        administrativeManagement: {
+          title: 'Gestion Administrative',
+          description: 'Centralisez contrats, assurances et documents critiques.',
+        },
+        detailedReports: {
+          title: 'Rapports et Analyses',
+          description: 'Suivez les coûts, les performances et les tendances grâce à des tableaux de bord clairs.',
+        },
+        enhancedSecurity: {
+          title: 'Sécurité des Données',
+          description: 'Hébergement sécurisé en Europe et chiffrement de bout en bout.',
+        },
+        mobileApp: {
+          title: 'Application Mobile',
+          description: 'Accédez à vos outils depuis n\'importe où, sur Android ou iOS.',
+        },
+      },
+    },
+    
+    // Benefits Section
+    benefits: {
+      title: 'Avantages',
+      subtitle: 'Pourquoi choisir FleetManager ?',
+      description: 'Une solution conçue pour simplifier, sécuriser et rentabiliser la gestion de votre flotte.',
+      items: {
+        timeSavings: {
+          title: 'Gain de Temps',
+          description: 'Automatisation des tâches répétitives et gestion simplifiée.',
+        },
+        costReduction: {
+          title: 'Réduction des Coûts',
+          description: 'Économisez jusqu\'à 30% sur vos dépenses de maintenance et carburant.',
+        },
+        informedDecisions: {
+          title: 'Décisions Éclairées',
+          description: 'Analysez vos performances grâce à des rapports intelligents.',
+        },
+        support247: {
+          title: 'Support 24/7',
+          description: 'Assistance réactive par chat, email ou téléphone.',
+        },
+      },
+    },
+    
+    // Mobile App Section
+    mobileApp: {
+      title: 'Une solution disponible partout',
+      description: 'Gérez votre flotte sur ordinateur, tablette ou smartphone. Recevez des notifications, consultez les rapports et suivez vos véhicules, où que vous soyez.',
+    },
+    
+    // Testimonials Section
+    testimonials: {
+      title: 'Ce que disent nos clients',
+      subtitle: 'FleetManager aide les entreprises à gérer plus efficacement leurs opérations.',
+      items: [
+        {
+          quote: 'Grâce à FleetManager, nous avons réduit nos coûts de maintenance de 25% en 6 mois.',
+          author: 'Sophie M.',
+          position: 'Responsable Flotte',
+          company: 'EuroDrive',
+        },
+        {
+          quote: 'L\'interface est claire et le support client irréprochable.',
+          author: 'Karim L.',
+          position: 'Directeur Logistique',
+          company: 'TransMobilis',
+        },
+      ],
+    },
+    
+    // Contact Section
+    contact: {
+      title: 'Contact',
+      subtitle: 'Parlons de votre projet',
+      description: 'Notre équipe vous accompagne dans la mise en place de votre solution de gestion de flotte.',
+      form: {
+        fullName: 'Nom complet',
+        fullNamePlaceholder: 'Entrer votre nom complet',
+        firstName: 'Prénom',
+        firstNamePlaceholder: 'Entrer votre prénom',
+        lastName: 'Nom',
+        lastNamePlaceholder: 'Entrer votre nom',
+        email: 'Email professionnel',
+        emailPlaceholder: 'votreemail{\'@\'}gmail.com',
+        phone: 'Téléphone',
+        phonePlaceholder: '+216 11 111 111',
+        company: 'Société',
+        companyPlaceholder: 'Entrer le nom de votre société',
+        message: 'Message',
+        messagePlaceholder: 'Parlez-nous de vos besoins...',
+        sendMessage: 'Envoyer le Message',
+        sending: 'Envoi en cours...',
+      },
+      info: {
+        title: 'Coordonnées directes',
+        address: 'Adresse',
+        addressValue: 'Tunis, Tunisie',
+        email: 'Email',
+        emailValue: 'contact{\'@\'}cartrackingapp.com',
+        phone: 'Téléphone',
+        phoneValue: '+216 11 111 111',
+      },
+      success: 'Message envoyé avec succès !',
+      successMessage: 'Votre message a été envoyé avec succès ! Nous vous répondrons bientôt.',
+      error: 'Erreur lors de l\'envoi du message. Veuillez réessayer.',
+      phone: 'Téléphone',
+      phonePlaceholder: '+216 11 111 111',
+      message: 'Message',
+      messagePlaceholder: 'Parlez-nous de vos besoins...',
+      email: 'Email',
+      address: 'Adresse',
+      sendMessage: 'Envoyer le Message',
+    },
+    
+    // Footer
+    footer: {
+      tagline: 'La plateforme moderne de gestion de flotte pour les entreprises ambitieuses.',
+      product: 'Produit',
+      company: 'Entreprise',
+      legal: 'Légal',
+      features: 'Fonctionnalités',
+      demo: 'Démo',
+      apiIntegrations: 'API & Intégrations',
+      benefits: 'Avantages',
+      pricing: 'Tarifs',
+      about: 'À propos',
+      careers: 'Carrières',
+      press: 'Presse',
+      privacy: 'Politique de Confidentialité',
+      terms: 'Conditions d\'Utilisation',
+      legalNotice: 'Mentions Légales',
+      allRightsReserved: 'Tous droits réservés',
+      rights: 'Tous droits réservés',
+    },
   },
 
   // Profile
@@ -1060,6 +1341,7 @@ export default {
     success: 'Succès!',
     photoUpdated: 'Photo de profil mise à jour avec succès',
     leaveBlankToKeep: 'Laissez vide pour conserver le mot de passe actuel',
+    vehicles: 'Véhicules',
   },
 
   // Users Management
@@ -1067,6 +1349,7 @@ export default {
     title: 'Gestion des Utilisateurs',
     subtitle: 'Gérez tous les utilisateurs de l\'application',
     addUser: 'Ajouter un utilisateur',
+    addFirstUser: 'Commencez par ajouter votre premier utilisateur',
     loading: 'Chargement des utilisateurs...',
     retry: 'Réessayer',
     searchPlaceholder: 'Rechercher par nom, prénom ou email...',
@@ -1086,12 +1369,17 @@ export default {
     editUserTitle: 'Modifier l\'utilisateur',
     firstName: 'Prénom',
     lastName: 'Nom',
+    firstNamePlaceholder: 'Entrez le prénom',
+    lastNamePlaceholder: 'Entrez le nom',
+    emailPlaceholder: 'email{\'@\'}exemple.com',
+    passwordPlaceholder: 'Entrez le mot de passe',
     selectRole: 'Sélectionner un rôle',
     admin: 'Admin',
     agent: 'Agent',
     technician: 'Technicien',
     password: 'Mot de passe',
     newPassword: 'Nouveau mot de passe (optionnel)',
+    passwordHelp: 'Laissez vide pour conserver le mot de passe actuel',
     confirmPassword: 'Confirmer le mot de passe',
     confirmNewPassword: 'Confirmer le nouveau mot de passe',
     leaveBlankToKeep: 'Laissez vide pour conserver le mot de passe actuel',
@@ -1099,21 +1387,32 @@ export default {
     update: 'Mettre à jour',
     create: 'Créer',
     cancel: 'Annuler',
+    confirmDelete: 'Confirmer la suppression',
     confirmDeletion: 'Confirmer la suppression',
     deleteUserConfirm: 'Êtes-vous sûr de vouloir supprimer l\'utilisateur',
+    deleteConfirmation: 'Êtes-vous sûr de vouloir supprimer {firstName} {name} ?',
     irreversible: 'Cette action est irréversible',
+    irreversibleAction: 'Cette action est irréversible et ne peut être annulée.',
     deleting: 'Suppression...',
     deleteButton: 'Supprimer',
+    avatar: 'Avatar de l\'utilisateur',
     updated: 'Mis à jour!',
     userUpdated: 'Utilisateur mis à jour avec succès',
+    updateSuccess: 'Utilisateur mis à jour avec succès',
     created: 'Créé!',
     userCreated: 'Utilisateur créé avec succès',
+    createSuccess: 'Utilisateur créé avec succès',
     deleted: 'Supprimé!',
     userDeleted: 'Utilisateur supprimé avec succès',
+    deleteSuccess: 'Utilisateur supprimé avec succès',
     error: 'Erreur',
+    loadError: 'Erreur lors du chargement des utilisateurs',
     errorSaving: 'Erreur lors de la sauvegarde de l\'utilisateur',
+    saveError: 'Erreur lors de la sauvegarde de l\'utilisateur',
     errorDeleting: 'Erreur lors de la suppression de l\'utilisateur',
+    deleteError: 'Erreur lors de la suppression de l\'utilisateur',
     passwordsNotMatch: 'Les mots de passe ne correspondent pas',
+    passwordMismatch: 'Les mots de passe ne correspondent pas',
     inputError: 'Erreur de saisie',
   },
 
@@ -1156,12 +1455,35 @@ export default {
     filename: 'Nom du fichier',
     // Messages
     added: 'Document ajouté avec succès',
+    addSuccess: 'Document ajouté avec succès',
     errorAdding: 'Erreur lors de l\'ajout du document',
+    addError: 'Erreur lors de l\'ajout du document',
     selectFile: 'Veuillez sélectionner un fichier',
+    fileRequired: 'Veuillez sélectionner un fichier',
     loading: 'Chargement du document...',
+    loadError: 'Erreur lors du chargement des documents',
+    loadDocumentError: 'Impossible de charger le document',
     unableToLoad: 'Impossible de charger le document',
     replaced: 'Document remplacé avec succès',
+    replaceSuccess: 'Document remplacé avec succès',
     errorReplacing: 'Erreur lors du remplacement du document',
+    replaceError: 'Erreur lors du remplacement du document',
+    downloadSuccess: 'Document téléchargé avec succès',
+    downloadError: 'Erreur lors du téléchargement du document',
+    deleteSuccess: 'Document supprimé avec succès',
+    deleteError: 'Erreur lors de la suppression du document',
+    confirmDelete: 'Supprimer ce document ?',
+    addDocuments: 'Ajoutez des documents importants',
+    fileRequirements: 'PDF, JPG, PNG - Maximum 10MB',
+    datePlaceholder: 'Sélectionner la date',
+    types: {
+      registration: 'Carte grise',
+      insurance: 'Assurance',
+      technicalControl: 'Contrôle technique',
+      warranty: 'Garantie',
+      purchaseInvoice: 'Facture achat',
+      other: 'Autre',
+    },
   },
 
   // Time-related
@@ -1192,4 +1514,505 @@ export default {
   dateFormats: {
     ddmmyyyy: 'JJ/MM/AAAA',
   },
+
+  // Privacy Policy
+  privacy: {
+    title: 'Politique de Confidentialité',
+    subtitle: 'Comment nous protégeons et gérons vos données',
+    lastUpdated: 'Dernière mise à jour',
+    sections: {
+      introduction: {
+        title: 'Introduction',
+        content: 'FleetManager s\'engage à protéger votre vie privée et à garantir la sécurité de vos informations personnelles. Cette Politique de Confidentialité explique comment nous collectons, utilisons, divulguons et protégeons vos données lorsque vous utilisez notre plateforme de gestion de flotte.',
+      },
+      dataCollection: {
+        title: 'Collecte de Données',
+        content: 'Nous collectons les informations que vous nous fournissez directement, notamment :',
+        items: [
+          'Informations de compte (nom, email, téléphone)',
+          'Informations sur les véhicules (marque, modèle, immatriculation, kilométrage)',
+          'Dossiers de maintenance et d\'intervention',
+          'Données d\'utilisation et analyses',
+          'Données de localisation (pour les fonctionnalités GPS)',
+          'Préférences de communication',
+        ],
+      },
+      dataUsage: {
+        title: 'Utilisation de Vos Données',
+        content: 'Vos informations sont utilisées pour :',
+        items: [
+          'Fournir et maintenir les services de gestion de flotte',
+          'Envoyer des notifications sur la maintenance et les alertes',
+          'Générer des rapports et des analyses',
+          'Améliorer nos services et l\'expérience utilisateur',
+          'Assurer la sécurité et prévenir la fraude',
+          'Se conformer aux obligations légales',
+        ],
+      },
+      dataSecurity: {
+        title: 'Sécurité des Données',
+        content: 'Nous mettons en œuvre des mesures de sécurité robustes pour protéger vos données, notamment le cryptage, des serveurs sécurisés, des contrôles d\'accès et des audits de sécurité réguliers. Cependant, aucun système n\'est totalement sécurisé et nous ne pouvons garantir une sécurité absolue.',
+      },
+      dataSharing: {
+        title: 'Partage de Données',
+        content: 'Nous ne vendons pas vos informations personnelles. Nous pouvons partager des données avec des prestataires de services de confiance qui nous aident à exploiter notre plateforme, sous réserve d\'accords de confidentialité stricts.',
+      },
+      yourRights: {
+        title: 'Vos Droits',
+        content: 'Vous avez le droit de :',
+        items: [
+          'Accéder à vos données personnelles',
+          'Corriger les informations inexactes',
+          'Demander la suppression de vos données',
+          'Vous opposer au traitement des données',
+          'Exporter vos données',
+          'Retirer votre consentement à tout moment',
+        ],
+      },
+      cookies: {
+        title: 'Cookies et Suivi',
+        content: 'Nous utilisons des cookies et des technologies similaires pour améliorer votre expérience, analyser les modèles d\'utilisation et fournir du contenu personnalisé. Vous pouvez contrôler les préférences de cookies via les paramètres de votre navigateur.',
+      },
+      contact: {
+        title: 'Nous Contacter',
+        content: 'Si vous avez des questions sur cette Politique de Confidentialité ou nos pratiques de données, veuillez nous contacter à :',
+        email: 'confidentialite{\'@\'}fleetmanager.com',
+        phone: '+33 1 23 45 67 89',
+      },
+    },
+  },
+
+  // Terms of Service
+  terms: {
+    title: 'Conditions d\'Utilisation',
+    subtitle: 'Termes et conditions d\'utilisation de FleetManager',
+    lastUpdated: 'Dernière mise à jour',
+    sections: {
+      acceptance: {
+        title: 'Acceptation des Conditions',
+        content: 'En accédant et en utilisant FleetManager, vous acceptez et acceptez d\'être lié par ces Conditions d\'Utilisation. Si vous n\'acceptez pas ces conditions, veuillez ne pas utiliser nos services.',
+      },
+      description: {
+        title: 'Description du Service',
+        content: 'FleetManager fournit une plateforme complète de gestion de flotte qui comprend le suivi des véhicules, la planification de la maintenance, la gestion des alertes, les rapports et les services connexes. Nous nous réservons le droit de modifier ou d\'interrompre les services à tout moment.',
+      },
+      accounts: {
+        title: 'Comptes Utilisateur',
+        content: 'Vous êtes responsable de :',
+        items: [
+          'Maintenir la confidentialité de vos identifiants de compte',
+          'Toutes les activités qui se produisent sous votre compte',
+          'Nous informer immédiatement de tout accès non autorisé',
+          'Fournir des informations exactes et à jour',
+          'Respecter toutes les lois et réglementations applicables',
+        ],
+      },
+      acceptable: {
+        title: 'Utilisation Acceptable',
+        content: 'Vous acceptez de ne pas :',
+        items: [
+          'Utiliser le service à des fins illégales',
+          'Tenter d\'obtenir un accès non autorisé aux systèmes',
+          'Interférer avec le bon fonctionnement du service',
+          'Télécharger du code malveillant ou des virus',
+          'Harceler, abuser ou nuire à d\'autres utilisateurs',
+          'Violer les droits de propriété intellectuelle',
+        ],
+      },
+      intellectual: {
+        title: 'Propriété Intellectuelle',
+        content: 'Tout le contenu, les fonctionnalités et les fonctionnalités de FleetManager sont notre propriété et sont protégés par les lois internationales sur le droit d\'auteur, les marques et autres propriétés intellectuelles. Vous ne pouvez pas copier, modifier ou distribuer notre contenu sans autorisation.',
+      },
+      liability: {
+        title: 'Limitation de Responsabilité',
+        content: 'FleetManager est fourni "tel quel" sans garanties d\'aucune sorte. Nous ne sommes pas responsables des dommages indirects, accessoires, spéciaux ou consécutifs découlant de votre utilisation du service.',
+      },
+      termination: {
+        title: 'Résiliation',
+        content: 'Nous nous réservons le droit de suspendre ou de résilier votre compte à tout moment en cas de violation de ces conditions. Lors de la résiliation, votre droit d\'utiliser le service cessera immédiatement.',
+      },
+      changes: {
+        title: 'Modifications des Conditions',
+        content: 'Nous pouvons mettre à jour ces Conditions d\'Utilisation de temps à autre. L\'utilisation continue du service après les modifications constitue l\'acceptation des conditions modifiées.',
+      },
+      governing: {
+        title: 'Droit Applicable',
+        content: 'Ces conditions sont régies et interprétées conformément aux lois applicables. Tout litige sera résolu devant les tribunaux compétents.',
+      },
+      contact: {
+        title: 'Informations de Contact',
+        content: 'Pour toute question concernant ces Conditions d\'Utilisation, contactez-nous à :',
+        email: 'legal{\'@\'}fleetmanager.com',
+        phone: '+33 1 23 45 67 89',
+      },
+    },
+  },
+
+  // Notifications
+  notifications: {
+    title: 'Notifications',
+    subtitle: 'Notifications système et mises à jour',
+    unreadMessages: 'messages non lus',
+    loading: 'Chargement...',
+    noNotifications: 'Aucune notification',
+    noNotificationsDesc: 'Vous êtes à jour ! Aucune nouvelle notification.',
+    markRead: 'Marquer comme lu',
+    markAllRead: 'Tout marquer comme lu',
+    allMarkedRead: 'Toutes les notifications marquées comme lues',
+    markAsRead: 'Marquer comme lu',
+    markAsUnread: 'Marquer comme non lu',
+    viewDetails: 'Voir les détails',
+    delete: 'Supprimer',
+    deleteAll: 'Tout supprimer',
+    confirmDelete: 'Supprimer la notification ?',
+    confirmDeleteText: 'Cette action est irréversible.',
+    deleted: 'Notification supprimée',
+    cancel: 'Annuler',
+    filter: 'Filtrer',
+    all: 'Toutes',
+    unread: 'Non lues',
+    error: 'Erreur',
+    errorFetching: 'Erreur lors du chargement des notifications',
+    errorMarking: 'Erreur lors du marquage comme lu',
+    errorDeleting: 'Erreur lors de la suppression',
+    justNow: 'À l\'instant',
+    minutesAgo: 'Il y a {count} min',
+    hoursAgo: 'Il y a {count}h',
+    daysAgo: 'Il y a {count}j',
+    types: {
+      all: 'Toutes',
+      system: 'Système',
+      maintenance: 'Maintenance',
+      alert: 'Alerte',
+      user: 'Utilisateur',
+      request: 'Demande',
+      warning: 'Avertissement',
+    },
+    messages: {
+      newUser: 'Nouvel utilisateur inscrit : {name}',
+      userRequest: '{name} a demandé l\'accès en tant que {role}',
+      maintenanceDue: 'Maintenance due pour le véhicule {vehicle}',
+      alertCreated: 'Nouvelle alerte créée pour {vehicle}',
+      documentExpiring: 'Document expirant bientôt : {document} pour {vehicle}',
+      lowStock: 'Alerte de stock faible : {item}',
+      systemUpdate: 'Système mis à jour vers la version {version}',
+      backupComplete: 'Sauvegarde terminée avec succès',
+      reportReady: 'Le rapport "{report}" est prêt à être téléchargé',
+      urgentAlert: 'Urgent : {message}',
+    },
+    actions: {
+      view: 'Voir',
+      approve: 'Approuver',
+      reject: 'Rejeter',
+      delete: 'Supprimer',
+    },
+  },
+
+  // Privacy Policy
+  privacy: {
+    title: 'Politique de Confidentialité',
+    subtitle: 'Comment nous protégeons et gérons vos données',
+    lastUpdated: 'Dernière mise à jour',
+    sections: {
+      introduction: {
+        title: 'Introduction',
+        content: 'FleetManager s\'engage à protéger votre vie privée et à garantir la sécurité de vos informations personnelles. Cette Politique de Confidentialité explique comment nous collectons, utilisons, divulguons et protégeons vos données lorsque vous utilisez notre plateforme de gestion de flotte.',
+      },
+      dataCollection: {
+        title: 'Collecte de Données',
+        content: 'Nous collectons les informations que vous nous fournissez directement, notamment :',
+        items: [
+          'Informations de compte (nom, email, téléphone)',
+          'Informations sur les véhicules (marque, modèle, immatriculation, kilométrage)',
+          'Dossiers de maintenance et d\'intervention',
+          'Données d\'utilisation et analyses',
+          'Données de localisation (pour les fonctionnalités GPS)',
+          'Préférences de communication',
+        ],
+      },
+      dataUsage: {
+        title: 'Utilisation de Vos Données',
+        content: 'Vos informations sont utilisées pour :',
+        items: [
+          'Fournir et maintenir les services de gestion de flotte',
+          'Envoyer des notifications sur la maintenance et les alertes',
+          'Générer des rapports et des analyses',
+          'Améliorer nos services et l\'expérience utilisateur',
+          'Assurer la sécurité et prévenir la fraude',
+          'Se conformer aux obligations légales',
+        ],
+      },
+      dataSecurity: {
+        title: 'Sécurité des Données',
+        content: 'Nous mettons en œuvre des mesures de sécurité robustes pour protéger vos données, notamment le cryptage, des serveurs sécurisés, des contrôles d\'accès et des audits de sécurité réguliers. Cependant, aucun système n\'est totalement sécurisé et nous ne pouvons garantir une sécurité absolue.',
+      },
+      dataSharing: {
+        title: 'Partage de Données',
+        content: 'Nous ne vendons pas vos informations personnelles. Nous pouvons partager des données avec des prestataires de services de confiance qui nous aident à exploiter notre plateforme, sous réserve d\'accords de confidentialité stricts.',
+      },
+      yourRights: {
+        title: 'Vos Droits',
+        content: 'Vous avez le droit de :',
+        items: [
+          'Accéder à vos données personnelles',
+          'Corriger les informations inexactes',
+          'Demander la suppression de vos données',
+          'Vous opposer au traitement des données',
+          'Exporter vos données',
+          'Retirer votre consentement à tout moment',
+        ],
+      },
+      cookies: {
+        title: 'Cookies et Suivi',
+        content: 'Nous utilisons des cookies et des technologies similaires pour améliorer votre expérience, analyser les modèles d\'utilisation et fournir du contenu personnalisé. Vous pouvez contrôler les préférences de cookies via les paramètres de votre navigateur.',
+      },
+      contact: {
+        title: 'Nous Contacter',
+        content: 'Si vous avez des questions sur cette Politique de Confidentialité ou nos pratiques de données, veuillez nous contacter à :',
+        email: 'confidentialite{\'@\'}fleetmanager.com',
+        phone: '+33 1 23 45 67 89',
+      },
+    },
+  },
+
+  // Terms of Service
+  terms: {
+    title: 'Conditions d\'Utilisation',
+    subtitle: 'Veuillez lire attentivement ces conditions avant d\'utiliser nos services',
+    downloadPDF: 'Télécharger PDF',
+    lastUpdated: 'Dernière Mise à Jour',
+    readingTime: 'Temps de Lecture',
+    version: 'Version',
+    required: 'Obligatoire',
+    restricted: 'Restreint',
+    important: 'Important',
+    warning: 'Avertissement',
+    disclaimer: 'Avis de Non-Responsabilité',
+    summary: {
+      title: 'Résumé',
+      content: 'Ces conditions régissent votre utilisation de nos services de gestion de flotte. En accédant à notre plateforme, vous acceptez d\'être lié par ces conditions.'
+    },
+    sections: {
+      acceptance: {
+        title: 'Acceptation des Conditions',
+        content: 'En accédant et utilisant nos services, vous reconnaissez avoir lu, compris et accepté d\'être lié par ces Conditions d\'Utilisation.',
+        notice: 'Votre utilisation continue du service constitue l\'acceptation de ces conditions.'
+      },
+      description: {
+        title: 'Description du Service',
+        content: 'Notre plateforme fournit des solutions complètes de gestion de flotte incluant le suivi des véhicules, la planification de maintenance et les fonctionnalités de reporting.'
+      },
+      accounts: {
+        title: 'Comptes Utilisateur',
+        content: 'Pour accéder à certaines fonctionnalités, vous devez créer un compte et fournir des informations exactes.'
+      },
+      acceptable: {
+        title: 'Utilisation Acceptable',
+        content: 'Vous acceptez d\'utiliser nos services conformément à toutes les lois et réglementations applicables.',
+        warning: 'La violation de ces conditions peut entraîner la suspension du compte.'
+      },
+      intellectual: {
+        title: 'Propriété Intellectuelle',
+        content: 'Tous les contenus et technologies sur notre plateforme sont protégés par les lois sur la propriété intellectuelle.',
+        copyright: 'Droit d\'Auteur',
+        copyrightDesc: 'Tous les contenus sont protégés par les lois sur le droit d\'auteur.',
+        trademarks: 'Marques Déposées',
+        trademarksDesc: 'Nos logos et noms de marque sont des marques déposées.',
+        patents: 'Brevet',
+        patentsDesc: 'Notre technologie est protégée par divers brevets.'
+      },
+      liability: {
+        title: 'Limitation de Responsabilité',
+        content: 'Nous ne sommes pas responsables des dommages indirects résultant de l\'utilisation du service.',
+        disclaimer: 'Nous fournissons les services tels quels sans garanties.'
+      },
+      contact: {
+        title: 'Informations de Contact',
+        content: 'Pour toute question concernant ces conditions, veuillez nous contacter.',
+        email: 'E-mail',
+        phone: 'Téléphone',
+        hours: 'Heures d\'Ouverture',
+        address: 'Adresse'
+      }
+    },
+    features: {
+      fleetManagement: 'Gestion de Flotte',
+      maintenanceTracking: 'Suivi de Maintenance',
+      reporting: 'Rapports et Analyses',
+      userManagement: 'Gestion des Utilisateurs',
+      dataAnalytics: 'Analyse de Données',
+      mobileAccess: 'Accès Mobile'
+    },
+    requirements: {
+      accuracy: {
+        title: 'Exactitude des Informations',
+        description: 'Vous devez fournir des informations exactes et complètes lors de la création de votre compte.'
+      },
+      security: {
+        title: 'Sécurité du Compte',
+        description: 'Vous êtes responsable de la sécurité de vos identifiants de compte.'
+      },
+      compliance: {
+        title: 'Conformité Légale',
+        description: 'Vous devez respecter toutes les lois et réglementations applicables.'
+      },
+      notification: {
+        title: 'Notification des Changements',
+        description: 'Vous devez nous informer immédiatement de toute utilisation non autorisée de votre compte.'
+      }
+    },
+    prohibited: {
+      unauthorized: {
+        title: 'Accès Non Autorisé',
+        description: 'Tenter d\'accéder aux systèmes ou données sans autorisation est interdit.'
+      },
+      misuse: {
+        title: 'Utilisation Inappropriée',
+        description: 'Utiliser le service pour des activités illégales ou du harcèlement n\'est pas autorisé.'
+      },
+      harmful: {
+        title: 'Activités Nocives',
+        description: 'Télécharger des virus ou du code malveillant est strictement interdit.'
+      },
+      commercial: {
+        title: 'Exploitation Commerciale',
+        description: 'La revente ou l\'exploitation commerciale sans autorisation est interdite.'
+      }
+    },
+    acceptance: {
+      title: 'Accepter les Conditions d\'Utilisation',
+      content: 'En cliquant sur "Accepter", vous reconnaissez avoir lu et accepté nos Conditions d\'Utilisation.',
+      accept: 'Accepter les Conditions',
+      decline: 'Refuser'
+    }
+  },
+
+  // About Page
+  about: {
+    nav: {
+      mission: 'Mission',
+      team: 'Équipe',
+      stats: 'Statistiques',
+      faq: 'FAQ',
+    },
+    hero: {
+      badge: 'À Propos de Nous',
+      title: 'Votre Partenaire de Confiance pour la Gestion de Flotte',
+      description: 'FleetManager aide les entreprises à optimiser leurs opérations de flotte grâce à une technologie innovante et un service exceptionnel.',
+    },
+    mission: {
+      badge: 'Notre Mission',
+      title: 'Notre Mission',
+      description: 'Nous nous efforçons de fournir les meilleures solutions de gestion de flotte pour aider les entreprises à réussir.',
+      items: {
+        vision: {
+          title: 'Vision',
+          text: 'Être le premier choix pour la gestion de flotte en fournissant des solutions innovantes qui simplifient les opérations.',
+        },
+        values: {
+          title: 'Valeurs',
+          text: 'Excellence, Innovation, Intégrité et Satisfaction Client au cœur de tout ce que nous faisons.',
+        },
+        innovation: {
+          title: 'Innovation',
+          text: 'Utilisation de technologies de pointe pour fournir les meilleures solutions de gestion de flotte du marché.',
+        },
+      },
+    },
+    stats: {
+      badge: 'Nos Chiffres',
+      title: 'Nos Chiffres',
+      vehicles: 'Véhicules Gérés',
+      companies: 'Entreprises Satisfaites',
+      availability: 'Disponibilité',
+      support: 'Support Client',
+    },
+    team: {
+      badge: 'Notre Équipe',
+      title: 'Notre Équipe',
+      description: 'Rencontrez les experts derrière FleetManager',
+      members: {
+        ceo: {
+          name: 'Jean Dupont',
+          role: 'PDG et Fondateur',
+          bio: '15 ans d\'expérience dans la gestion de flotte et la transformation digitale.',
+        },
+        cto: {
+          name: 'Marie Martin',
+          role: 'Directrice Technique',
+          bio: 'Experte en systèmes GPS et plateformes de gestion de données en temps réel.',
+        },
+        lead: {
+          name: 'Ahmed Benali',
+          role: 'Responsable Développement',
+          bio: 'Passionné par la création de solutions logicielles évolutives et conviviales.',
+        },
+      },
+    },
+    cta: {
+      title: 'Prêt à Commencer ?',
+      description: 'Rejoignez des centaines d\'entreprises qui optimisent leurs opérations de flotte avec FleetManager',
+    },
+  },
+
+  // FAQ Page
+  faq: {
+    hero: {
+      badge: 'Centre d\'Aide',
+    },
+    title: 'Questions Fréquentes',
+    subtitle: 'Trouvez des réponses aux questions courantes sur FleetManager',
+    searchPlaceholder: 'Rechercher une question...',
+    categories: {
+      all: 'Tout',
+      general: 'Général',
+      vehicles: 'Véhicules',
+      interventions: 'Interventions',
+      reports: 'Rapports',
+      account: 'Compte',
+    },
+    items: {
+      q1: 'Qu\'est-ce que FleetManager ?',
+      a1: 'FleetManager est une plateforme complète de gestion de flotte qui vous aide à suivre, gérer et optimiser vos opérations de véhicules. Elle comprend le suivi GPS, la gestion de la maintenance, les alertes, les rapports et bien plus encore.',
+      q2: 'Comment puis-je commencer avec FleetManager ?',
+      a2: 'C\'est facile ! Cliquez simplement sur "Démarrer Gratuitement" pour créer votre compte. Vous pouvez ajouter vos véhicules, configurer vos préférences et commencer à gérer votre flotte immédiatement.',
+      q3: 'Quels types de véhicules puis-je gérer ?',
+      a3: 'FleetManager prend en charge tous les types de véhicules : voitures, camions, fourgonnettes, bus, équipements de construction et plus encore. Notre plateforme flexible s\'adapte à vos besoins spécifiques.',
+      q4: 'Comment ajouter un nouveau véhicule ?',
+      a4: 'Accédez à la section Catalogue, cliquez sur "Ajouter un véhicule", remplissez les informations du véhicule (marque, modèle, année, kilométrage), téléchargez une photo et enregistrez. C\'est aussi simple que ça !',
+      q5: 'Puis-je suivre l\'historique de maintenance ?',
+      a5: 'Oui ! Chaque véhicule a un historique complet de maintenance. Vous pouvez voir toutes les interventions passées, les coûts et planifier les maintenances futures.',
+      q6: 'Comment fonctionnent les alertes ?',
+      a6: 'Les alertes vous notifient automatiquement des échéances importantes comme l\'assurance, le contrôle technique, la maintenance et plus encore. Vous pouvez personnaliser quand et comment vous recevez ces notifications.',
+      q7: 'Quels types de rapports puis-je générer ?',
+      a7: 'Vous pouvez générer des rapports sur les véhicules, les interventions, les coûts, les utilisateurs et des rapports personnalisés. Tous les rapports peuvent être téléchargés en PDF ou CSV.',
+      q8: 'Les données sont-elles sécurisées ?',
+      a8: 'Absolument ! Nous utilisons un cryptage de niveau entreprise, un hébergement sécurisé et des sauvegardes régulières. Vos données sont protégées avec les plus hauts standards de sécurité.',
+      q9: 'Puis-je accéder à FleetManager sur mobile ?',
+      a9: 'Oui ! FleetManager est entièrement responsive et fonctionne parfaitement sur tous les appareils - ordinateurs de bureau, tablettes et smartphones.',
+      q10: 'Combien d\'utilisateurs puis-je avoir ?',
+      a10: 'Le nombre d\'utilisateurs dépend de votre plan. Vous pouvez ajouter plusieurs utilisateurs avec différents rôles (Admin, Agent, Technicien) pour collaborer efficacement.',
+      q11: 'Comment puis-je contacter le support ?',
+      a11: 'Notre équipe de support est disponible 24/7. Vous pouvez nous contacter par email à contact@fleetmanager.com ou par téléphone au +216 11 111 111.',
+      q12: 'Y a-t-il un essai gratuit ?',
+      a12: 'Oui ! Nous offrons un essai gratuit de 14 jours avec accès complet à toutes les fonctionnalités. Aucune carte de crédit requise.',
+      q13: 'Puis-je annuler à tout moment ?',
+      a13: 'Oui, vous pouvez annuler votre abonnement à tout moment. Pas de contrats à long terme ni de frais de résiliation.',
+    },
+    cta: {
+      title: 'Vous ne trouvez pas ce que vous cherchez ?',
+      description: 'Notre équipe de support est prête à vous aider',
+      button: 'Contactez-Nous',
+    },
+  },
+
+  // 404 Page
+  notfound: {
+    title: 'Page Non Trouvée',
+    description: 'La page que vous recherchez n\'existe pas ou a été déplacée.',
+    backHome: 'Retour à l\'Accueil',
+    goBack: 'Retour',
+    helpText: 'Peut-être ces liens peuvent aider :',
+  }
 };
+

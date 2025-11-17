@@ -13,11 +13,6 @@
           <i class="bi bi-car-front-fill"></i>
           <span>{{ t('home.brandName') }}</span>
         </div>
-        <nav class="header-nav">
-          <a href="#features" class="nav-item">{{ t('home.nav.features') }}</a>
-          <a href="#benefits" class="nav-item">{{ t('home.nav.benefits') }}</a>
-          <a href="#contact" class="nav-item">{{ t('home.nav.contact') }}</a>
-        </nav>
         <div class="header-actions">
           <button class="btn-header-secondary" @click="$router.push('/login')">
             {{ t('auth.login') }}
@@ -25,6 +20,41 @@
           <button class="btn-header-primary" @click="$router.push('/register')">
             {{ t('home.getStarted') }}
           </button>
+          <!-- Language Selector -->
+          <div class="language-selector" @click="toggleLanguageMenu" v-click-outside="closeLanguageMenu">
+            <button class="language-btn">
+              <span :class="['fi', `fi-${getCurrentCountryCode()}`]"></span>
+              <i class="bi bi-chevron-down"></i>
+            </button>
+            <div class="language-dropdown" v-if="showLanguageMenu">
+              <div 
+                class="language-option" 
+                :class="{ active: currentLocale === 'fr' }"
+                @click="changeLanguage('fr')"
+              >
+                <span class="fi fi-fr"></span>
+                <span>Français</span>
+              </div>
+
+              <div 
+                class="language-option" 
+                :class="{ active: currentLocale === 'en' }"
+                @click="changeLanguage('en')"
+              >
+                <span class="fi fi-gb"></span>
+                <span>English</span>
+              </div>
+
+              <div 
+                class="language-option" 
+                :class="{ active: currentLocale === 'ar' }"
+                @click="changeLanguage('ar')"
+              >
+                <span class="fi fi-sa"></span>
+                <span>العربية</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </header>
@@ -49,24 +79,24 @@
             {{ t('home.hero.startFree') }}
             <i class="bi bi-arrow-right"></i>
           </button>
-          <button class="btn-cta-secondary" @click="scrollToSection('features')">
-            {{ t('home.hero.learnMore') }}
+          <button class="btn-cta-secondary" @click="scrollToSection('contact')">
+            {{ t('home.hero.requestDemo') }}
             <i class="bi bi-play-circle"></i>
           </button>
         </div>
         <div class="hero-stats">
           <div class="stat-item">
-            <div class="stat-number">500+</div>
-            <div class="stat-label">{{ t('home.stats.companies') }}</div>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-item">
-            <div class="stat-number">10K+</div>
+            <div class="stat-icon"><i class="bi bi-car-front-fill"></i></div>
             <div class="stat-label">{{ t('home.stats.vehiclesManaged') }}</div>
           </div>
           <div class="stat-divider"></div>
           <div class="stat-item">
-            <div class="stat-number">99.9%</div>
+            <div class="stat-icon"><i class="bi bi-building"></i></div>
+            <div class="stat-label">{{ t('home.stats.companies') }}</div>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <div class="stat-icon"><i class="bi bi-check-circle-fill"></i></div>
             <div class="stat-label">{{ t('home.stats.availability') }}</div>
           </div>
         </div>
@@ -76,7 +106,10 @@
     <!-- Features Section -->
     <section id="features" class="features-section-modern">
       <div class="section-header">
-        <span class="section-badge">{{ t('home.features.title') }}</span>
+        <span class="section-badge">
+          <i class="bi bi-star-fill"></i>
+          {{ t('home.features.title') }}
+        </span>
         <h2 class="section-title-modern">{{ t('home.features.subtitle') }}</h2>
         <p class="section-description">
           {{ t('home.features.description') }}
@@ -98,6 +131,13 @@
           <p>{{ t('home.features.items.preventiveMaintenance.description') }}</p>
         </div>
         <div class="feature-card-modern">
+          <div class="feature-icon" style="background: #FFF9C4;">
+            <i class="bi bi-file-earmark-text" style="color: #F57F17;"></i>
+          </div>
+          <h3>{{ t('home.features.items.administrativeManagement.title') }}</h3>
+          <p>{{ t('home.features.items.administrativeManagement.description') }}</p>
+        </div>
+        <div class="feature-card-modern">
           <div class="feature-icon" style="background: #FFF3E0;">
             <i class="bi bi-graph-up" style="color: #F57C00;"></i>
           </div>
@@ -112,13 +152,6 @@
           <p>{{ t('home.features.items.enhancedSecurity.description') }}</p>
         </div>
         <div class="feature-card-modern">
-          <div class="feature-icon" style="background: #FCE4EC;">
-            <i class="bi bi-people" style="color: #C2185B;"></i>
-          </div>
-          <h3>{{ t('home.features.items.teamManagement.title') }}</h3>
-          <p>{{ t('home.features.items.teamManagement.description') }}</p>
-        </div>
-        <div class="feature-card-modern">
           <div class="feature-icon" style="background: #E0F2F1;">
             <i class="bi bi-phone" style="color: #00796B;"></i>
           </div>
@@ -131,7 +164,10 @@
     <!-- Benefits Section -->
     <section id="benefits" class="benefits-section">
       <div class="section-header">
-        <span class="section-badge">{{ t('home.benefits.title') }}</span>
+        <span class="section-badge">
+          <i class="bi bi-star-fill"></i>
+          {{ t('home.benefits.title') }}
+        </span>
         <h2 class="section-title-modern">{{ t('home.benefits.subtitle') }}</h2>
         <p class="section-description">
           {{ t('home.benefits.description') }}
@@ -140,21 +176,21 @@
       <div class="benefits-grid">
         <div class="benefit-card">
           <div class="benefit-icon-wrapper">
+            <div class="benefit-icon" style="background: #E3F2FD;">
+              <i class="bi bi-clock-history" style="color: #1976D2;"></i>
+            </div>
+          </div>
+          <h3>{{ t('home.benefits.items.timeSavings.title') }}</h3>
+          <p>{{ t('home.benefits.items.timeSavings.description') }}</p>
+        </div>
+        <div class="benefit-card">
+          <div class="benefit-icon-wrapper">
             <div class="benefit-icon" style="background: #E8F5E9;">
               <i class="bi bi-piggy-bank" style="color: #388E3C;"></i>
             </div>
           </div>
           <h3>{{ t('home.benefits.items.costReduction.title') }}</h3>
           <p>{{ t('home.benefits.items.costReduction.description') }}</p>
-        </div>
-        <div class="benefit-card">
-          <div class="benefit-icon-wrapper">
-            <div class="benefit-icon" style="background: #E3F2FD;">
-              <i class="bi bi-clock-history" style="color: #1976D2;"></i>
-            </div>
-          </div>
-          <h3>{{ t('home.benefits.items.timeSaving.title') }}</h3>
-          <p>{{ t('home.benefits.items.timeSaving.description') }}</p>
         </div>
         <div class="benefit-card">
           <div class="benefit-icon-wrapper">
@@ -181,7 +217,10 @@
     <section id="contact" class="contact-section-modern">
       <div class="contact-container-modern">
         <div class="contact-header">
-          <span class="section-badge">{{ t('home.contact.title') }}</span>
+          <span class="section-badge">
+            <i class="bi bi-star-fill"></i>
+            {{ t('home.contact.title') }}
+          </span>
           <h2 class="section-title-modern">{{ t('home.contact.subtitle') }}</h2>
           <p class="section-description">
             {{ t('home.contact.description') }}
@@ -191,27 +230,27 @@
           <form class="contact-form-modern">
             <div class="form-row-modern">
               <div class="form-group-modern">
-                <label>{{ t('auth.lastName') }}</label>
-                <input type="text" name="nom" :placeholder="t('auth.lastNamePlaceholder')" class="input-modern" required />
+                <label>{{ t('home.contact.form.fullName') }}</label>
+                <input type="text" name="nom" :placeholder="t('home.contact.form.fullNamePlaceholder')" class="input-modern" required />
               </div>
               <div class="form-group-modern">
-                <label>{{ t('auth.firstName') }}</label>
-                <input type="text" name="prenom" :placeholder="t('auth.firstNamePlaceholder')" class="input-modern" required />
+                <label>{{ t('home.contact.form.email') }}</label>
+                <input type="email" name="email" :placeholder="t('home.contact.form.emailPlaceholder')" class="input-modern" required />
               </div>
             </div>
             <div class="form-row-modern">
               <div class="form-group-modern">
-                <label>{{ t('auth.email') }}</label>
-                <input type="email" name="email" :placeholder="t('auth.emailPlaceholder')" class="input-modern" required />
+                <label>{{ t('home.contact.form.phone') }}</label>
+                <input type="text" name="phone" :placeholder="t('home.contact.form.phonePlaceholder')" class="input-modern" />
               </div>
               <div class="form-group-modern">
-                <label>{{ t('home.contact.phone') }}</label>
-                <input type="text" name="phone" :placeholder="t('home.contact.phonePlaceholder')" class="input-modern" />
+                <label>{{ t('home.contact.form.company') }}</label>
+                <input type="text" name="company" :placeholder="t('home.contact.form.companyPlaceholder')" class="input-modern" />
               </div>
             </div>
             <div class="form-group-modern full-width">
-              <label>{{ t('home.contact.message') }}</label>
-              <textarea name="message" :placeholder="t('home.contact.messagePlaceholder')" class="textarea-modern" rows="5" required></textarea>
+              <label>{{ t('home.contact.form.message') }}</label>
+              <textarea name="message" :placeholder="t('home.contact.form.messagePlaceholder')" class="textarea-modern" rows="5" required></textarea>
             </div>
             <div class="captcha-modern">
               <div class="g-recaptcha" data-sitekey="6LcmDesrAAAAABYomrU6uWTydYDNuYXHAOHWL9Mf"></div>
@@ -226,22 +265,22 @@
               <div class="info-icon-modern">
                 <i class="bi bi-envelope"></i>
               </div>
-              <h4>{{ t('home.contact.email') }}</h4>
-              <p>contact@fleetmanager.com</p>
+              <h4>{{ t('home.contact.info.email') }}</h4>
+              <p>{{ t('home.contact.info.emailValue') }}</p>
             </div>
             <div class="info-card-modern">
               <div class="info-icon-modern">
                 <i class="bi bi-telephone"></i>
               </div>
-              <h4>{{ t('home.contact.phone') }}</h4>
-              <p>+33 1 23 45 67 89</p>
+              <h4>{{ t('home.contact.info.phone') }}</h4>
+              <p>{{ t('home.contact.info.phoneValue') }}</p>
             </div>
             <div class="info-card-modern">
               <div class="info-icon-modern">
                 <i class="bi bi-geo-alt"></i>
               </div>
-              <h4>{{ t('home.contact.address') }}</h4>
-              <p>Paris, France</p>
+              <h4>{{ t('home.contact.info.address') }}</h4>
+              <p>{{ t('home.contact.info.addressValue') }}</p>
             </div>
           </div>
         </div>
@@ -257,35 +296,74 @@
             <span>{{ t('home.brandName') }}</span>
           </div>
           <p>{{ t('home.footer.tagline') }}</p>
+          <div class="footer-social">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" title="Facebook">
+              <i class="bi bi-facebook"></i>
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" title="Twitter">
+              <i class="bi bi-twitter"></i>
+            </a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" title="LinkedIn">
+              <i class="bi bi-linkedin"></i>
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" title="Instagram">
+              <i class="bi bi-instagram"></i>
+            </a>
+          </div>
         </div>
         <div class="footer-links">
           <div class="footer-column">
             <h4>{{ t('home.footer.product') }}</h4>
-            <a href="#features">{{ t('home.nav.features') }}</a>
-            <a href="#benefits">{{ t('home.nav.benefits') }}</a>
-            <a href="#">{{ t('home.footer.pricing') }}</a>
+            <a href="#features" @click.prevent="scrollToSection('features')">
+              {{ t('home.footer.features') }}
+            </a>
+            <a href="#benefits" @click.prevent="scrollToSection('benefits')">
+              {{ t('home.nav.benefits') }}
+            </a>
+            <a href="#contact" @click.prevent="scrollToSection('contact')">
+              {{ t('home.footer.demo') }}
+            </a>
+            <a href="/register" @click.prevent="$router.push('/register')">
+              {{ t('home.getStarted') }}
+            </a>
           </div>
           <div class="footer-column">
             <h4>{{ t('home.footer.company') }}</h4>
-            <a href="#">{{ t('home.footer.about') }}</a>
-            <a href="#contact">{{ t('home.nav.contact') }}</a>
-            <a href="#">{{ t('home.footer.careers') }}</a>
+            <a href="/about" @click.prevent="$router.push('/about')">
+              {{ t('home.footer.about') }}
+            </a>
+            <a href="/faq" @click.prevent="$router.push('/faq')">
+              {{ t('faq.title') }}
+            </a>
+            <a href="/#contact" @click.prevent="scrollToSection('contact')">
+              {{ t('home.nav.contact') }}
+            </a>
+            <a href="/login" @click.prevent="$router.push('/login')">
+              {{ t('auth.login') }}
+            </a>
+            <a href="/register" @click.prevent="$router.push('/register')">
+              {{ t('auth.register') }}
+            </a>
           </div>
           <div class="footer-column">
-            <h4>{{ t('home.footer.legal') }}</h4>
-            <a href="#">{{ t('home.footer.privacy') }}</a>
-            <a href="#">{{ t('home.footer.terms') }}</a>
-            <a href="#">{{ t('home.footer.legalNotice') }}</a>
+            <h4>{{ t('home.nav.contact') }}</h4>
+            <a href="mailto:contact@cartrackingapp.com">
+              <i class="bi bi-envelope"></i>
+              {{ t('home.contact.info.emailValue') }}
+            </a>
+            <a href="tel:+21611111111">
+              <i class="bi bi-telephone"></i>
+              {{ t('home.contact.info.phoneValue') }}
+            </a>
+            <a href="#contact" @click.prevent="scrollToSection('contact')">
+              <i class="bi bi-geo-alt"></i>
+              {{ t('home.contact.info.addressValue') }}
+            </a>
           </div>
         </div>
       </div>
       <div class="footer-bottom">
         <p>&copy; 2025 {{ t('home.brandName') }}. {{ t('home.footer.rights') }}</p>
-        <div class="footer-social">
-          <a href="#"><i class="bi bi-facebook"></i></a>
-          <a href="#"><i class="bi bi-twitter"></i></a>
-          <a href="#"><i class="bi bi-linkedin"></i></a>
-        </div>
       </div>
     </footer>
 
@@ -294,13 +372,77 @@
 
 <script>
 import { useI18n } from 'vue-i18n';
+import { ref, computed } from 'vue';
 import alerts from '@/utils/alerts';
 
 export default {
   name: "HomePage",
   setup() {
-    const { t } = useI18n();
-    return { t };
+    const { t, locale } = useI18n();
+    const showLanguageMenu = ref(false);
+    
+    const currentLocale = computed(() => locale.value);
+    
+    const getCurrentCountryCode = () => {
+      const codes = {
+        fr: 'fr',
+        en: 'gb',
+        ar: 'sa'
+      };
+      return codes[locale.value] || 'fr';
+    };
+    
+    const toggleLanguageMenu = () => {
+      showLanguageMenu.value = !showLanguageMenu.value;
+    };
+    
+    const closeLanguageMenu = () => {
+      showLanguageMenu.value = false;
+    };
+    
+    const changeLanguage = (lang) => {
+      locale.value = lang;
+      
+      // Save to localStorage for persistence
+      const savedSettings = localStorage.getItem('appSettings');
+      const settings = savedSettings ? JSON.parse(savedSettings) : {};
+      settings.language = lang;
+      localStorage.setItem('appSettings', JSON.stringify(settings));
+      
+      // Update document direction for RTL languages
+      if (lang === 'ar') {
+        document.documentElement.setAttribute('dir', 'rtl');
+      } else {
+        document.documentElement.setAttribute('dir', 'ltr');
+      }
+      
+      showLanguageMenu.value = false;
+    };
+    
+    return { 
+      t, 
+      currentLocale,
+      showLanguageMenu,
+      getCurrentCountryCode, 
+      toggleLanguageMenu,
+      closeLanguageMenu,
+      changeLanguage
+    };
+  },
+  directives: {
+    'click-outside': {
+      mounted(el, binding) {
+        el.clickOutsideEvent = function(event) {
+          if (!(el === event.target || el.contains(event.target))) {
+            binding.value(event);
+          }
+        };
+        document.body.addEventListener('click', el.clickOutsideEvent);
+      },
+      unmounted(el) {
+        document.body.removeEventListener('click', el.clickOutsideEvent);
+      }
+    }
   },
   methods: {
     scrollToSection(sectionId) {

@@ -5,12 +5,6 @@
       <i class="bi bi-app-indicator logo"></i>
     </div>
 
-    <!-- Search (optional, shown when expanded) -->
-    <div v-if="isExpanded" class="sidebar-search">
-      <i class="bi bi-search"></i>
-      <input type="text" :placeholder="t('common.search') + ' ...'" />
-    </div>
-
     <!-- Main Menu -->
     <ul class="sidebar-menu">
       <li v-for="(item, index) in mainMenu" :key="index">
@@ -33,7 +27,7 @@
       </li>
     </ul>
 
-    <!-- Footer with settings + dark mode + logout -->
+    <!-- Footer with notifications + settings + dark mode + logout -->
     <div class="sidebar-footer">
       <router-link to="/settings" class="menu-link">
         <i class="bi bi-gear"></i>
@@ -65,7 +59,7 @@ export default {
   name: "Sidebar",
   setup() {
     const { t } = useI18n();
-    const theme = inject("theme"); // inject global reactive theme
+    const theme = inject("theme");
 
     const toggleTheme = () => {
       theme.isDark = !theme.isDark;
@@ -76,12 +70,10 @@ export default {
     };
 
     onMounted(() => {
-      // ensure body has the correct class on mount
       if (theme.isDark) document.body.classList.add("dark");
       else document.body.classList.remove("dark");
     });
 
-    // Reactive menu items that update with language changes
     const mainMenu = computed(() => [
       { label: t('nav.users'), to: "/users", icon: "bi bi-people" },
       { label: t('nav.reports'), to: "/rapports", icon: "bi bi-file-earmark-bar-graph" },
@@ -89,12 +81,18 @@ export default {
     ]);
 
     const personalMenu = computed(() => [
-      { label: t('nav.notifications'), to: "/alertes", icon: "bi bi-bell" },
+      { label: t('nav.notifications'), to: "/notifications", icon: "bi bi-bell" },
       { label: t('nav.help'), to: "/help", icon: "bi bi-question-circle" },
       { label: t('nav.trash'), to: "/corbeille", icon: "bi bi-trash" },
     ]);
 
-    return { t, theme, toggleTheme, mainMenu, personalMenu };
+    return { 
+      t, 
+      theme, 
+      toggleTheme, 
+      mainMenu, 
+      personalMenu,
+    };
   },
   data() {
     return {
@@ -119,3 +117,6 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+</style>

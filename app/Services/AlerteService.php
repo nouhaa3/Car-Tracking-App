@@ -5,8 +5,11 @@ namespace App\Services;
 use App\Models\Alerte;
 use App\Models\Voiture;
 use App\Models\Intervention;
+use App\Models\Notification;
+use App\Mail\AlertGeneratedMail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class AlerteService
 {
@@ -104,13 +107,16 @@ class AlerteService
                     $monthsUntilService = max(1, ceil($kmRemaining / 1000));
                     $dateEcheance = Carbon::now()->addMonths($monthsUntilService);
 
-                    Alerte::create([
+                    $newAlert = Alerte::create([
                         'type' => $type,
                         'dateEchance' => $dateEcheance,
                         'kilometrageEchance' => $nextServiceKm,
                         'statut' => 'En attente',
                         'voiture_id' => $voiture->idVoiture,
                     ]);
+
+                    // Send email notification
+                    $this->sendAlertNotification($newAlert);
 
                     $alertsGenerated++;
                 }
@@ -385,5 +391,37 @@ class AlerteService
 
         Log::info("Cleaned up {$deleted} old alerts.");
         return $deleted;
+    }
+
+    /**
+     * Send email notification for a new alert
+     */
+    protected function sendAlertNotification(Alerte $alerte)
+    {
+        try {
+            // Get the vehicle owner's email
+            if ($alerte->voiture && $alerte->voiture->user && $alerte->voiture->user->email) {
+                $priority = $this->calculatePriority($alerte);
+                $priorityColor = $this->getPriorityColor($priority);
+
+                // Send email
+                Mail::to($alerte->voiture->user->email)
+                    ->send(new AlertGeneratedMail($alerte, $priority, $priorityColor));
+
+                Log::info("Email notification sent for alert {$alerte->idAlerte} to {$alerte->voiture->user->email}");
+                
+                // Create in-app notification
+                Notification::create([
+                    'user_id' => $alerte->voiture->user_id,
+                    'type' => 'alert',
+                    'title' => 'Nouvelle alerte: ' . $alerte->type,
+                    'message' => "Votre véhicule {$alerte->voiture->marque} {$alerte->voiture->modele} nécessite une attention. Échéance: " . Carbon::parse($alerte->dateEchance)->format('d/m/Y'),
+                    'link' => '/alertes/' . $alerte->idAlerte,
+                    'read' => false,
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error("Failed to send notification for alert {$alerte->idAlerte}: " . $e->getMessage());
+        }
     }
 }

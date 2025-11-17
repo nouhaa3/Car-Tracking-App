@@ -9,6 +9,7 @@ use App\Http\Controllers\InterventionController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\AlerteController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\MaintenanceController;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Controllers\ReportController;
@@ -29,7 +30,15 @@ use Illuminate\Support\Facades\Hash;
 Route::middleware('auth:sanctum')->group(function () {
     // Settings
     Route::get('/settings', [SettingsController::class, 'index']);
-    Route::post('/settings', [SettingsController::class, 'store']);
+    Route::post('/settings', [SettingsController::class, 'update']);
+
+    // Notifications
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount']);
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
+    Route::post('/notifications', [NotificationController::class, 'store']);
     
     // Maintenance stats
     Route::get('/maintenance/total-cost', [MaintenanceController::class, 'getTotalCost']);
@@ -104,6 +113,13 @@ Route::get('/voitures/{idVoiture}', [VoitureController::class, 'show']);
 Route::put('/voitures/{idVoiture}', [VoitureController::class, 'update'])->middleware('auth:sanctum');
 Route::delete('/voitures/{idVoiture}', [VoitureController::class, 'destroy'])->middleware('auth:sanctum');
 Route::middleware('auth:sanctum')->post('/voitures', [VoitureController::class, 'store']);
+
+// Excel Import/Export routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/voitures/export/excel', [VoitureController::class, 'export']);
+    Route::post('/voitures/import/excel', [VoitureController::class, 'import']);
+    Route::get('/voitures/import/template', [VoitureController::class, 'downloadTemplate']);
+});
 
 // Interventions routes (protected with auth)
 Route::middleware('auth:sanctum')->group(function () {

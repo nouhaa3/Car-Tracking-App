@@ -17,6 +17,12 @@ import Rapports from './components/rapports.vue';
 import HelpPage from './components/help.vue';
 import Corbeille from './components/Corbeille.vue';
 import Settings from './components/Settings.vue';
+import PrivacyPolicy from './components/PrivacyPolicy.vue';
+import TermsOfService from './components/TermsOfService.vue';
+import Notifications from './components/Notifications.vue';
+import AboutPage from './components/About.vue';
+import FAQPage from './components/FAQ.vue';
+import NotFoundPage from './components/NotFound.vue';
 
 // Interventions
 import CatalogueInterventions from './components/interventions/catalogue.vue';
@@ -30,6 +36,8 @@ import DetailsAlerte from './components/alertes/details.vue';
 
 const routes = [
   { path: '/', name: 'HomePage', component: HomePage },
+  { path: '/about', name: 'About', component: AboutPage },
+  { path: '/faq', name: 'FAQ', component: FAQPage },
   { path: '/login', name: 'Login', component: LoginPage },
   { path: '/register', name: 'Register', component: RegisterPage },
   { path: '/forgot-password', name: 'ForgotPassword', component: ForgotPassword },
@@ -57,6 +65,12 @@ const routes = [
   { path: '/help', name: 'Help', component: HelpPage },
   { path: '/corbeille', name: 'Corbeille', component: Corbeille },
   { path: '/settings', name: 'Settings', component: Settings },
+  { path: '/privacy-policy', name: 'PrivacyPolicy', component: PrivacyPolicy },
+  { path: '/terms-of-service', name: 'TermsOfService', component: TermsOfService },
+  { path: '/notifications', name: 'Notifications', component: Notifications },
+  
+  // 404 Catch-all route (must be last)
+  { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFoundPage },
 ];
 
 const router = createRouter({

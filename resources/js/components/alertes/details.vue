@@ -52,32 +52,25 @@
             <!-- Left Side -->
             <div class="car-details-left">
               <!-- Header Card -->
-              <div class="car-details-header card alert-header-card">
+              <div class="car-details-header card">
                 <div class="header-content">
-                  <div class="header-left">
-                    <div class="alert-type-display">
-                      <div class="type-icon-large" :class="getPriorityClass(alerte.priorite)">
-                        <i class="bi" :class="getTypeIcon(alerte.type)"></i>
-                      </div>
-                      <div>
-                        <h2 class="alert-type-title">{{ getTypeLabel(alerte.type) }}</h2>
-                        <p class="car-subtitle">{{ t('alerts.alertNumber', { id: alerte.idAlerte }) }}</p>
-                      </div>
+                  <div class="alert-type-display">
+                    <div class="type-icon-large" :class="getPriorityClass(alerte.priorite)">
+                      <i class="bi" :class="getTypeIcon(alerte.type)"></i>
+                    </div>
+                    <div>
+                      <h1 class="car-title">{{ getTypeLabel(alerte.type) }}</h1>
+                      <p class="car-year">{{ t('alerts.alertNumber', { id: alerte.idAlerte }) }}</p>
                     </div>
                   </div>
-                  <div class="header-right">
-                    <!-- Status badge moved to bottom right - removed from here -->
-                  </div>
+                  <span 
+                    class="status-text-simple" 
+                    :class="alerte.statut === 'En attente' ? 'status-pending-text' : 'status-treated-text'"
+                  >
+                    <i class="bi" :class="alerte.statut === 'En attente' ? 'bi-clock-fill' : 'bi-check-circle-fill'"></i>
+                    {{ alerte.statut === 'En attente' ? t('alerts.pending') : t('alerts.treated') }}
+                  </span>
                 </div>
-                
-                <!-- Status Badge - Bottom Right -->
-                <span 
-                  class="status-badge-bottom-right" 
-                  :class="alerte.statut === 'En attente' ? 'status-pending' : 'status-treated'"
-                >
-                  <i class="bi" :class="alerte.statut === 'En attente' ? 'bi-clock-fill' : 'bi-check-circle-fill'"></i>
-                  {{ alerte.statut === 'En attente' ? t('alerts.pending') : t('alerts.treated') }}
-                </span>
               </div>
 
               <!-- Vehicle Card -->
@@ -134,21 +127,20 @@
                   <div class="header-actions">
                     <button 
                       v-if="alerte.statut === 'En attente'"
-                      class="icon-btn" 
-                      style="background: linear-gradient(135deg, #BFCC94 0%, #A8B880 100%); color: #0D1821;"
+                      class="btn-action btn-success" 
                       @click="resolveAlert" 
                       :disabled="isResolving"
                     >
                       <i :class="isResolving ? 'bi bi-hourglass-split' : 'bi bi-check-circle-fill'"></i>
-                      {{ isResolving ? t('common.processing') : t('alerts.resolve') }}
+                      <span>{{ isResolving ? t('common.processing') : t('alerts.resolve') }}</span>
                     </button>
-                    <button class="icon-btn edit-btn" @click="editAlert" :disabled="isResolving || isDeleting">
+                    <button class="btn-action btn-edit" @click="editAlert" :disabled="isResolving || isDeleting">
                       <i class="bi bi-pencil-square"></i>
-                      {{ t('common.edit') }}
+                      <span>{{ t('common.edit') }}</span>
                     </button>
-                    <button class="icon-btn delete-btn" @click="deleteAlert" :disabled="isDeleting">
+                    <button class="btn-action btn-delete" @click="deleteAlert" :disabled="isDeleting">
                       <i :class="isDeleting ? 'bi bi-hourglass-split' : 'bi bi-trash3'"></i>
-                      {{ isDeleting ? t('common.deleting') : t('common.delete') }}
+                      <span>{{ isDeleting ? t('common.deleting') : t('common.delete') }}</span>
                     </button>
                   </div>
                 </div>
@@ -260,7 +252,6 @@ export default {
       
       if (role === "admin") {
         return [
-          { label: t('menu.home'), to: "/", icon: "house" },
           { label: t('menu.dashboard'), to: "/admindashboard", icon: "speedometer2" },
           { label: t('menu.catalog'), to: "/voitures/cataloguevoitures", icon: "car-front" },
           { label: t('menu.interventions'), to: "/interventions/catalogue", icon: "tools" },
@@ -268,7 +259,6 @@ export default {
         ];
       } else if (role === "agent") {
         return [
-          { label: t('menu.home'), to: "/", icon: "house" },
           { label: t('menu.dashboard'), to: "/agentdashboard", icon: "speedometer2" },
           { label: t('vehicles.vehicles'), to: "/voitures/cataloguevoitures", icon: "car-front" },
           { label: t('menu.interventions'), to: "/interventions/catalogue", icon: "tools" },
@@ -277,7 +267,6 @@ export default {
         ];
       } else {
         return [
-          { label: t('menu.home'), to: "/", icon: "house" },
           { label: t('menu.dashboard'), to: "/techniciendashboard", icon: "speedometer2" },
           { label: t('menu.interventions'), to: "/interventions/catalogue", icon: "tools" },
           { label: t('menu.alerts'), to: "/alertes", icon: "bell" },
@@ -326,6 +315,28 @@ export default {
           headers: { Authorization: `Bearer ${token}` },
         });
         alerte.value = res.data;
+
+        // Fetch the vehicle data if voiture_id exists
+        if (res.data.voiture_id) {
+          try {
+            const voitureRes = await axios.get(`http://127.0.0.1:8000/api/voitures/${res.data.voiture_id}`, {
+              headers: {
+                Authorization: token ? `Bearer ${token}` : "",
+                Accept: "application/json"
+              },
+              validateStatus: function (status) {
+                return status < 500; // Don't throw for 404
+              }
+            });
+            // Add the vehicle object to the alert only if found
+            if (voitureRes.status === 200) {
+              alerte.value.voiture = voitureRes.data;
+            }
+          } catch (voitureErr) {
+            // Only log unexpected errors
+            console.error("Unexpected error fetching vehicle:", voitureErr);
+          }
+        }
       } catch (err) {
         console.error("Error fetching alerte:", err);
         error.value = t('errors.loadingAlert');
@@ -559,3 +570,239 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* Header Card Styling - Matching Vehicle Details */
+.car-details-header {
+  position: relative;
+  padding: 24px 28px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
+}
+
+.car-details-header:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.header-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.alert-type-display {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.type-icon-large {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.priority-critique {
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+}
+
+.priority-haute {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+}
+
+.priority-moyenne {
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+}
+
+.priority-faible {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+}
+
+.car-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+  color: #344966;
+  letter-spacing: -0.3px;
+}
+
+.car-year {
+  font-size: 0.9rem;
+  color: #748BAA;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Simple Status Text - Bottom Right */
+.status-text-simple {
+  position: absolute;
+  bottom: 16px;
+  right: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-text-simple i {
+  font-size: 14px;
+}
+
+.status-pending-text {
+  color: #F59E0B;
+}
+
+.status-treated-text {
+  color: #10B981;
+}
+
+/* Remove old badge styles */
+.status-badge-large {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-badge-large:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.status-pending {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: white;
+}
+
+.status-treated {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+}
+
+/* Action Buttons - Matching Vehicle Details */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.btn-action i {
+  font-size: 1rem;
+  transition: transform 0.3s;
+}
+
+.btn-action:hover i {
+  transform: scale(1.1);
+}
+
+.btn-edit {
+  background: #748BAA;
+  color: white;
+  box-shadow: 0 2px 8px rgba(116, 139, 170, 0.2);
+}
+
+.btn-edit:hover {
+  background: #546A88;
+  box-shadow: 0 4px 12px rgba(116, 139, 170, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-edit:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(116, 139, 170, 0.25);
+}
+
+.btn-delete {
+  background: #C85A54;
+  color: white;
+  box-shadow: 0 2px 8px rgba(200, 90, 84, 0.2);
+}
+
+.btn-delete:hover {
+  background: #B04944;
+  box-shadow: 0 4px 12px rgba(200, 90, 84, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-delete:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(200, 90, 84, 0.25);
+}
+
+.btn-success {
+  background: #BFCC94;
+  color: #0D1821;
+  box-shadow: 0 2px 8px rgba(191, 204, 148, 0.2);
+}
+
+.btn-success:hover {
+  background: #A8B880;
+  box-shadow: 0 4px 12px rgba(191, 204, 148, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-success:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(191, 204, 148, 0.25);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .car-details-header {
+    padding: 20px 20px 45px 20px;
+  }
+  
+  .status-text-simple {
+    bottom: 12px;
+    right: 20px;
+    font-size: 12px;
+  }
+  
+  .status-text-simple i {
+    font-size: 13px;
+  }
+  
+  .btn-action {
+    font-size: 14px;
+    padding: 9px 16px;
+    min-width: 110px;
+  }
+  
+  .btn-action span {
+    display: none;
+  }
+  
+  .btn-action i {
+    margin: 0;
+  }
+}
+</style>

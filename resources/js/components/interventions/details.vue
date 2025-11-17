@@ -28,6 +28,7 @@
         <!-- Breadcrumb -->
         <div class="breadcrumb-nav">
           <router-link to="/interventions/catalogue" class="breadcrumb-link">
+            <i class="bi bi-arrow-left"></i>
             {{ t('interventions.backToCatalog') }}
           </router-link>
         </div>
@@ -45,59 +46,69 @@
             <!-- Left: Header and Vehicle Info -->
             <div class="car-details-left">
               <!-- Header Card -->
-              <div class="car-details-header card intervention-header">
+              <div class="car-details-header card">
                 <div class="header-content">
-                  <div class="header-left">
-                    <div class="intervention-type-display">
-                      <i :class="getTypeIcon(intervention.type)" class="type-icon-large"></i>
-                      <div>
-                        <h1 class="car-title">{{ getTypeLabel(intervention.type) }}</h1>
-                        <p class="car-subtitle">{{ formatDate(intervention.date) }}</p>
-                      </div>
+                  <div class="intervention-type-display">
+                    <i :class="getTypeIcon(intervention.type)" class="type-icon-large"></i>
+                    <div>
+                      <h1 class="car-title">{{ getTypeLabel(intervention.type) }}</h1>
+                      <p class="car-year">{{ formatDate(intervention.date) }}</p>
                     </div>
                   </div>
-                  <div class="header-right">
-                    <span class="cost-badge-large">
-                      {{ formatCurrency(intervention.cout) }}
-                    </span>
-                  </div>
+                  <span class="cost-text-simple">
+                    {{ formatCurrency(intervention.cout) }}
+                  </span>
                 </div>
               </div>
 
               <!-- Vehicle Card -->
-              <div class="vehicle-info-card card">
-                <h3 class="card-title">
-                  <i class="bi bi-car-front"></i>
-                  {{ t('vehicles.concernedVehicle') }}
-                </h3>
-                <div class="vehicle-details" v-if="intervention.voiture">
-                  <div class="vehicle-main-info">
-                    <h4>{{ intervention.voiture.marque }} {{ intervention.voiture.modele }}</h4>
-                    <span class="vehicle-year">{{ intervention.voiture.annee }}</span>
-                  </div>
-                  <div class="vehicle-meta">
-                    <div class="meta-item">
-                      <i class="bi bi-speedometer2"></i>
-                      <span>{{ formatNumber(intervention.voiture.kilometrage) }} km</span>
-                    </div>
-                    <div class="meta-item">
-                      <span class="badge-etat">{{ intervention.voiture.etat }}</span>
-                    </div>
-                    <div class="meta-item">
-                      <span :class="['badge-statut', getStatusClass(intervention.voiture.statut)]">
-                        {{ intervention.voiture.statut }}
-                      </span>
-                    </div>
-                  </div>
-                  <router-link 
-                    :to="`/voitures/${intervention.voiture.idVoiture}`" 
-                    class="view-vehicle-btn"
-                  >
-                    <i class="bi bi-arrow-right-circle"></i>
-                    {{ t('vehicles.viewVehicleDetails') }}
-                  </router-link>
+              <div class="card" v-if="intervention.voiture">
+                <div class="card-header-section">
+                  <h3>
+                    <i class="bi bi-car-front-fill"></i>
+                    {{ t('vehicles.concernedVehicle') }}
+                  </h3>
                 </div>
-                <div v-else class="vehicle-not-found">
+                <div class="vehicle-details-section">
+                  <div class="vehicle-main-info">
+                    <h4 class="vehicle-title">{{ intervention.voiture.marque }} {{ intervention.voiture.modele }}</h4>
+                    <div class="vehicle-specs-grid">
+                      <div class="spec-item">
+                        <i class="bi bi-calendar3"></i>
+                        <span>{{ intervention.voiture.annee }}</span>
+                      </div>
+                      <div class="spec-item">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>{{ formatNumber(intervention.voiture.kilometrage) }} km</span>
+                      </div>
+                      <div class="spec-item">
+                        <i class="bi bi-gear-fill"></i>
+                        <span>{{ intervention.voiture.etat }}</span>
+                      </div>
+                      <div class="spec-item">
+                        <i class="bi bi-bookmark-fill"></i>
+                        <span>{{ intervention.voiture.statut }}</span>
+                      </div>
+                    </div>
+                    <router-link 
+                      :to="`/voitures/${intervention.voiture.idVoiture}`" 
+                      class="btn-secondary"
+                      style="margin-top: 1rem; display: inline-flex;"
+                    >
+                      <i class="bi bi-eye"></i>
+                      {{ t('vehicles.viewVehicle') }}
+                    </router-link>
+                  </div>
+                </div>
+              </div>
+              <div v-else class="card">
+                <div class="card-header-section">
+                  <h3>
+                    <i class="bi bi-car-front-fill"></i>
+                    {{ t('vehicles.concernedVehicle') }}
+                  </h3>
+                </div>
+                <div class="vehicle-not-found">
                   <i class="bi bi-exclamation-circle"></i>
                   <span>{{ t('vehicles.vehicleNotFound') }}</span>
                 </div>
@@ -120,13 +131,13 @@
                 <div class="card-header-section">
                   <h3>{{ t('interventions.interventionDetails') }}</h3>
                   <div class="header-actions">
-                    <button class="icon-btn edit-btn" @click="editMode = true" :disabled="saving">
+                    <button class="btn-action btn-edit" @click="editMode = true" :disabled="saving">
                       <i class="bi bi-pencil-square"></i>
-                      {{ t('common.edit') }}
+                      <span>{{ t('common.edit') }}</span>
                     </button>
-                    <button class="icon-btn delete-btn" @click="deleteIntervention" :disabled="deleting">
+                    <button class="btn-action btn-delete" @click="deleteIntervention" :disabled="deleting">
                       <i :class="deleting ? 'bi bi-hourglass-split' : 'bi bi-trash3'"></i>
-                      {{ deleting ? t('common.deleting') : t('common.delete') }}
+                      <span>{{ deleting ? t('common.deleting') : t('common.delete') }}</span>
                     </button>
                   </div>
                 </div>
@@ -139,7 +150,7 @@
                   <div class="info-row">
                     <span class="info-label">{{ t('common.type') }}</span>
                     <span class="info-value">
-                      <span class="type-badge-small" :class="getTypeClass(intervention.type)">
+                      <span class="type-text-simple" :class="getTypeClass(intervention.type)">
                         <i :class="getTypeIcon(intervention.type)"></i>
                         {{ getTypeLabel(intervention.type) }}
                       </span>
@@ -326,11 +337,10 @@ export default {
         remarques: ""
       },
       menuItems: [
-        { label: this.t('menu.home'), to: "/" },
         { label: this.t('menu.dashboard'), to: "/admindashboard" },
         { label: this.t('menu.catalog'), to: "/voitures/cataloguevoitures" },
         { label: this.t('menu.interventions'), to: "/interventions/catalogue" },
-        { label: this.t('menu.alerts'), to: "/alertes" }
+        { label: this.t('menu.alerts'), to: "/alertes" },
       ],
     };
   },
@@ -392,6 +402,28 @@ export default {
           }
         });
         this.intervention = res.data;
+
+        // Fetch the vehicle data if voiture_id exists
+        if (res.data.voiture_id) {
+          try {
+            const voitureRes = await axios.get(`http://127.0.0.1:8000/api/voitures/${res.data.voiture_id}`, {
+              headers: {
+                Authorization: token ? `Bearer ${token}` : "",
+                Accept: "application/json"
+              },
+              validateStatus: function (status) {
+                return status < 500; // Don't throw for 404
+              }
+            });
+            // Add the vehicle object to the intervention only if found
+            if (voitureRes.status === 200) {
+              this.intervention.voiture = voitureRes.data;
+            }
+          } catch (voitureErr) {
+            // Only log unexpected errors
+            console.error("Unexpected error fetching vehicle:", voitureErr);
+          }
+        }
 
         this.form = {
           voiture_id: res.data.voiture_id ?? "",
@@ -602,122 +634,240 @@ export default {
 </script>
 
 <style scoped>
-.intervention-header {
-  background: linear-gradient(135deg, #344966 0%, #546A88 100%);
-  color: white;
+/* Header Card Styling */
+.car-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 28px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s;
 }
 
-.intervention-header .car-title,
-.intervention-header .car-subtitle {
-  color: white;
+.car-details-header:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.header-content {
+  position: relative;
+  width: 100%;
+  min-height: 100px;
 }
 
 .intervention-type-display {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 16px;
 }
 
 .type-icon-large {
-  font-size: 2.5rem;
-  color: #B4CDED;
-}
-
-.cost-badge-large {
-  background: white;
-  color: #344966;
-  padding: 0.75rem 1.5rem;
-  border-radius: 12px;
-  font-size: 1.5rem;
-  font-weight: 700;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.vehicle-info-card {
-  margin-top: 1rem;
-}
-
-.card-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-  color: #344966;
-}
-
-.card-title i {
-  font-size: 1.3rem;
-}
-
-.vehicle-main-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid #E8F0F7;
-}
-
-.vehicle-main-info h4 {
-  margin: 0;
-  font-size: 1.2rem;
-  color: #344966;
-}
-
-.vehicle-year {
-  background: #E8F0F7;
-  color: #344966;
-  padding: 0.25rem 0.75rem;
-  border-radius: 6px;
-  font-weight: 600;
-}
-
-.vehicle-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.9rem;
+  font-size: 32px;
   color: #546A88;
 }
 
-.meta-item i {
-  color: #748BAA;
+.car-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+  color: #344966;
+  letter-spacing: -0.3px;
 }
 
-.view-vehicle-btn {
+.car-year {
+  font-size: 0.9rem;
+  color: #748BAA;
+  margin: 0;
+  font-weight: 400;
+}
+
+.status-badge-large {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.status-badge-large:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cost-badge {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+}
+
+/* Action Buttons - Matching Vehicle Details */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.btn-action i {
+  font-size: 1rem;
+  transition: transform 0.3s;
+}
+
+.btn-action:hover i {
+  transform: scale(1.1);
+}
+
+.btn-edit {
+  background: #748BAA;
+  color: white;
+  box-shadow: 0 2px 8px rgba(116, 139, 170, 0.2);
+}
+
+.btn-edit:hover {
+  background: #546A88;
+  box-shadow: 0 4px 12px rgba(116, 139, 170, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-edit:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(116, 139, 170, 0.25);
+}
+
+.btn-delete {
+  background: #C85A54;
+  color: white;
+  box-shadow: 0 2px 8px rgba(200, 90, 84, 0.2);
+}
+
+.btn-delete:hover {
+  background: #B04944;
+  box-shadow: 0 4px 12px rgba(200, 90, 84, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-delete:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(200, 90, 84, 0.25);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .car-details-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+  }
+  
+  .cost-text-simple {
+    font-size: 13px;
+    bottom: 0.75rem;
+    right: 0.75rem;
+  }
+  
+  .btn-action {
+    font-size: 14px;
+    padding: 9px 16px;
+    min-width: 110px;
+  }
+  
+  .btn-action span {
+    display: none;
+  }
+  
+  .btn-action i {
+    margin: 0;
+  }
+}
+
+/* Vehicle Card - Matching Alert Details Design */
+.vehicle-details-section {
+  padding: 0;
+}
+
+.vehicle-main-info {
+  margin-bottom: 0;
+}
+
+.vehicle-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #344966;
+  margin: 0 0 1rem 0;
+}
+
+.vehicle-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.spec-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: #F8FAFB;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #344966;
+}
+
+.spec-item i {
+  color: #546A88;
+  font-size: 1rem;
+}
+
+.btn-secondary {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 1.2rem;
-  background: #344966;
-  color: white;
+  background: white;
+  color: #546A88;
+  border: 1px solid #D2E1EE;
   border-radius: 8px;
   text-decoration: none;
   font-weight: 500;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(84, 106, 136, 0.1);
 }
 
-.view-vehicle-btn:hover {
-  background: #546A88;
+.btn-secondary:hover {
+  background: #D2E1EE;
+  color: #344966;
+  border-color: #B4CDED;
+  box-shadow: 0 3px 10px rgba(84, 106, 136, 0.15);
 }
 
 .vehicle-not-found {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
   padding: 1rem;
   background: #FEF5E7;
   border: 1px solid #F8C471;
   border-radius: 8px;
   color: #DC7633;
+  font-size: 0.95rem;
+}
+
+.vehicle-not-found i {
+  font-size: 1.2rem;
 }
 
 .garage-card {
@@ -731,26 +881,32 @@ export default {
   margin: 0;
 }
 
-.type-badge-small {
+.cost-text-simple {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  font-size: 15px;
+  font-weight: 700;
+  color: #10B981;
+}
+
+.type-text-simple {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.4rem 0.8rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: white;
 }
 
-.type-vidange { background: #3498db; }
-.type-revision { background: #9b59b6; }
-.type-reparation { background: #e74c3c; }
-.type-pneus { background: #34495e; }
-.type-freins { background: #c0392b; }
-.type-batterie { background: #f39c12; }
-.type-climatisation { background: #1abc9c; }
-.type-controle { background: #27ae60; }
-.type-autre { background: #95a5a6; }
+.type-vidange { color: #3498db; }
+.type-revision { color: #9b59b6; }
+.type-reparation { color: #e74c3c; }
+.type-pneus { color: #34495e; }
+.type-freins { color: #c0392b; }
+.type-batterie { color: #f39c12; }
+.type-climatisation { color: #1abc9c; }
+.type-controle { color: #27ae60; }
+.type-autre { color: #95a5a6; }
 
 .cost-value-display {
   font-weight: 700;
@@ -798,37 +954,6 @@ export default {
   resize: vertical;
   min-height: 120px;
   font-family: inherit;
-}
-
-.badge-etat {
-  padding: 0.3rem 0.7rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  background: #E8F0F7;
-  color: #344966;
-}
-
-.badge-statut {
-  padding: 0.3rem 0.7rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-.badge-available {
-  background: #d4edda;
-  color: #155724;
-}
-
-.badge-rented {
-  background: #fff3cd;
-  color: #856404;
-}
-
-.badge-maintenance {
-  background: #f8d7da;
-  color: #721c24;
 }
 
 .full-width {

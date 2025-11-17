@@ -306,7 +306,6 @@ export default {
     const errors = reactive({});
 
     const menuItems = computed(() => [
-      { label: t('menu.home'), to: "/" },
       { label: t('menu.dashboard'), to: "/admindashboard" },
       { label: t('menu.catalog'), to: "/voitures/cataloguevoitures" },
       { label: t('menu.interventions'), to: "/interventions/catalogue" },

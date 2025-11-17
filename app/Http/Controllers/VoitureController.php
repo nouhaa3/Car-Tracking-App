@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Voiture;
+use App\Exports\VoituresExport;
+use App\Imports\VoituresImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class VoitureController extends Controller
 {
@@ -109,6 +112,12 @@ class VoitureController extends Controller
     public function destroy(string $id)
     {
         $voiture = Voiture::findOrFail($id);
+        
+        // Cascade delete: Delete all related interventions and alerts
+        $voiture->interventions()->delete();
+        $voiture->alertes()->delete();
+        
+        // Delete the vehicle
         $voiture->delete();
 
         return response()->json(null, 204);
@@ -162,6 +171,78 @@ class VoitureController extends Controller
             'available' => $available,
             'rate' => round($rate, 2)
         ]);
+    }
+
+    /**
+     * Export vehicles to Excel
+     */
+    public function export()
+    {
+        return Excel::download(new VoituresExport, 'vehicules_' . date('Y-m-d') . '.xlsx');
+    }
+
+    /**
+     * Import vehicles from Excel
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:2048',
+        ]);
+
+        try {
+            Excel::import(new VoituresImport(auth()->id()), $request->file('file'));
+
+            return response()->json([
+                'message' => 'Véhicules importés avec succès',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Erreur lors de l\'importation: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Download import template
+     */
+    public function downloadTemplate()
+    {
+        $headers = [
+            'marque',
+            'modele',
+            'annee',
+            'kilometrage',
+            'etat',
+            'statut',
+        ];
+
+        $exampleData = [
+            ['Toyota', 'Corolla', 2020, 50000, 'Bon', 'En boutique'],
+            ['Renault', 'Clio', 2019, 75000, 'Excellent', 'En location'],
+        ];
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Add headers
+        $sheet->fromArray($headers, null, 'A1');
+        
+        // Add example data
+        $sheet->fromArray($exampleData, null, 'A2');
+
+        // Style headers
+        $sheet->getStyle('A1:F1')->getFont()->setBold(true);
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $fileName = 'template_import_vehicules.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
     }
 
 }

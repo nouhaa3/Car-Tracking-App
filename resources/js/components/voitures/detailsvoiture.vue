@@ -54,23 +54,21 @@
 
               <!-- Header Card -->
               <div class="car-details-header card">
-                <div class="header-content">
-                  <div class="header-left">
-                    <h1 class="car-title">{{ voiture.marque }} {{ voiture.modele }}</h1>
-                    <p class="car-subtitle">{{ t('cars.year') }} {{ voiture.annee }}</p>
-                  </div>
-                  <div class="header-right">
-                    <span 
-                      class="status-badge-large" 
-                      :class="{
-                        'status-available': voiture.statut === 'En boutique',
-                        'status-rented': voiture.statut === 'En location',
-                        'status-maintenance': voiture.statut === 'En maintenance'
-                      }"
-                    >
-                      {{ voiture.statut }}
-                    </span>
-                  </div>
+                <div class="header-main">
+                  <h1 class="car-title">{{ voiture.marque }} {{ voiture.modele }}</h1>
+                  <p class="car-year">{{ t('cars.year') }} {{ voiture.annee }}</p>
+                </div>
+                <div class="header-badge">
+                  <span 
+                    class="status-badge-large" 
+                    :class="{
+                      'status-available': voiture.statut === 'En boutique',
+                      'status-rented': voiture.statut === 'En location',
+                      'status-maintenance': voiture.statut === 'En maintenance'
+                    }"
+                  >
+                    {{ voiture.statut }}
+                  </span>
                 </div>
               </div>
             </div>
@@ -82,13 +80,13 @@
                 <div class="card-header-section">
                   <h3>{{ t('cars.vehicleInfo') }}</h3>
                   <div class="header-actions">
-                    <button class="icon-btn edit-btn" @click="editMode = true" :disabled="saving">
+                    <button class="btn-action btn-edit" @click="editMode = true" :disabled="saving">
                       <i class="bi bi-pencil-square"></i>
-                      {{ t('common.edit') }}
+                      <span>{{ t('common.edit') }}</span>
                     </button>
-                    <button class="icon-btn delete-btn" @click="deleteVoiture" :disabled="deleting">
+                    <button class="btn-action btn-delete" @click="deleteVoiture" :disabled="deleting">
                       <i :class="deleting ? 'bi bi-hourglass-split' : 'bi bi-trash3'"></i>
-                      {{ deleting ? t('common.deleting') : t('common.delete') }}
+                      <span>{{ deleting ? t('common.deleting') : t('common.delete') }}</span>
                     </button>
                   </div>
                 </div>
@@ -498,6 +496,189 @@ export default {
 </script>
 
 <style scoped>
+/* Modern Action Buttons - Improved Size & Spacing */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.btn-action i {
+  font-size: 1rem;
+  transition: transform 0.3s;
+}
+
+.btn-action:hover i {
+  transform: scale(1.1);
+}
+
+.btn-edit {
+  background: #748BAA;
+  color: white;
+  box-shadow: 0 2px 8px rgba(116, 139, 170, 0.2);
+}
+
+.btn-edit:hover {
+  background: #546A88;
+  box-shadow: 0 4px 12px rgba(116, 139, 170, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-edit:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(116, 139, 170, 0.25);
+}
+
+.btn-delete {
+  background: #C85A54;
+  color: white;
+  box-shadow: 0 2px 8px rgba(200, 90, 84, 0.2);
+}
+
+.btn-delete:hover {
+  background: #B04944;
+  box-shadow: 0 4px 12px rgba(200, 90, 84, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-delete:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
+}
+
+.btn-action:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-action span {
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Improved Header Card Layout */
+.car-details-header {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 16px;
+  padding: 24px 28px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e8edf4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 16px;
+  transition: all 0.3s;
+}
+
+.car-details-header:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.header-main {
+  flex: 1;
+}
+
+.car-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #344966;
+  margin: 0 0 8px 0;
+  line-height: 1.2;
+  letter-spacing: -0.3px;
+}
+
+.car-year {
+  font-size: 0.9rem;
+  color: #748BAA;
+  margin: 0;
+  font-weight: 400;
+}
+
+.header-badge {
+  display: flex;
+  align-items: center;
+}
+
+.status-badge-large {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.status-badge-large:hover {
+  transform: scale(1.03);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.status-available {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+}
+
+.status-rented {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: white;
+}
+
+.status-maintenance {
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+  color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .car-details-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+  }
+  
+  .header-main {
+    width: 100%;
+  }
+  
+  .header-badge {
+    width: 100%;
+  }
+  
+  .status-badge-large {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .btn-action {
+    font-size: 14px;
+    padding: 9px 16px;
+    min-width: 110px;
+  }
+  
+  .btn-action span {
+    display: none;
+  }
+  
+  .btn-action i {
+    margin: 0;
+  }
+}
+
 /* Tabs Section */
 .tabs-section {
   margin-top: 24px;
