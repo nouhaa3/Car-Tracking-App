@@ -573,9 +573,9 @@ export default {
         });
         const voitures = voituresResponse.data;
         totalVoitures.value = voitures.length;
-        stats.voitures.disponibles = voitures.filter(v => v.statut === "disponible").length;
-        stats.voitures.maintenance = voitures.filter(v => v.statut === "maintenance").length;
-        stats.voitures.loues = voitures.filter(v => v.statut === "loué").length;
+        stats.voitures.disponibles = voitures.filter(v => v.statut === "En boutique").length;
+        stats.voitures.maintenance = voitures.filter(v => v.statut === "En maintenance").length;
+        stats.voitures.loues = voitures.filter(v => v.statut === "Loué").length;
 
         // Récupérer les données des interventions
         const interventionsResponse = await axios.get("http://127.0.0.1:8000/api/interventions", {
@@ -583,9 +583,22 @@ export default {
         });
         const interventions = interventionsResponse.data;
         totalInterventions.value = interventions.length;
-        stats.interventions.enCours = interventions.filter(i => i.statut === "en_cours").length;
-        stats.interventions.terminees = interventions.filter(i => i.statut === "terminee").length;
-        stats.interventions.planifiees = interventions.filter(i => i.statut === "planifiee").length;
+        // Interventions don't have a statut column - count by date or assigned status
+        const today = new Date();
+        const currentMonth = today.getMonth();
+        const currentYear = today.getFullYear();
+        stats.interventions.enCours = interventions.filter(i => {
+          const interventionDate = new Date(i.date);
+          return interventionDate.getMonth() === currentMonth && interventionDate.getFullYear() === currentYear;
+        }).length;
+        stats.interventions.terminees = interventions.filter(i => {
+          const interventionDate = new Date(i.date);
+          return interventionDate < today;
+        }).length;
+        stats.interventions.planifiees = interventions.filter(i => {
+          const interventionDate = new Date(i.date);
+          return interventionDate > today;
+        }).length;
 
         // Calculer le coût total
         stats.coutTotal = interventions.reduce((sum, i) => sum + (parseFloat(i.cout) || 0), 0);
@@ -596,9 +609,9 @@ export default {
         });
         const users = usersResponse.data;
         totalUsers.value = users.length;
-        stats.users.admins = users.filter(u => u.role === "admin").length;
-        stats.users.agents = users.filter(u => u.role === "agent").length;
-        stats.users.techniciens = users.filter(u => u.role === "technicien").length;
+        stats.users.admins = users.filter(u => u.role?.nomRole?.toLowerCase() === "admin").length;
+        stats.users.agents = users.filter(u => u.role?.nomRole?.toLowerCase() === "agent").length;
+        stats.users.techniciens = users.filter(u => u.role?.nomRole?.toLowerCase() === "technicien").length;
 
         loading.value = false;
         console.log("All data loaded successfully!");
@@ -624,6 +637,8 @@ export default {
       return new Intl.NumberFormat("fr-TN", {
         style: "currency",
         currency: "TND",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
       }).format(amount);
     };
 
