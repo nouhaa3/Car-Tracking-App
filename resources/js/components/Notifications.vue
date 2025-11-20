@@ -5,7 +5,7 @@
 
       <div class="main-content">
         <router-link to="/profile" class="profile-float" v-if="user">
-          <img :src="user.avatar || '/images/avatar.png'" :alt="t('user.avatarAlt')" class="avatar" />
+          <img :src="user.avatar || '/images/avatar.png'" :alt="t('common.userAvatar')" class="avatar" />
         </router-link>
 
         <link
@@ -13,7 +13,7 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
         />
 
-        <nav class="navbar mb-4">
+        <nav class="navbar mb-5">
           <router-link
             v-for="(item, index) in menuItems"
             :key="index"
@@ -25,16 +25,12 @@
           </router-link>
         </nav>
 
-        <!-- Notifications Content -->
-        <div class="notifications-container">
-          <!-- Header -->
+        <div class="profile-wrapper">
+          <!-- Page Header -->
           <div class="page-header">
             <div class="header-left">
-              <i class="bi bi-bell-fill"></i>
-              <div>
-                <h1>{{ t('notifications.title') }}</h1>
-                <p class="subtitle">{{ unreadCount }} {{ t('notifications.unreadMessages') }}</p>
-              </div>
+              <h1>{{ t('notifications.title') }}</h1>
+              <p>{{ unreadCount }} {{ t('notifications.unreadMessages') }}</p>
             </div>
             <div class="header-actions">
               <button 
@@ -165,12 +161,12 @@ export default {
   computed: {
     filteredNotifications() {
       if (this.filter === 'unread') {
-        return this.notifications.filter(n => !n.read);
+        return this.notifications.filter(n => !n.read_at && !n.is_read);
       }
       return this.notifications;
     },
     unreadCount() {
-      return this.notifications.filter(n => !n.read).length;
+      return this.notifications.filter(n => !n.read_at && !n.is_read).length;
     },
   },
   mounted() {
@@ -181,29 +177,48 @@ export default {
     async fetchUser() {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('/api/user', {
+        if (!token) {
+          this.$router.push('/login');
+          return;
+        }
+        const response = await axios.get('http://127.0.0.1:8000/api/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
         this.user = response.data;
+        console.log('Notifications: User data loaded', this.user);
       } catch (error) {
         console.error('Error fetching user:', error);
+        if (error.response?.status === 401) {
+          localStorage.removeItem('token');
+          this.$router.push('/login');
+        }
       }
     },
     async fetchNotifications() {
       this.loading = true;
       try {
         const token = localStorage.getItem('token');
+        if (!token) {
+          this.$router.push('/login');
+          return;
+        }
         const response = await axios.get('/api/notifications', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        this.notifications = response.data;
+        this.notifications = Array.isArray(response.data) ? response.data : [];
       } catch (error) {
         console.error('Error fetching notifications:', error);
-        Swal.fire({
-          icon: 'error',
-          title: this.t('notifications.error'),
-          text: this.t('notifications.errorFetching'),
-        });
+        this.notifications = []; // Ensure it's always an array
+        if (error.response?.status === 401) {
+          localStorage.removeItem('token');
+          this.$router.push('/login');
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: this.t('notifications.error'),
+            text: this.t('notifications.errorFetching'),
+          });
+        }
       } finally {
         this.loading = false;
       }
@@ -316,494 +331,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-/* Layout Structure - matches workspace global styles */
-.home-page {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-}
-
-.layout {
-  display: flex;
-}
-
-.main-content {
-  position: relative;
-  flex: 1;
-  margin-left: 70px;
-  padding: 1.5rem;
-  transition: margin-left 0.3s ease;
-}
-
-/* Adjust margin when sidebar is expanded */
-:deep(.sidebar.expanded ~ .main-content) {
-  margin-left: 240px;
-}
-
-/* Profile Float */
-.profile-float {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
-}
-
-.profile-float:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
-
-.profile-float .avatar {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Navbar - transparent background like other pages */
-.navbar {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px;
-  background: transparent;
-  border-radius: 16px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-
-.nav-link {
-  padding: 10px 20px;
-  border-radius: 10px;
-  text-decoration: none;
-  color: #546A88;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.3s;
-  white-space: nowrap;
-}
-
-.nav-link:hover {
-  background: rgba(84, 106, 136, 0.1);
-  color: #344966;
-  transform: translateY(-2px);
-}
-
-.nav-link.active {
-  background: linear-gradient(135deg, #344966 0%, #546A88 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(52, 73, 102, 0.3);
-}
-
-/* Notifications Container */
-.notifications-container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-/* Page Header */
-.page-header {
-  background: white;
-  border-radius: 16px;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.header-left > i {
-  font-size: 2.5rem;
-  color: #344966;
-  background: linear-gradient(135deg, rgba(52, 73, 102, 0.1), rgba(84, 106, 136, 0.1));
-  width: 70px;
-  height: 70px;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.header-left h1 {
-  margin: 0 0 0.25rem 0;
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: #344966;
-}
-
-.subtitle {
-  margin: 0;
-  font-size: 0.95rem;
-  color: #748BAA;
-  font-weight: 400;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.btn-action {
-  background: white;
-  border: 2px solid #E5E7EB;
-  color: #748BAA;
-  padding: 0.65rem 1.25rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s;
-}
-
-.btn-action:hover {
-  border-color: #344966;
-  color: #344966;
-  background: rgba(52, 73, 102, 0.05);
-}
-
-.btn-mark-all {
-  border-color: #344966;
-  color: #344966;
-}
-
-.btn-mark-all:hover {
-  background: #344966;
-  color: white;
-}
-
-.filter-tabs {
-  display: flex;
-  gap: 0.5rem;
-  background: #F3F4F6;
-  padding: 0.35rem;
-  border-radius: 10px;
-}
-
-.filter-tab {
-  background: transparent;
-  border: none;
-  color: #748BAA;
-  padding: 0.6rem 1.25rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.filter-tab:hover {
-  color: #344966;
-  background: rgba(52, 73, 102, 0.08);
-}
-
-.filter-tab.active {
-  background: white;
-  color: #344966;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-
-/* Loading State */
-.loading-state {
-  text-align: center;
-  padding: 4rem 2rem;
-  color: #748BAA;
-}
-
-.spinner {
-  width: 50px;
-  height: 50px;
-  border: 4px solid #E5E7EB;
-  border-top-color: #344966;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 1rem;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.loading-state p {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 4rem 2rem;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-}
-
-.empty-state i {
-  font-size: 4rem;
-  color: #CBD5E1;
-  margin-bottom: 1.5rem;
-  display: block;
-}
-
-.empty-state h3 {
-  color: #64748b;
-  margin: 0 0 0.5rem 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.empty-state p {
-  margin: 0;
-  font-size: 1rem;
-  color: #94A3B8;
-}
-
-/* Notifications List */
-.notifications-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-/* Notification Card */
-.notification-card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  transition: all 0.2s;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1.5rem;
-  border-left: 4px solid transparent;
-}
-
-.notification-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
-
-.notification-card.unread {
-  border-left-color: #344966;
-  background: linear-gradient(to right, rgba(52, 73, 102, 0.03) 0%, white 10%);
-}
-
-.notification-content {
-  flex: 1;
-}
-
-.notification-header {
-  display: flex;
-  gap: 1.25rem;
-  align-items: flex-start;
-}
-
-.notification-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  flex-shrink: 0;
-}
-
-.notification-icon.alert {
-  background: linear-gradient(135deg, #FEE2E2, #FECACA);
-  color: #DC2626;
-}
-
-.notification-icon.message {
-  background: linear-gradient(135deg, #DBEAFE, #BFDBFE);
-  color: #2563EB;
-}
-
-.notification-icon.system {
-  background: linear-gradient(135deg, #E0E7FF, #C7D2FE);
-  color: #4F46E5;
-}
-
-.notification-icon.success {
-  background: linear-gradient(135deg, #D1FAE5, #A7F3D0);
-  color: #059669;
-}
-
-.notification-icon.warning {
-  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
-  color: #D97706;
-}
-
-.notification-icon.maintenance {
-  background: linear-gradient(135deg, #F3E8FF, #E9D5FF);
-  color: #9333EA;
-}
-
-.notification-info {
-  flex: 1;
-}
-
-.notification-title {
-  margin: 0 0 0.5rem 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #1e293b;
-}
-
-.notification-message {
-  margin: 0 0 0.75rem 0;
-  font-size: 0.9rem;
-  color: #64748b;
-  line-height: 1.5;
-}
-
-.notification-time {
-  font-size: 0.8rem;
-  color: #94a3b8;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.notification-time i {
-  font-size: 0.75rem;
-}
-
-/* Notification Actions */
-.notification-actions {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.btn-view {
-  background: linear-gradient(135deg, #748BAA, #546A88);
-  color: white;
-  text-decoration: none;
-  padding: 0.65rem 1.25rem;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s;
-  border: none;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.btn-view:hover {
-  background: linear-gradient(135deg, #546A88, #344966);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(52, 73, 102, 0.25);
-}
-
-.btn-icon {
-  background: #F3F4F6;
-  border: none;
-  color: #748BAA;
-  cursor: pointer;
-  padding: 0.65rem;
-  border-radius: 8px;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-}
-
-.btn-icon:hover {
-  background: #E5E7EB;
-  color: #344966;
-}
-
-.btn-icon.btn-delete:hover {
-  background: #FEE2E2;
-  color: #DC2626;
-}
-
-/* Responsive */
-@media (max-width: 1024px) {
-  .main-content {
-    margin-left: 0;
-  }
-}
-
-@media (max-width: 768px) {
-  .main-content {
-    padding: 1rem;
-  }
-
-  .page-header {
-    padding: 1.5rem;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .header-left {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .header-left > i {
-    width: 60px;
-    height: 60px;
-    font-size: 2rem;
-  }
-
-  .header-left h1 {
-    font-size: 1.5rem;
-  }
-
-  .header-actions {
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .filter-tabs {
-    justify-content: center;
-  }
-
-  .notification-card {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .notification-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .btn-view {
-    flex: 1;
-    justify-content: center;
-  }
-}
-</style>

@@ -115,8 +115,12 @@ class AlerteService
                         'voiture_id' => $voiture->idVoiture,
                     ]);
 
-                    // Send email notification
-                    $this->sendAlertNotification($newAlert);
+                    // Send email notification (non-blocking)
+                    try {
+                        $this->sendAlertNotification($newAlert);
+                    } catch (\Exception $e) {
+                        Log::warning("Failed to send notification for alert {$newAlert->idAlerte}: " . $e->getMessage());
+                    }
 
                     $alertsGenerated++;
                 }
@@ -152,13 +156,18 @@ class AlerteService
                     ->first();
 
                 if (!$existingAlert) {
-                    Alerte::create([
+                    $newAlert = Alerte::create([
                         'type' => 'Contrôle technique',
                         'dateEchance' => $nextCTDate,
                         'kilometrageEchance' => $voiture->kilometrage,
                         'statut' => 'En attente',
                         'voiture_id' => $voiture->idVoiture,
                     ]);
+                    try {
+                        $this->sendAlertNotification($newAlert);
+                    } catch (\Exception $e) {
+                        Log::warning("Failed to send notification for alert {$newAlert->idAlerte}: " . $e->getMessage());
+                    }
                     $alertsGenerated++;
                 }
             }
@@ -170,13 +179,18 @@ class AlerteService
                 ->first();
 
             if (!$existingAlert) {
-                Alerte::create([
+                $newAlert = Alerte::create([
                     'type' => 'Contrôle technique',
                     'dateEchance' => Carbon::now()->addDays(30),
                     'kilometrageEchance' => $voiture->kilometrage,
                     'statut' => 'En attente',
                     'voiture_id' => $voiture->idVoiture,
                 ]);
+                try {
+                    $this->sendAlertNotification($newAlert);
+                } catch (\Exception $e) {
+                    Log::warning("Failed to send notification for alert {$newAlert->idAlerte}: " . $e->getMessage());
+                }
                 $alertsGenerated++;
             }
         }
@@ -199,13 +213,18 @@ class AlerteService
                     ->first();
 
                 if (!$existingAlert) {
-                    Alerte::create([
+                    $newAlert = Alerte::create([
                         'type' => 'Révision annuelle',
                         'dateEchance' => $nextRevisionDate,
                         'kilometrageEchance' => $voiture->kilometrage,
                         'statut' => 'En attente',
                         'voiture_id' => $voiture->idVoiture,
                     ]);
+                    try {
+                        $this->sendAlertNotification($newAlert);
+                    } catch (\Exception $e) {
+                        Log::warning("Failed to send notification for alert {$newAlert->idAlerte}: " . $e->getMessage());
+                    }
                     $alertsGenerated++;
                 }
             }
@@ -229,13 +248,18 @@ class AlerteService
                 ->first();
 
             if (!$existingAlert) {
-                Alerte::create([
+                $newAlert = Alerte::create([
                     'type' => 'État véhicule critique',
                     'dateEchance' => Carbon::now()->addDays(7),
                     'kilometrageEchance' => $voiture->kilometrage,
                     'statut' => 'En attente',
                     'voiture_id' => $voiture->idVoiture,
                 ]);
+                try {
+                    $this->sendAlertNotification($newAlert);
+                } catch (\Exception $e) {
+                    Log::warning("Failed to send notification for alert {$newAlert->idAlerte}: " . $e->getMessage());
+                }
                 $alertsGenerated++;
             }
         }
@@ -257,13 +281,18 @@ class AlerteService
                         ->first();
 
                     if (!$existingAlert) {
-                        Alerte::create([
+                        $newAlert = Alerte::create([
                             'type' => 'Maintenance prolongée',
                             'dateEchance' => Carbon::now()->addDays(3),
                             'kilometrageEchance' => $voiture->kilometrage,
                             'statut' => 'En attente',
                             'voiture_id' => $voiture->idVoiture,
                         ]);
+                        try {
+                            $this->sendAlertNotification($newAlert);
+                        } catch (\Exception $e) {
+                            Log::warning("Failed to send notification for alert {$newAlert->idAlerte}: " . $e->getMessage());
+                        }
                         $alertsGenerated++;
                     }
                 }
@@ -285,20 +314,25 @@ class AlerteService
             ->where('date', '>=', Carbon::now()->subMonths(6))
             ->sum('cout');
 
-        if ($totalCosts > 10000) { // More than 10,000 MAD in 6 months
+        if ($totalCosts > 10000) { // More than 10,000 DT in 6 months
             $existingAlert = Alerte::where('voiture_id', $voiture->idVoiture)
                 ->where('type', 'Coûts élevés')
                 ->where('statut', 'En attente')
                 ->first();
 
             if (!$existingAlert) {
-                Alerte::create([
+                $newAlert = Alerte::create([
                     'type' => 'Coûts élevés',
                     'dateEchance' => Carbon::now()->addDays(7),
                     'kilometrageEchance' => $voiture->kilometrage,
                     'statut' => 'En attente',
                     'voiture_id' => $voiture->idVoiture,
                 ]);
+                try {
+                    $this->sendAlertNotification($newAlert);
+                } catch (\Exception $e) {
+                    Log::warning("Failed to send notification for alert {$newAlert->idAlerte}: " . $e->getMessage());
+                }
                 $alertsGenerated++;
             }
         }
@@ -317,13 +351,18 @@ class AlerteService
                     ->first();
 
                 if (!$existingAlert) {
-                    Alerte::create([
+                    $newAlert = Alerte::create([
                         'type' => 'Problème récurrent: ' . $type,
                         'dateEchance' => Carbon::now()->addDays(7),
                         'kilometrageEchance' => $voiture->kilometrage,
                         'statut' => 'En attente',
                         'voiture_id' => $voiture->idVoiture,
                     ]);
+                    try {
+                        $this->sendAlertNotification($newAlert);
+                    } catch (\Exception $e) {
+                        Log::warning("Failed to send notification for alert {$newAlert->idAlerte}: " . $e->getMessage());
+                    }
                     $alertsGenerated++;
                 }
             }

@@ -8,6 +8,13 @@ import 'flag-icons/css/flag-icons.min.css';
 
 const app = createApp(App);
 
+// Suppress browser extension errors
+window.addEventListener('unhandledrejection', (event) => {
+  if (event.reason?.message?.includes('message channel closed')) {
+    event.preventDefault();
+  }
+});
+
 const pinia = createPinia();   //  create once
 app.use(pinia);                //  register once
 app.use(router);

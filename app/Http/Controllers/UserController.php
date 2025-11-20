@@ -173,4 +173,32 @@ class UserController extends Controller
         ]);
     }
 
+    public function deleteAvatar(Request $request, string $id)
+    {
+        $user = User::findOrFail($id);
+
+        // Verify the authenticated user is deleting their own avatar or is an admin
+        $isOwnProfile = Auth::id() == $id;
+        $isAdmin = Auth::user()->role && Auth::user()->role->nomRole === 'admin';
+        
+        if (!$isOwnProfile && !$isAdmin) {
+            return response()->json([
+                'message' => 'Non autorisé à supprimer cet avatar.'
+            ], 403);
+        }
+
+        // Delete avatar file if exists
+        if ($user->avatar && file_exists(public_path($user->avatar))) {
+            unlink(public_path($user->avatar));
+        }
+
+        // Update user avatar to null
+        $user->update(['avatar' => null]);
+
+        return response()->json([
+            'message' => 'Avatar supprimé avec succès',
+            'user' => $user->load('role')
+        ]);
+    }
+
 }

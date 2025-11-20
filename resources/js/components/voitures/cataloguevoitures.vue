@@ -13,7 +13,7 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
         />
 
-        <nav class="navbar mb-4">
+        <nav class="navbar mb-5">
           <router-link
             v-for="(item, index) in menuItems"
             :key="index"
@@ -45,25 +45,6 @@
                 </button>
               </div>
               <div class="header-actions">
-                <button @click="exportToExcel" class="export-btn" title="Exporter vers Excel">
-                  <i class="bi bi-file-earmark-excel"></i>
-                  {{ t('catalog.export') }}
-                </button>
-                <button @click="triggerFileInput" class="import-btn" title="Importer depuis Excel">
-                  <i class="bi bi-upload"></i>
-                  {{ t('catalog.import') }}
-                </button>
-                <input 
-                  ref="fileInput" 
-                  type="file" 
-                  accept=".xlsx,.xls,.csv" 
-                  @change="importFromExcel" 
-                  style="display: none;"
-                />
-                <button @click="downloadTemplate" class="template-btn" title="Télécharger le modèle">
-                  <i class="bi bi-download"></i>
-                  {{ t('catalog.template') }}
-                </button>
                 <button @click="toggleFilter" class="filter-toggle-btn" :class="{ active: showFilter }">
                   <i class="bi bi-funnel-fill"></i>
                   {{ t('catalog.filters') }}
@@ -79,7 +60,6 @@
 
             <!-- Error state -->
             <div v-else-if="error" class="error-container">
-              <i class="bi bi-exclamation-triangle"></i>
               <p>{{ error }}</p>
               <button @click="fetchVoitures" class="retry-btn">{{ t('common.retry') }}</button>
             </div>
@@ -103,7 +83,8 @@
               <div
                 v-for="voiture in filteredVoitures"
                 :key="voiture.idVoiture"
-                class="car-card"
+                class="car-card clickable-card"
+                @click="voirPlus(voiture)"
               >
                 <!-- Status badge - Shows on hover -->
                 <span 
@@ -148,10 +129,6 @@
                     <span>{{ formatNumber(voiture.kilometrage) }} km</span>
                   </div>
                 </div>
-
-                <button class="car-btn-voir-plus" @click="voirPlus(voiture)">
-                  {{ t('common.seeMore') }}
-                </button>
               </div>
             </div>
           </div>
@@ -175,14 +152,12 @@
                 <!-- Status & État Filters -->
                 <div class="filter-section">
                 <h4>
-                  <i class="bi bi-circle-fill status-icon"></i>
                   {{ t('catalog.status') }}
                 </h4>
                 <div class="filter-options">
                   <label class="filter-option">
                     <input type="radio" value="" v-model="filters.statut" @change="applyFilters" />
                     <span class="filter-label">
-                      <i class="bi bi-grid-3x3-gap"></i>
                       {{ t('common.all') }}
                     </span>
                   </label>
@@ -200,7 +175,7 @@
                       {{ t('catalog.statusRented') }}
                     </span>
                   </label>
-                  <label class="filter-option status-maintenance">
+                  <label class="filter-option">
                     <input type="radio" value="En maintenance" v-model="filters.statut" @change="applyFilters" />
                     <span class="filter-label">
                       <i class="bi bi-wrench"></i>
@@ -212,14 +187,12 @@
 
               <div class="filter-section">
                 <h4>
-                  <i class="bi bi-star-fill state-icon"></i>
                   {{ t('catalog.condition') }}
                 </h4>
                 <div class="filter-options">
                   <label class="filter-option">
                     <input type="radio" value="" v-model="filters.etat" @change="applyFilters" />
                     <span class="filter-label">
-                      <i class="bi bi-grid-3x3-gap"></i>
                       {{ t('common.all') }}
                     </span>
                   </label>
@@ -247,7 +220,7 @@
                   <label class="filter-option">
                     <input type="radio" value="Endommagé" v-model="filters.etat" @change="applyFilters" />
                     <span class="filter-label">
-                      <i class="bi bi-exclamation-triangle"></i>
+      
                       {{ t('catalog.conditionDamaged') }}
                     </span>
                   </label>
@@ -307,23 +280,6 @@
                   />
                 </div>
               </div>
-
-              <div class="filter-section">
-                <h4>
-                  <i class="bi bi-palette-fill color-icon"></i>
-                  {{ t('catalog.color') }}
-                </h4>
-                <div class="filter-input-wrapper">
-                  <i class="bi bi-search input-icon"></i>
-                  <input 
-                    type="text" 
-                    v-model="filters.couleur" 
-                    :placeholder="t('catalog.colorPlaceholder')"
-                    @input="applyFilters"
-                    class="filter-input"
-                  />
-                </div>
-              </div>
               </div>
 
               <!-- Filter summary -->
@@ -375,7 +331,6 @@ export default {
         etat: ""
       },
       menuItems: [
-        { label: this.t('nav.home'), to: "/" },
         { label: this.t('nav.dashboard'), to: "/admindashboard" },
         { label: this.t('nav.catalog'), to: "/voitures/cataloguevoitures" },
         { label: this.t('nav.interventions'), to: "/interventions/catalogue" },

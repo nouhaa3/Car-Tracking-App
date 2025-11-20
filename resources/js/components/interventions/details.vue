@@ -13,7 +13,7 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
         />
 
-        <nav class="navbar mb-4">
+        <nav class="navbar mb-5">
           <router-link
             v-for="(item, index) in menuItems"
             :key="index"
@@ -289,7 +289,6 @@
 
         <!-- Error State -->
         <div v-else class="error-state card">
-          <i class="bi bi-exclamation-triangle"></i>
           <h3>{{ t('interventions.interventionNotFound') }}</h3>
           <p>{{ t('interventions.interventionNotFoundMessage') }}</p>
           <router-link to="/interventions/catalogue" class="btn-primary">
@@ -328,6 +327,7 @@ export default {
       deleting: false,
       user: null,
       voitures: [],
+      isExpanded: false,
       form: {
         voiture_id: "",
         type: "",
@@ -566,9 +566,9 @@ export default {
     },
 
     formatCurrency(amount) {
-      return new Intl.NumberFormat('fr-FR', {
+      return new Intl.NumberFormat('fr-TN', {
         style: 'currency',
-        currency: 'EUR'
+        currency: 'TND'
       }).format(amount || 0);
     },
 
@@ -633,330 +633,4 @@ export default {
 };
 </script>
 
-<style scoped>
-/* Header Card Styling */
-.car-details-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 24px 28px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s;
-}
 
-.car-details-header:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-}
-
-.header-content {
-  position: relative;
-  width: 100%;
-  min-height: 100px;
-}
-
-.intervention-type-display {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.type-icon-large {
-  font-size: 32px;
-  color: #546A88;
-}
-
-.car-title {
-  font-size: 1.75rem;
-  font-weight: 600;
-  margin: 0;
-  color: #344966;
-  letter-spacing: -0.3px;
-}
-
-.car-year {
-  font-size: 0.9rem;
-  color: #748BAA;
-  margin: 0;
-  font-weight: 400;
-}
-
-.status-badge-large {
-  padding: 12px 24px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s;
-}
-
-.status-badge-large:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.cost-badge {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-  color: white;
-}
-
-/* Action Buttons - Matching Vehicle Details */
-.btn-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  white-space: nowrap;
-  min-width: 120px;
-  justify-content: center;
-}
-
-.btn-action i {
-  font-size: 1rem;
-  transition: transform 0.3s;
-}
-
-.btn-action:hover i {
-  transform: scale(1.1);
-}
-
-.btn-edit {
-  background: #748BAA;
-  color: white;
-  box-shadow: 0 2px 8px rgba(116, 139, 170, 0.2);
-}
-
-.btn-edit:hover {
-  background: #546A88;
-  box-shadow: 0 4px 12px rgba(116, 139, 170, 0.3);
-  transform: translateY(-2px);
-}
-
-.btn-edit:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(116, 139, 170, 0.25);
-}
-
-.btn-delete {
-  background: #C85A54;
-  color: white;
-  box-shadow: 0 2px 8px rgba(200, 90, 84, 0.2);
-}
-
-.btn-delete:hover {
-  background: #B04944;
-  box-shadow: 0 4px 12px rgba(200, 90, 84, 0.3);
-  transform: translateY(-2px);
-}
-
-.btn-delete:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(200, 90, 84, 0.25);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .car-details-header {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 20px;
-  }
-  
-  .cost-text-simple {
-    font-size: 13px;
-    bottom: 0.75rem;
-    right: 0.75rem;
-  }
-  
-  .btn-action {
-    font-size: 14px;
-    padding: 9px 16px;
-    min-width: 110px;
-  }
-  
-  .btn-action span {
-    display: none;
-  }
-  
-  .btn-action i {
-    margin: 0;
-  }
-}
-
-/* Vehicle Card - Matching Alert Details Design */
-.vehicle-details-section {
-  padding: 0;
-}
-
-.vehicle-main-info {
-  margin-bottom: 0;
-}
-
-.vehicle-title {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #344966;
-  margin: 0 0 1rem 0;
-}
-
-.vehicle-specs-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-
-.spec-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  background: #F8FAFB;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  color: #344966;
-}
-
-.spec-item i {
-  color: #546A88;
-  font-size: 1rem;
-}
-
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1.2rem;
-  background: white;
-  color: #546A88;
-  border: 1px solid #D2E1EE;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.2s;
-  box-shadow: 0 2px 6px rgba(84, 106, 136, 0.1);
-}
-
-.btn-secondary:hover {
-  background: #D2E1EE;
-  color: #344966;
-  border-color: #B4CDED;
-  box-shadow: 0 3px 10px rgba(84, 106, 136, 0.15);
-}
-
-.vehicle-not-found {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem;
-  background: #FEF5E7;
-  border: 1px solid #F8C471;
-  border-radius: 8px;
-  color: #DC7633;
-  font-size: 0.95rem;
-}
-
-.vehicle-not-found i {
-  font-size: 1.2rem;
-}
-
-.garage-card {
-  margin-top: 1rem;
-}
-
-.garage-name {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #344966;
-  margin: 0;
-}
-
-.cost-text-simple {
-  position: absolute;
-  bottom: 1rem;
-  right: 1rem;
-  font-size: 15px;
-  font-weight: 700;
-  color: #10B981;
-}
-
-.type-text-simple {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.type-vidange { color: #3498db; }
-.type-revision { color: #9b59b6; }
-.type-reparation { color: #e74c3c; }
-.type-pneus { color: #34495e; }
-.type-freins { color: #c0392b; }
-.type-batterie { color: #f39c12; }
-.type-climatisation { color: #1abc9c; }
-.type-controle { color: #27ae60; }
-.type-autre { color: #95a5a6; }
-
-.cost-value-display {
-  font-weight: 700;
-  color: #27ae60;
-  font-size: 1.1rem;
-}
-
-.remarks-section {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #E8F0F7;
-}
-
-.remarks-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-  font-size: 1rem;
-  color: #344966;
-}
-
-.remarks-content {
-  padding: 1rem;
-  background: #F9FBFD;
-  border-radius: 8px;
-  line-height: 1.6;
-  color: #546A88;
-  white-space: pre-wrap;
-}
-
-.no-remarks {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1rem;
-  background: #F9FBFD;
-  border-radius: 8px;
-  color: #95a5a6;
-  font-style: italic;
-  margin-top: 1.5rem;
-}
-
-.remarks-textarea {
-  resize: vertical;
-  min-height: 120px;
-  font-family: inherit;
-}
-
-.full-width {
-  grid-column: 1 / -1;
-}
-</style>

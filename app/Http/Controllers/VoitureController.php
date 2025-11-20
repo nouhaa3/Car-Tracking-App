@@ -132,6 +132,12 @@ class VoitureController extends Controller
         return response()->json($data);
     }
 
+    public function countTotal()
+    {
+        $total = Voiture::count();
+        return response()->json(['total' => $total]);
+    }
+
     public function getTopExpensive()
     {
         $topCars = Voiture::select(
@@ -241,8 +247,60 @@ class VoitureController extends Controller
         header('Content-Disposition: attachment;filename="' . $fileName . '"');
         header('Cache-Control: max-age=0');
 
-        $writer->save('php://output');
+                $writer->save('php://output');
         exit;
+    }
+
+    public function uploadImage(Request $request, $id)
+    {
+        $voiture = Voiture::findOrFail($id);
+
+        $validated = $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB max
+        ]);
+
+        try {
+            // Delete old image if exists
+            if ($voiture->image && \Storage::disk('public')->exists($voiture->image)) {
+                \Storage::disk('public')->delete($voiture->image);
+            }
+
+            // Store new image
+            $imagePath = $request->file('image')->store('voitures', 'public');
+            $voiture->image = $imagePath;
+            $voiture->save();
+
+            return response()->json([
+                'message' => 'Image mise à jour avec succès',
+                'image' => $imagePath
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Image upload error: ' . $e->getMessage());
+            return response()->json(['error' => 'Erreur lors du téléchargement de l\'image'], 500);
+        }
+    }
+
+    public function deleteImage($id)
+    {
+        $voiture = Voiture::findOrFail($id);
+
+        try {
+            // Delete image file if exists
+            if ($voiture->image && \Storage::disk('public')->exists($voiture->image)) {
+                \Storage::disk('public')->delete($voiture->image);
+            }
+
+            // Update database
+            $voiture->image = null;
+            $voiture->save();
+
+            return response()->json([
+                'message' => 'Image supprimée avec succès'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Image delete error: ' . $e->getMessage());
+            return response()->json(['error' => 'Erreur lors de la suppression de l\'image'], 500);
+        }
     }
 
 }

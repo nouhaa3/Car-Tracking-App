@@ -13,7 +13,7 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
         />
 
-        <nav class="navbar mb-4">
+        <nav class="navbar mb-5">
           <router-link
             v-for="(item, index) in menuItems"
             :key="index"
@@ -41,12 +41,11 @@
                   @click="searchQuery = ''"
                   class="clear-search-btn"
                 >
-                  <i class="bi bi-x"></i>
+                  ×
                 </button>
               </div>
               <div class="header-actions">
                 <button @click="toggleFilter" class="filter-toggle-btn" :class="{ active: showFilter }">
-                  <i class="bi bi-funnel-fill"></i>
                   {{ t('common.filters') }}
                 </button>
               </div>
@@ -91,7 +90,6 @@
 
             <!-- Error state -->
             <div v-else-if="error" class="error-container">
-              <i class="bi bi-exclamation-triangle"></i>
               <p>{{ error }}</p>
               <button @click="fetchInterventions" class="retry-btn">{{ t('common.retry') }}</button>
             </div>
@@ -106,9 +104,6 @@
               <p v-else>
                 {{ t('interventions.startAddingFirst') }}
               </p>
-              <router-link to="/interventions/ajouter" class="add-car-btn">
-                {{ t('interventions.newIntervention') }}
-              </router-link>
             </div>
 
             <!-- Interventions grid -->
@@ -116,8 +111,18 @@
               <div
                 v-for="intervention in filteredInterventions"
                 :key="intervention.idIntervention"
-                class="car-card"
+                class="car-card clickable-card"
+                @click="voirDetails(intervention)"
               >
+                <!-- Status badge - Shows on hover -->
+                <span 
+                  class="status-badge-hover"
+                  :class="isUpcoming(intervention.date) ? 'status-upcoming' : 'status-completed'"
+                >
+                  <i class="bi bi-circle-fill"></i>
+                  {{ isUpcoming(intervention.date) ? t('interventions.upcoming') : t('interventions.completed') }}
+                </span>
+
                 <!-- Type header -->
                 <div class="intervention-type-header">
                   <i :class="getTypeIcon(intervention.type)"></i>
@@ -151,11 +156,6 @@
                   <i class="bi bi-chat-left-text"></i>
                   <span>{{ truncateText(intervention.remarques, 80) }}</span>
                 </div>
-
-                <!-- Voir plus button - Bottom right -->
-                <button class="car-btn-voir-plus" @click="voirDetails(intervention)">
-                  {{ t('common.seeMore') }}
-                </button>
               </div>
             </div>
           </div>
@@ -597,9 +597,9 @@ export default {
     },
 
     formatCurrency(amount) {
-      return new Intl.NumberFormat('fr-FR', {
+      return new Intl.NumberFormat('fr-TN', {
         style: 'currency',
-        currency: 'EUR'
+        currency: 'TND'
       }).format(amount || 0);
     },
 
@@ -634,6 +634,20 @@ export default {
       return classes[type] || '';
     },
 
+    isUpcoming(date) {
+      const interventionDate = new Date(date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return interventionDate >= today;
+    },
+
+    async logout() {
+      const interventionDate = new Date(date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return interventionDate >= today;
+    },
+
     async logout() {
       try {
         const token = localStorage.getItem("token");
@@ -661,301 +675,4 @@ export default {
 };
 </script>
 
-<style scoped>
-/* Statistics Summary */
-.stats-summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
 
-.stat-card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-}
-
-.stat-icon {
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, #344966 0%, #546A88 100%);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.5rem;
-}
-
-.stat-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #344966;
-}
-
-.stat-label {
-  font-size: 0.875rem;
-  color: #546A88;
-}
-
-/* Intervention Card Enhancements */
-.intervention-card {
-  position: relative;
-}
-
-.intervention-type-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-.intervention-main {
-  padding: 1rem 0;
-}
-
-.intervention-vehicle {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid #E8F0F7;
-}
-
-.intervention-vehicle i {
-  color: #344966;
-  font-size: 1.2rem;
-}
-
-.vehicle-name {
-  font-weight: 600;
-  color: #344966;
-  font-size: 1rem;
-}
-
-.intervention-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.info-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  color: #546A88;
-}
-
-.info-row i {
-  color: #748BAA;
-  width: 20px;
-}
-
-.cost-row {
-  margin-top: 0.5rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid #E8F0F7;
-}
-
-.cost-value {
-  font-weight: 700;
-  color: #344966;
-  font-size: 1.1rem;
-}
-
-.intervention-remarks {
-  display: flex;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  background: #F9FBFD;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  color: #546A88;
-  line-height: 1.4;
-}
-
-.intervention-remarks i {
-  color: #748BAA;
-  flex-shrink: 0;
-  margin-top: 0.2rem;
-}
-
-/* Type badges colors */
-.type-vidange { background: #3498db; color: white; }
-.type-revision { background: #9b59b6; color: white; }
-.type-reparation { background: #e74c3c; color: white; }
-.type-pneus { background: #34495e; color: white; }
-.type-freins { background: #c0392b; color: white; }
-.type-batterie { background: #f39c12; color: white; }
-.type-climatisation { background: #1abc9c; color: white; }
-.type-controle { background: #27ae60; color: white; }
-.type-autre { background: #95a5a6; color: white; }
-
-/* Filter enhancements */
-.filter-select {
-  width: 100%;
-  padding: 0.6rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  background: white;
-  cursor: pointer;
-}
-
-.date-filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.date-filter-group label {
-  font-size: 0.875rem;
-  color: #546A88;
-  font-weight: 500;
-}
-
-.date-filter-group input[type="date"] {
-  width: 100%;
-  padding: 0.6rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 0.9rem;
-}
-
-.cost-filter-group {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.cost-filter-group input {
-  flex: 1;
-  padding: 0.6rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 0.9rem;
-}
-
-.filter-separator {
-  color: #748BAA;
-  font-weight: 600;
-}
-
-/* Empty state with icon */
-.empty-state i {
-  font-size: 4rem;
-  color: #B4CDED;
-  margin-bottom: 1rem;
-}
-
-/* Modern Action Buttons */
-.car-actions {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #E8F0F7;
-}
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  padding: 0.6rem 0.8rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.action-btn i {
-  font-size: 1rem;
-}
-
-.action-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.action-btn:active {
-  transform: translateY(0);
-}
-
-.action-btn:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-  transform: none !important;
-}
-
-/* Primary button - Voir */
-.action-btn-primary {
-  background: linear-gradient(135deg, #344966 0%, #546A88 100%);
-  color: white;
-}
-
-.action-btn-primary:hover {
-  background: linear-gradient(135deg, #546A88 0%, #344966 100%);
-}
-
-/* Edit button - Modifier */
-.action-btn-edit {
-  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-  color: white;
-}
-
-.action-btn-edit:hover {
-  background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
-}
-
-/* Delete button - Supprimer */
-.action-btn-delete {
-  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-  color: white;
-}
-
-.action-btn-delete:hover:not(:disabled) {
-  background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
-}
-
-.action-btn-delete:disabled {
-  background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
-}
-
-/* Responsive buttons */
-@media (max-width: 768px) {
-  .car-actions {
-    grid-template-columns: 1fr;
-    gap: 0.4rem;
-  }
-
-  .action-btn {
-    width: 100%;
-  }
-}
-</style>

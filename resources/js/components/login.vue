@@ -17,7 +17,7 @@
           <p class="auth-subtitle">{{ t('auth.loginSubtitle') }}</p>
         </div>
 
-        <form @submit.prevent="login" class="auth-form">
+        <form @submit.prevent="login" class="auth-form" method="post" action="/api/login">
           <!-- Email -->
           <div class="form-group-auth">
             <label for="email" class="form-label-auth">
@@ -27,9 +27,11 @@
             <input 
               v-model="credentials.email" 
               id="email" 
+              name="email"
               type="email" 
               class="form-input-auth" 
               :placeholder="t('auth.emailPlaceholder')"
+              autocomplete="username"
               required 
             />
           </div>
@@ -46,7 +48,9 @@
                 :type="showPassword ? 'text' : 'password'"
                 class="form-input-auth"
                 id="password"
+                name="password"
                 :placeholder="t('auth.passwordPlaceholder')"
+                autocomplete="current-password"
                 required
               />
               <i

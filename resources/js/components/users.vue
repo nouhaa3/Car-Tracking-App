@@ -13,7 +13,7 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
         />
 
-        <nav class="navbar mb-4">
+        <nav class="navbar mb-5">
           <router-link
             v-for="(item, index) in menuItems"
             :key="index"
@@ -25,15 +25,18 @@
           </router-link>
         </nav>
 
-        <!-- Page Header -->
-        <div class="users-page-header">
+        <div class="profile-wrapper">
+          <!-- Page Header -->
+          <div class="page-header">
           <div class="header-left">
             <h1>{{ t('users.title') }}</h1>
             <p>{{ t('users.subtitle') }}</p>
           </div>
-          <button class="add-user-btn" @click="openAddModal">
-            {{ t('users.addUser') }}
-          </button>
+          <div class="header-actions">
+            <button class="add-user-btn" @click="openAddModal">
+              {{ t('users.addUser') }}
+            </button>
+          </div>
         </div>
 
         <!-- Loading State -->
@@ -44,7 +47,6 @@
 
         <!-- Error State -->
         <div v-else-if="error" class="error-container">
-          <i class="bi bi-exclamation-triangle"></i>
           <p>{{ error }}</p>
           <button @click="fetchUsers" class="retry-btn">{{ t('common.retry') }}</button>
         </div>
@@ -123,14 +125,14 @@
                   <td>
                     <div class="action-buttons">
                       <button 
-                        class="action-btn edit-btn" 
+                        class="btn-action btn-edit" 
                         @click="openEditModal(user)"
                         :title="t('common.edit')"
                       >
                         {{ t('common.edit') }}
                       </button>
                       <button 
-                        class="action-btn delete-btn" 
+                        class="btn-action btn-delete" 
                         @click="confirmDelete(user)"
                         :title="t('common.delete')"
                       >
@@ -269,6 +271,7 @@
             </div>
           </div>
         </div>
+        </div>
       </div>
     </div>
   </div>
@@ -316,7 +319,6 @@ export default {
     });
 
     const menuItems = computed(() => [
-      { label: t('nav.home'), to: "/" },
       { label: t('nav.dashboard'), to: "/admindashboard" },
       { label: t('nav.catalog'), to: "/voitures/cataloguevoitures" },
       { label: t('nav.interventions'), to: "/interventions/catalogue" },

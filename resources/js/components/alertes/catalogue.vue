@@ -13,7 +13,7 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
         />
 
-        <nav class="navbar mb-4">
+        <nav class="navbar mb-5">
           <router-link
             v-for="(item, index) in menuItems"
             :key="index"
@@ -41,12 +41,11 @@
                   @click="searchQuery = ''"
                   class="clear-search-btn"
                 >
-                  <i class="bi bi-x"></i>
+                  ×
                 </button>
               </div>
               <div class="header-actions">
                 <button @click="toggleFilter" class="filter-toggle-btn" :class="{ active: showFilter }">
-                  <i class="bi bi-funnel-fill"></i>
                   {{ t('common.filters') }}
                 </button>
               </div>
@@ -91,7 +90,6 @@
 
             <!-- Error state -->
             <div v-else-if="error" class="error-container">
-              <i class="bi bi-exclamation-triangle"></i>
               <p>{{ error }}</p>
               <button @click="fetchAlertes" class="retry-btn">{{ t('common.retry') }}</button>
             </div>
@@ -116,7 +114,8 @@
               <div
                 v-for="alerte in filteredAlertes"
                 :key="alerte.idAlerte"
-                class="car-card"
+                class="car-card clickable-card"
+                @click="voirDetails(alerte)"
               >
                 <!-- Status badge - Shows on hover -->
                 <span 
@@ -156,11 +155,6 @@
                   <i class="bi bi-clock-history"></i>
                   <span>{{ getDaysMessage(alerte) }}</span>
                 </div>
-
-                <!-- Voir plus button - Bottom right -->
-                <button class="car-btn-voir-plus" @click.stop="voirDetails(alerte)">
-                  {{ t('common.seeMore') }}
-                </button>
               </div>
             </div>
           </div>
@@ -412,6 +406,11 @@ export default {
   },
 
   methods: {
+    openAddModal() {
+      // TODO: Implement add alert modal
+      alert('Fonctionnalité à venir : Ajouter une nouvelle alerte');
+    },
+
     toggleFilter() {
       this.showFilter = !this.showFilter;
     },

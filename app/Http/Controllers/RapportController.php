@@ -167,7 +167,7 @@ class RapportController extends Controller
         });
         
         $csvData = [];
-        $csvData[] = ['ID', 'Véhicule', 'Type', 'Date', 'Coût (MAD)', 'Statut'];
+        $csvData[] = ['ID', 'Véhicule', 'Type', 'Date', 'Coût (DT)', 'Statut'];
         
         foreach ($data as $item) {
             $csvData[] = array_values((array)$item);
@@ -177,9 +177,9 @@ class RapportController extends Controller
         $csvData[] = ['', '', '', '', '', ''];
         // Statistiques
         $csvData[] = ['STATISTIQUES', '', '', '', '', ''];
-        $csvData[] = ['Coût Total', '', '', '', $total, 'MAD'];
+        $csvData[] = ['Coût Total', '', '', '', $total, 'DT'];
         $csvData[] = ['Nombre d\'interventions', '', '', '', $count, ''];
-        $csvData[] = ['Coût Moyen', '', '', '', round($moyenne, 2), 'MAD'];
+        $csvData[] = ['Coût Moyen', '', '', '', round($moyenne, 2), 'DT'];
         
         $callback = function() use ($csvData) {
             $file = fopen('php://output', 'w');
@@ -249,7 +249,7 @@ class RapportController extends Controller
         $csvData[] = ['Véhicules Disponibles', $voitures->where('statut', 'disponible')->count()];
         $csvData[] = ['Véhicules en Maintenance', $voitures->where('statut', 'maintenance')->count()];
         $csvData[] = ['Total Interventions', $interventions->count()];
-        $csvData[] = ['Coût Total Interventions', $interventions->sum('cout') . ' MAD'];
+        $csvData[] = ['Coût Total Interventions', $interventions->sum('cout') . ' DT'];
         $csvData[] = ['Total Utilisateurs', $users->count()];
         
         $callback = function() use ($csvData) {
@@ -359,7 +359,7 @@ class RapportController extends Controller
             
             if ($includeFinancier) {
                 $csvData[] = [''];
-                $csvData[] = ['Coût Total', $interventions->sum('cout') . ' MAD'];
+                $csvData[] = ['Coût Total', $interventions->sum('cout') . ' DT'];
             }
             $csvData[] = [''];
         }

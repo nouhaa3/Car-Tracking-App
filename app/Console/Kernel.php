@@ -17,6 +17,12 @@ class Kernel extends ConsoleKernel
         
         // Clean up old resolved alerts weekly on Sunday at 2:00 AM
         $schedule->command('alerts:generate --cleanup')->weeklyOn(0, '02:00');
+        
+        // Check notifications (document expiration, upcoming interventions) daily at 7:00 AM
+        $schedule->command('notifications:check')->dailyAt('07:00');
+        
+        // Clean up old read notifications weekly on Monday at 3:00 AM
+        $schedule->command('notifications:check --cleanup')->weeklyOn(1, '03:00');
     }
 
     /**

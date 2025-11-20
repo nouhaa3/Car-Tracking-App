@@ -145,9 +145,139 @@
     <div class="section">
         <h2>Résumé Financier</h2>
         <div class="summary">
-            <div class="stat"><strong>Total des coûts:</strong> {{ number_format($interventions->sum('cout'), 2) }} DH</div>
+            <div class="stat"><strong>Total des coûts:</strong> {{ number_format($interventions->sum('cout'), 2) }} DT</div>
             <div class="stat"><strong>Nombre d'interventions:</strong> {{ $interventions->count() }}</div>
-            <div class="stat"><strong>Coût moyen:</strong> {{ $interventions->count() > 0 ? number_format($interventions->avg('cout'), 2) : 0 }} DH</div>
+            <div class="stat"><strong>Coût moyen:</strong> {{ $interventions->count() > 0 ? number_format($interventions->avg('cout'), 2) : 0 }} DT</div>
+        </div>
+    </div>
+
+    <!-- Section Statistiques Visuelles -->
+    <div class="section">
+        <h2>Statistiques Visuelles</h2>
+        
+        <!-- Graphique Véhicules par Statut -->
+        <div style="margin-bottom: 20px;">
+            <h3 style="font-size: 13px; color: #546A88; margin-bottom: 10px;">Répartition des Véhicules par Statut</h3>
+            <div class="chart-container">
+                @php
+                    $vehiculesParStatut = $voitures->groupBy('statut');
+                    $totalVoitures = $voitures->count();
+                @endphp
+                <table style="width: 100%; border: none;">
+                    <tr>
+                        @foreach($vehiculesParStatut as $statut => $voituresGroupe)
+                            @php
+                                $count = $voituresGroupe->count();
+                                $percentage = ($totalVoitures > 0) ? round(($count / $totalVoitures) * 100, 1) : 0;
+                                $colors = [
+                                    'En boutique' => '#4CAF50',
+                                    'En location' => '#2196F3',
+                                    'En maintenance' => '#FF9800'
+                                ];
+                                $color = $colors[$statut] ?? '#9E9E9E';
+                            @endphp
+                            <td style="text-align: center; padding: 10px; border: none;">
+                                <div style="background-color: {{ $color }}; color: white; padding: 15px; border-radius: 8px; margin-bottom: 5px;">
+                                    <div style="font-size: 24px; font-weight: bold;">{{ $count }}</div>
+                                    <div style="font-size: 11px; opacity: 0.9;">{{ $percentage }}%</div>
+                                </div>
+                                <div style="font-size: 10px; color: #344966;">{{ $statut }}</div>
+                            </td>
+                        @endforeach
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Graphique Interventions par Type -->
+        <div style="margin-bottom: 20px;">
+            <h3 style="font-size: 13px; color: #546A88; margin-bottom: 10px;">Interventions par Type</h3>
+            @php
+                $interventionsParType = $interventions->groupBy('type');
+                $maxCount = $interventionsParType->map->count()->max();
+            @endphp
+            <div style="padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
+                @foreach($interventionsParType as $type => $interventionsGroupe)
+                    @php
+                        $count = $interventionsGroupe->count();
+                        $width = ($maxCount > 0) ? ($count / $maxCount) * 100 : 0;
+                    @endphp
+                    <div style="margin-bottom: 12px;">
+                        <div style="font-size: 10px; color: #344966; margin-bottom: 3px; font-weight: 500;">{{ $type }} ({{ $count }})</div>
+                        <div style="background-color: #E8F0F7; height: 20px; border-radius: 10px; overflow: hidden;">
+                            <div style="background: linear-gradient(90deg, #546A88 0%, #748BAA 100%); height: 100%; width: {{ $width }}%; border-radius: 10px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: white; font-size: 9px; font-weight: bold;">
+                                @if($width > 15){{ $count }}@endif
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Graphique Coûts par Mois -->
+        <div style="margin-bottom: 20px;">
+            <h3 style="font-size: 13px; color: #546A88; margin-bottom: 10px;">Évolution des Coûts (6 derniers mois)</h3>
+            @php
+                $interventionsByMonth = [];
+                for ($i = 5; $i >= 0; $i--) {
+                    $month = now()->subMonths($i)->format('Y-m');
+                    $monthLabel = now()->subMonths($i)->locale('fr')->isoFormat('MMM YYYY');
+                    $interventionsByMonth[$monthLabel] = $interventions->filter(function($intervention) use ($month) {
+                        return \Carbon\Carbon::parse($intervention->date_intervention)->format('Y-m') === $month;
+                    })->sum('cout');
+                }
+                $maxCost = max(array_values($interventionsByMonth)) ?: 1;
+            @endphp
+            <div style="padding: 15px; background-color: #f8f9fa; border-radius: 8px;">
+                <table style="width: 100%; border: none;">
+                    <tr style="vertical-align: bottom; height: 150px;">
+                        @foreach($interventionsByMonth as $month => $cost)
+                            @php
+                                $height = ($cost / $maxCost) * 100;
+                            @endphp
+                            <td style="text-align: center; padding: 0 5px; border: none; vertical-align: bottom;">
+                                <div style="display: inline-block; width: 100%; max-width: 60px;">
+                                    <div style="font-size: 9px; color: #344966; margin-bottom: 3px; font-weight: 500;">{{ number_format($cost, 0) }} DT</div>
+                                    <div style="background: linear-gradient(180deg, #546A88 0%, #748BAA 100%); height: {{ $height }}px; max-height: 120px; min-height: 5px; border-radius: 5px 5px 0 0; margin: 0 auto;"></div>
+                                </div>
+                            </td>
+                        @endforeach
+                    </tr>
+                    <tr>
+                        @foreach($interventionsByMonth as $month => $cost)
+                            <td style="text-align: center; padding: 5px 2px 0 2px; border: none;">
+                                <div style="font-size: 8px; color: #748BAA; transform: rotate(-45deg); white-space: nowrap; margin-top: 15px;">{{ $month }}</div>
+                            </td>
+                        @endforeach
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Statistiques Globales -->
+        <div style="margin-top: 20px;">
+            <table style="width: 100%; border: none;">
+                <tr>
+                    <td style="width: 33%; padding: 10px; border: none;">
+                        <div style="background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%); padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="color: #1976D2; font-size: 28px; font-weight: bold;">{{ $voitures->count() }}</div>
+                            <div style="color: #546A88; font-size: 10px; margin-top: 5px;">Total Véhicules</div>
+                        </div>
+                    </td>
+                    <td style="width: 33%; padding: 10px; border: none;">
+                        <div style="background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%); padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="color: #7B1FA2; font-size: 28px; font-weight: bold;">{{ $interventions->count() }}</div>
+                            <div style="color: #546A88; font-size: 10px; margin-top: 5px;">Total Interventions</div>
+                        </div>
+                    </td>
+                    <td style="width: 33%; padding: 10px; border: none;">
+                        <div style="background: linear-gradient(135deg, #FFF9C4 0%, #FFF59D 100%); padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="color: #F57F17; font-size: 20px; font-weight: bold;">{{ number_format($interventions->sum('cout'), 0) }} DT</div>
+                            <div style="color: #546A88; font-size: 10px; margin-top: 5px;">Coût Total</div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 

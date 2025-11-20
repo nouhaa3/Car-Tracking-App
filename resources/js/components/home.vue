@@ -79,10 +79,6 @@
             {{ t('home.hero.startFree') }}
             <i class="bi bi-arrow-right"></i>
           </button>
-          <button class="btn-cta-secondary" @click="scrollToSection('contact')">
-            {{ t('home.hero.requestDemo') }}
-            <i class="bi bi-play-circle"></i>
-          </button>
         </div>
         <div class="hero-stats">
           <div class="stat-item">
@@ -230,31 +226,41 @@
           <form class="contact-form-modern">
             <div class="form-row-modern">
               <div class="form-group-modern">
-                <label>{{ t('home.contact.form.fullName') }}</label>
-                <input type="text" name="nom" :placeholder="t('home.contact.form.fullNamePlaceholder')" class="input-modern" required />
+                <label>{{ t('home.contact.form.firstName') }}</label>
+                <input type="text" name="prenom" :placeholder="t('home.contact.form.firstNamePlaceholder')" class="input-modern" required />
               </div>
               <div class="form-group-modern">
-                <label>{{ t('home.contact.form.email') }}</label>
-                <input type="email" name="email" :placeholder="t('home.contact.form.emailPlaceholder')" class="input-modern" required />
+                <label>{{ t('home.contact.form.lastName') }}</label>
+                <input type="text" name="nom" :placeholder="t('home.contact.form.lastNamePlaceholder')" class="input-modern" required />
               </div>
             </div>
             <div class="form-row-modern">
               <div class="form-group-modern">
-                <label>{{ t('home.contact.form.phone') }}</label>
-                <input type="text" name="phone" :placeholder="t('home.contact.form.phonePlaceholder')" class="input-modern" />
+                <label>{{ t('home.contact.form.email') }}</label>
+                <input type="email" name="email" :placeholder="t('home.contact.form.emailPlaceholder')" class="input-modern" required />
               </div>
               <div class="form-group-modern">
-                <label>{{ t('home.contact.form.company') }}</label>
-                <input type="text" name="company" :placeholder="t('home.contact.form.companyPlaceholder')" class="input-modern" />
+                <label>{{ t('home.contact.form.phone') }}</label>
+                <input type="text" name="phone" :placeholder="t('home.contact.form.phonePlaceholder')" class="input-modern" />
               </div>
             </div>
             <div class="form-group-modern full-width">
               <label>{{ t('home.contact.form.message') }}</label>
               <textarea name="message" :placeholder="t('home.contact.form.messagePlaceholder')" class="textarea-modern" rows="5" required></textarea>
             </div>
-            <div class="captcha-modern">
-              <div class="g-recaptcha" data-sitekey="6LcmDesrAAAAABYomrU6uWTydYDNuYXHAOHWL9Mf"></div>
+            
+            <!-- Honeypot field (hidden from humans, visible to bots) -->
+            <input type="text" name="website" class="honeypot-field" tabindex="-1" autocomplete="off" />
+            
+            <!-- Human verification checkbox -->
+            <div class="verification-checkbox">
+              <label class="checkbox-container">
+                <input type="checkbox" name="human_verification" required />
+                <span class="checkmark"></span>
+                <span class="checkbox-label">{{ t('home.contact.form.notRobot') }}</span>
+              </label>
             </div>
+            
             <button type="submit" class="btn-submit-modern">
               {{ t('home.contact.sendMessage') }}
               <i class="bi bi-send"></i>
@@ -458,19 +464,46 @@ export default {
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const formData = new FormData(form);
+        
+        // Check honeypot field (should be empty)
+        if (formData.get('website')) {
+          console.warn('Bot detected via honeypot');
+          return; // Silent fail for bots
+        }
+        
+        // Check human verification
+        if (!formData.get('human_verification')) {
+          await alerts.alertWarning(this.t('common.warning'), this.t('home.contact.form.pleaseVerify'));
+          return;
+        }
+        
+        // Remove verification fields before sending to server
+        formData.delete('website');
+        formData.delete('human_verification');
+        
         try {
-          const res = await fetch('http://127.0.0.1:8000/api/messages', {
+          const res = await fetch('http://127.0.0.1:8000/api/contact-messages', {
             method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+            },
             body: formData,
           });
 
-          const data = await res.json();
-          if (data.status === 'success') {
-            await alerts.alertSuccess(this.t('common.success'), this.t('home.contact.successMessage'));
-            form.reset();
-            if(window.grecaptcha) grecaptcha.reset();
+          const contentType = res.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const data = await res.json();
+            
+            if (res.ok && (data.status === 'success' || res.status === 201)) {
+              await alerts.alertSuccess(this.t('common.success'), this.t('home.contact.successMessage'));
+              form.reset();
+            } else {
+              // Show specific error message from server
+              const errorMsg = data.message || data.error || this.t('errors.generic');
+              await alerts.alertError(this.t('common.error'), errorMsg);
+            }
           } else {
-            await alerts.alertError(this.t('common.error'), data.message || this.t('errors.generic'));
+            throw new Error(`Server error: ${res.status}`);
           }
         } catch (err) {
           console.error(err);
@@ -480,20 +513,8 @@ export default {
     }
   },
   mounted() {
-    // Load reCAPTCHA script
-    const existing = document.querySelector('script[src="https://www.google.com/recaptcha/api.js"]');
-    if (!existing) {
-      const recaptchaScript = document.createElement('script');
-      recaptchaScript.src = "https://www.google.com/recaptcha/api.js";
-      recaptchaScript.async = true;
-      recaptchaScript.defer = true;
-      recaptchaScript.onload = () => {
-        this.initContactForm();
-      };
-      document.body.appendChild(recaptchaScript);
-    } else {
-      this.initContactForm();
-    }
+    // Initialize contact form
+    this.initContactForm();
 
     // Smooth scroll for navigation
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {

@@ -15,7 +15,7 @@
         />
 
         <!-- Navbar -->
-        <nav class="navbar mb-4">
+        <nav class="navbar mb-5">
           <router-link
             v-for="(item, index) in menuItems"
             :key="index"
@@ -27,21 +27,22 @@
           </router-link>
         </nav>
 
-        <!-- Header -->
-        <div class="reports-page-header">
+        <div class="profile-wrapper">
+          <!-- Header -->
+          <div class="page-header">
           <div class="header-left">
-            <h1><i class="bi bi-file-earmark-bar-graph"></i> {{ t('reports.title') }}</h1>
+            <h1>{{ t('reports.title') }}</h1>
             <p>{{ t('reports.subtitle') }}</p>
           </div>
-          <div class="header-stats">
+          <div class="header-actions">
             <div class="stat-badge">
-              <i class="bi bi-car-front"></i> {{ totalVoitures }} {{ t('reports.vehicles') }}
+              {{ totalVoitures }} {{ t('reports.vehicles') }}
             </div>
             <div class="stat-badge">
-              <i class="bi bi-tools"></i> {{ totalInterventions }} {{ t('reports.interventions') }}
+              {{ totalInterventions }} {{ t('reports.interventions') }}
             </div>
             <div class="stat-badge">
-              <i class="bi bi-people"></i> {{ totalUsers }} {{ t('reports.users') }}
+              {{ totalUsers }} {{ t('reports.users') }}
             </div>
           </div>
         </div>
@@ -54,7 +55,6 @@
 
         <!-- Error State -->
         <div v-else-if="error" class="error-container">
-          <i class="bi bi-exclamation-triangle"></i>
           <h3>{{ t('errors.loadError') }}</h3>
           <p>{{ error }}</p>
           <button @click="fetchData" class="retry-btn">
@@ -445,6 +445,7 @@
             <span class="progress-text">{{ downloadProgress }}%</span>
           </div>
         </div>
+        </div>
       </div>
     </div>
   </div>
@@ -477,7 +478,6 @@ export default {
 
     // Menu items for navbar
     const menuItems = [
-      { label: t('nav.home'), to: '/' },
       { label: t('nav.dashboard'), to: '/admindashboard' },
       { label: t('nav.catalog'), to: '/voitures/cataloguevoitures' },
       { label: t('nav.interventions'), to: '/interventions/catalogue' },
@@ -621,9 +621,9 @@ export default {
     };
 
     const formatCurrency = (amount) => {
-      return new Intl.NumberFormat("fr-FR", {
+      return new Intl.NumberFormat("fr-TN", {
         style: "currency",
-        currency: "MAD",
+        currency: "TND",
       }).format(amount);
     };
 

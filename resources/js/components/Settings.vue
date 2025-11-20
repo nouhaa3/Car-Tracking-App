@@ -15,7 +15,7 @@
         />
 
         <!-- Navbar -->
-        <nav class="navbar mb-4">
+        <nav class="navbar mb-5">
           <router-link
             v-for="(item, index) in menuItems"
             :key="index"
@@ -34,17 +34,11 @@
         </div>
 
         <!-- Settings Content -->
-        <div v-else class="settings-page">
+        <div v-else class="profile-wrapper">
           <div class="page-header">
-            <div class="header-icon-badge">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M12 1v6m0 6v6m5.66-13.66l-4.24 4.24M10.59 13.41l-4.24 4.24M23 12h-6m-6 0H5m13.66 5.66l-4.24-4.24M10.59 10.59l-4.24-4.24"></path>
-              </svg>
-            </div>
-            <div class="header-content">
+            <div class="header-left">
               <h1>{{ t('settings.title') }}</h1>
-              <p class="subtitle">{{ t('settings.subtitle') }}</p>
+              <p>{{ t('settings.subtitle') }}</p>
             </div>
           </div>
 
@@ -515,7 +509,6 @@ export default {
     const storagePercentage = ref(45);
 
     const menuItems = computed(() => [
-      { label: t('nav.home'), to: "/" },
       { label: t('nav.dashboard'), to: "/admindashboard" },
       { label: t('nav.catalog'), to: "/voitures/cataloguevoitures" },
       { label: t('nav.interventions'), to: "/interventions/catalogue" },
@@ -705,6 +698,4 @@ export default {
 };
 </script>
 
-<style scoped>
-/* Settings specific styles - most styles are in app.css */
-</style>
+

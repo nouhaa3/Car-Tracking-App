@@ -12,7 +12,7 @@
                 href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
                 />
 
-                <nav class="navbar">
+                <nav class="navbar mb-5">
                 <router-link
                     v-for="(item, index) in menuItems"
                     :key="index"
@@ -176,7 +176,8 @@ import {
   PointElement,
   ArcElement, 
   Tooltip, 
-  Legend 
+  Legend,
+  Filler
 } from "chart.js";
 import { inject } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -193,7 +194,8 @@ Chart.register(
   PointElement,
   ArcElement, 
   Tooltip, 
-  Legend
+  Legend,
+  Filler
 );
 
 export default {
@@ -244,30 +246,43 @@ export default {
     async getUser() {
       try {
         const token = localStorage.getItem("token");
+        if (!token) {
+          this.$router.push("/login");
+          return;
+        }
+        
         const res = await axios.get("http://127.0.0.1:8000/api/me", {
           headers: { Authorization: `Bearer ${token}` }
         });
-        this.user = res.data;
-        this.userName = res.data.prenom;
+        
+        if (res.data) {
+          this.user = res.data;
+          this.userName = res.data.prenom || res.data.nom || 'Utilisateur';
+        }
       } catch (error) {
-        console.error(this.t('errors.getUserError'), error);
+        console.error('Error loading user:', error.response?.data || error.message);
+        localStorage.removeItem("token");
         this.$router.push("/login");
       }
     },
 
     async loadAllStats() {
-      await Promise.all([
-        this.loadCarsStats(),
-        this.loadInterventionsMonthTotal(),
-        this.loadUsersStats(),
-        this.loadMaintenanceTotalCost(),
-        this.loadMaintenanceCostByMonth(),
-        this.loadVehiclesByYear(),
-        this.loadTopExpensiveCars(),
-        this.loadAvailabilityRate(),
-        this.loadAlertsStats(),
-        this.loadInterventionsHistory()
-      ]);
+      try {
+        await Promise.allSettled([
+          this.loadCarsStats(),
+          this.loadInterventionsMonthTotal(),
+          this.loadUsersStats(),
+          this.loadMaintenanceTotalCost(),
+          this.loadMaintenanceCostByMonth(),
+          this.loadVehiclesByYear(),
+          this.loadTopExpensiveCars(),
+          this.loadAvailabilityRate(),
+          this.loadAlertsStats(),
+          this.loadInterventionsHistory()
+        ]);
+      } catch (error) {
+        console.error('Error loading dashboard stats:', error);
+      }
     },
 
     async loadInterventionsMonthTotal() {
@@ -292,6 +307,7 @@ export default {
         const values = res.data.map(item => item.total);
 
         this.$nextTick(() => {
+          if (!this.$refs.carsChart) return;
           if (this.carsChart) this.carsChart.destroy();
           this.carsChart = new Chart(this.$refs.carsChart, {
             type: "doughnut",
@@ -332,6 +348,7 @@ export default {
         const values = res.data.map(item => item.total);
 
         this.$nextTick(() => {
+          if (!this.$refs.usersChart) return;
           if (this.usersChart) this.usersChart.destroy();
           this.usersChart = new Chart(this.$refs.usersChart, {
             type: "doughnut",
@@ -383,6 +400,7 @@ export default {
         const values = res.data.map(item => item.total);
 
         this.$nextTick(() => {
+          if (!this.$refs.maintenanceCostChart) return;
           if (this.maintenanceCostChart) this.maintenanceCostChart.destroy();
           this.maintenanceCostChart = new Chart(this.$refs.maintenanceCostChart, {
             type: "line",
@@ -420,6 +438,7 @@ export default {
         const values = res.data.map(item => item.total);
 
         this.$nextTick(() => {
+          if (!this.$refs.vehiclesByYearChart) return;
           if (this.vehiclesByYearChart) this.vehiclesByYearChart.destroy();
           this.vehiclesByYearChart = new Chart(this.$refs.vehiclesByYearChart, {
             type: "bar",
@@ -454,6 +473,7 @@ export default {
         const values = res.data.map(item => item.total_cost);
 
         this.$nextTick(() => {
+          if (!this.$refs.topExpensiveCarsChart) return;
           if (this.topExpensiveCarsChart) this.topExpensiveCarsChart.destroy();
           this.topExpensiveCarsChart = new Chart(this.$refs.topExpensiveCarsChart, {
             type: "bar",
@@ -514,9 +534,9 @@ export default {
     },
 
     formatCurrency(value) {
-      return new Intl.NumberFormat('fr-FR', {
+      return new Intl.NumberFormat('fr-TN', {
         style: 'currency',
-        currency: 'EUR',
+        currency: 'TND',
       }).format(value);
     },
 

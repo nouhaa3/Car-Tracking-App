@@ -21,7 +21,7 @@ class SettingsController extends Controller
             return response()->json($this->getDefaultSettings());
         }
 
-        return response()->json(json_decode($settings->settings_data, true));
+        return response()->json($settings->settings_data);
     }
 
     /**
@@ -55,12 +55,12 @@ class SettingsController extends Controller
 
         $settings = UserSetting::updateOrCreate(
             ['user_id' => $user->id],
-            ['settings_data' => json_encode($validated)]
+            ['settings_data' => $validated]
         );
 
         return response()->json([
             'message' => 'Paramètres enregistrés avec succès',
-            'settings' => json_decode($settings->settings_data, true)
+            'settings' => $settings->settings_data
         ]);
     }
 

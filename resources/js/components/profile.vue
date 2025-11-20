@@ -13,7 +13,7 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
         />
 
-        <nav class="navbar mb-4">
+        <nav class="navbar mb-5">
           <router-link
             v-for="(item, index) in menuItems"
             :key="index"
@@ -34,9 +34,11 @@
         <!-- Profile Content -->
         <div v-else-if="user" class="profile-wrapper">
           <!-- Page Header -->
-          <div class="profile-page-header">
-            <h1>{{ t('profile.title') }}</h1>
-            <p>{{ t('profile.subtitle') }}</p>
+          <div class="page-header">
+            <div class="header-left">
+              <h1>{{ t('profile.title') }}</h1>
+              <p>{{ t('profile.subtitle') }}</p>
+            </div>
           </div>
 
           <!-- Profile Container -->
@@ -57,25 +59,20 @@
                     accept="image/*" 
                     style="display: none"
                   />
-                  <button v-if="!editMode" class="change-avatar-btn" @click="triggerFileInput" :disabled="uploadingAvatar">
-                    {{ uploadingAvatar ? t('profile.uploading') : t('profile.changePhoto') }}
-                  </button>
+                  <div v-if="!editMode" class="avatar-actions">
+                    <button class="change-avatar-btn" @click="triggerFileInput" :disabled="uploadingAvatar || deletingAvatar">
+                      {{ uploadingAvatar ? t('profile.uploading') : 'Changer' }}
+                    </button>
+                    <button v-if="user.avatar" class="delete-avatar-btn" @click="deleteAvatar" :disabled="uploadingAvatar || deletingAvatar">
+                      {{ deletingAvatar ? t('profile.deleting') : 'Supprimer' }}
+                    </button>
+                  </div>
                 </div>
                 <div class="user-basic-info">
                   <h2>{{ user.nom }} {{ user.prenom }}</h2>
                   <span class="user-role-badge" :class="getRoleClass(user.role?.nomRole)">
                     {{ user.role?.nomRole || t('profile.roles.user') }}
                   </span>
-                </div>
-                <div class="profile-stats">
-                  <div class="stat-item">
-                    <span class="stat-label">{{ t('profile.memberSince') }}</span>
-                    <span class="stat-value">{{ formatDate(user.created_at) }}</span>
-                  </div>
-                  <div class="stat-item" v-if="userVehiclesCount !== null">
-                    <span class="stat-label">{{ t('profile.vehicles') }}</span>
-                    <span class="stat-value">{{ userVehiclesCount }}</span>
-                  </div>
                 </div>
               </div>
             </div>
@@ -86,8 +83,8 @@
               <div v-if="!editMode" class="details-card card">
                 <div class="card-header-section">
                   <h3>{{ t('profile.personalInfo') }}</h3>
-                  <button class="icon-btn edit-btn" @click="enableEditMode">
-                    {{ t('common.edit') }}
+                  <button class="btn-action btn-edit" @click="enableEditMode">
+                    <span>{{ t('common.edit') }}</span>
                   </button>
                 </div>
 
@@ -105,16 +102,16 @@
                     <span class="info-value">{{ user.email }}</span>
                   </div>
                   <div class="info-row">
-                    <span class="info-label">{{ t('profile.role') }}</span>
-                    <span class="info-value">
-                      <span class="badge-role" :class="getRoleClass(user.role?.nomRole)">
-                        {{ user.role?.nomRole || t('profile.roles.user') }}
-                      </span>
-                    </span>
-                  </div>
-                  <div class="info-row">
                     <span class="info-label">{{ t('profile.userId') }}</span>
                     <span class="info-value">{{ user.id }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">{{ t('profile.memberSince') }}</span>
+                    <span class="info-value">{{ formatDate(user.created_at) }}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">{{ t('auth.password') }}</span>
+                    <span class="info-value">{{ user.password || '••••••••' }}</span>
                   </div>
                 </div>
               </div>
@@ -243,6 +240,7 @@ export default {
     const saving = ref(false);
     const userVehiclesCount = ref(null);
     const uploadingAvatar = ref(false);
+    const deletingAvatar = ref(false);
     const avatarInput = ref(null);
 
     const form = reactive({
@@ -255,7 +253,6 @@ export default {
     });
 
     const menuItems = [
-      { label: t('nav.home'), to: "/" },
       { label: t('nav.dashboard'), to: "/admindashboard" },
       { label: t('nav.catalog'), to: "/voitures/cataloguevoitures" },
       { label: t('nav.interventions'), to: "/interventions/catalogue" },
@@ -422,6 +419,38 @@ export default {
       }
     };
 
+    const deleteAvatar = async () => {
+      const confirmed = await alerts.alertConfirm(
+        t('profile.deletePhotoConfirm'),
+        t('profile.deletePhotoMessage')
+      );
+      
+      if (!confirmed) return;
+
+      deletingAvatar.value = true;
+      try {
+        const token = localStorage.getItem('token');
+        
+        await axios.delete(
+          `http://127.0.0.1:8000/api/users/${user.value.id}/avatar`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        // Remove user avatar
+        user.value.avatar = null;
+        await alerts.alertSuccess(t('common.success'), t('profile.avatarDeleteSuccess'));
+      } catch (error) {
+        console.error(t('errors.deleteAvatarError'), error);
+        await alerts.alertError(t('common.error'), error.response?.data?.message || t('errors.deleteAvatarError'));
+      } finally {
+        deletingAvatar.value = false;
+      }
+    };
+
     const getRoleClass = (role) => {
       if (!role) return 'role-default';
       const roleLower = role.toLowerCase();
@@ -462,6 +491,7 @@ export default {
       menuItems,
       userVehiclesCount,
       uploadingAvatar,
+      deletingAvatar,
       avatarInput,
       fetchUserData,
       enableEditMode,
@@ -469,6 +499,7 @@ export default {
       updateProfile,
       triggerFileInput,
       handleAvatarChange,
+      deleteAvatar,
       getRoleClass,
       formatDate,
       logout,

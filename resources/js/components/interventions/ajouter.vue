@@ -13,7 +13,7 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
         />
 
-        <nav class="navbar">
+        <nav class="navbar mb-5">
           <router-link
             v-for="(item, index) in menuItems"
             :key="index"
@@ -399,9 +399,9 @@ export default {
     };
 
     const formatCurrency = (amount) => {
-      return new Intl.NumberFormat('fr-FR', {
+      return new Intl.NumberFormat('fr-TN', {
         style: 'currency',
-        currency: 'EUR'
+        currency: 'TND'
       }).format(amount || 0);
     };
 
@@ -503,97 +503,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.full-width {
-  grid-column: 1 / -1;
-}
 
-.vehicle-select {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  background: white;
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-
-.vehicle-select:hover {
-  border-color: #344966;
-}
-
-.vehicle-select:focus {
-  outline: none;
-  border-color: #344966;
-  box-shadow: 0 0 0 3px rgba(52, 73, 102, 0.1);
-}
-
-.remarks-textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-family: inherit;
-  resize: vertical;
-  min-height: 120px;
-  transition: border-color 0.2s;
-}
-
-.remarks-textarea:focus {
-  outline: none;
-  border-color: #344966;
-  box-shadow: 0 0 0 3px rgba(52, 73, 102, 0.1);
-}
-
-.field-hint {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-  color: #748BAA;
-}
-
-.field-hint i {
-  color: #B4CDED;
-}
-
-.intervention-type {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
-  color: #344966;
-}
-
-.intervention-type i {
-  font-size: 1.2rem;
-}
-
-.cost-highlight {
-  font-weight: 700;
-  color: #27ae60;
-  font-size: 1.1rem;
-}
-
-.remarks-display {
-  display: block;
-  width: 100%;
-}
-
-.remarks-display p {
-  margin: 0;
-  padding: 0.75rem;
-  background: #F9FBFD;
-  border-radius: 8px;
-  line-height: 1.6;
-  color: #546A88;
-  white-space: pre-wrap;
-}
-
-.validation-card.full-width {
-  grid-column: 1 / -1;
-}
-</style>

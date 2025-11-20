@@ -13,7 +13,7 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
         />
 
-        <nav class="navbar mb-4">
+        <nav class="navbar mb-5">
           <router-link
             v-for="(item, index) in menuItems"
             :key="index"
@@ -44,11 +44,25 @@
           <div class="car-details-container">
             <!-- Left: Image and Header Section -->
             <div class="car-details-left">
-              <div class="image-card card">
+              <div class="image-card card" :class="{ 'edit-mode-image': editMode }">
                 <img 
                   :src="voiture.image ? `http://127.0.0.1:8000/storage/${voiture.image}` : '/images/default.png'" 
                   :alt="`${voiture.marque} ${voiture.modele}`" 
-                  class="car-details-img" 
+                  class="car-details-img"
+                />
+                
+                <!-- Edit Mode Hover Overlay -->
+                <div v-if="editMode" class="image-hover-overlay" @click="$refs.imageInput.click()">
+                  <span>{{ t('cars.changeImage') }}</span>
+                </div>
+                
+                <input 
+                  type="file" 
+                  ref="imageInput" 
+                  name="car_image"
+                  @change="handleImageSelect" 
+                  accept="image/*"
+                  style="display: none"
                 />
               </div>
 
@@ -56,19 +70,7 @@
               <div class="car-details-header card">
                 <div class="header-main">
                   <h1 class="car-title">{{ voiture.marque }} {{ voiture.modele }}</h1>
-                  <p class="car-year">{{ t('cars.year') }} {{ voiture.annee }}</p>
-                </div>
-                <div class="header-badge">
-                  <span 
-                    class="status-badge-large" 
-                    :class="{
-                      'status-available': voiture.statut === 'En boutique',
-                      'status-rented': voiture.statut === 'En location',
-                      'status-maintenance': voiture.statut === 'En maintenance'
-                    }"
-                  >
-                    {{ voiture.statut }}
-                  </span>
+                  <p class="car-year" style="text-align: center;">{{ t('cars.year') }} {{ voiture.annee }}</p>
                 </div>
               </div>
             </div>
@@ -81,11 +83,9 @@
                   <h3>{{ t('cars.vehicleInfo') }}</h3>
                   <div class="header-actions">
                     <button class="btn-action btn-edit" @click="editMode = true" :disabled="saving">
-                      <i class="bi bi-pencil-square"></i>
                       <span>{{ t('common.edit') }}</span>
                     </button>
                     <button class="btn-action btn-delete" @click="deleteVoiture" :disabled="deleting">
-                      <i :class="deleting ? 'bi bi-hourglass-split' : 'bi bi-trash3'"></i>
                       <span>{{ deleting ? t('common.deleting') : t('common.delete') }}</span>
                     </button>
                   </div>
@@ -142,53 +142,62 @@
                 </div>
 
                 <form @submit.prevent="updateVoiture" class="edit-form">
-                  <div class="form-grid">
-                    <div class="form-group">
-                      <label>{{ t('cars.brand') }} *</label>
+                  <div class="info-grid">
+                    <div class="info-row">
+                      <label class="info-label">{{ t('cars.vehicleId') }}</label>
+                      <span class="info-value">{{ voiture.idVoiture }}</span>
+                    </div>
+                    
+                    <div class="info-row">
+                      <label class="info-label">{{ t('cars.brand') }} *</label>
                       <input 
                         v-model="form.marque" 
-                        class="form-input" 
+                        name="marque"
+                        class="form-input-inline" 
                         :placeholder="t('cars.brandPlaceholder')"
                         required
                       />
                     </div>
 
-                    <div class="form-group">
-                      <label>{{ t('cars.model') }} *</label>
+                    <div class="info-row">
+                      <label class="info-label">{{ t('cars.model') }} *</label>
                       <input 
                         v-model="form.modele" 
-                        class="form-input" 
+                        name="modele"
+                        class="form-input-inline" 
                         :placeholder="t('cars.modelPlaceholder')"
                         required
                       />
                     </div>
 
-                    <div class="form-group">
-                      <label>{{ t('cars.year') }}</label>
+                    <div class="info-row">
+                      <label class="info-label">{{ t('cars.year') }}</label>
                       <input 
                         type="number" 
                         v-model="form.annee" 
-                        class="form-input" 
+                        name="annee"
+                        class="form-input-inline" 
                         :placeholder="t('cars.yearPlaceholder')"
                         min="1900"
                         :max="new Date().getFullYear()"
                       />
                     </div>
 
-                    <div class="form-group">
-                      <label>{{ t('cars.mileage') }}</label>
+                    <div class="info-row">
+                      <label class="info-label">{{ t('cars.mileage') }}</label>
                       <input 
                         type="number" 
                         v-model="form.kilometrage" 
-                        class="form-input" 
+                        name="kilometrage"
+                        class="form-input-inline" 
                         :placeholder="t('cars.mileagePlaceholder')"
                         min="0"
                       />
                     </div>
 
-                    <div class="form-group">
-                      <label>{{ t('cars.condition') }}</label>
-                      <select v-model="form.etat" class="form-input">
+                    <div class="info-row">
+                      <label class="info-label">{{ t('cars.condition') }}</label>
+                      <select v-model="form.etat" name="etat" class="form-input-inline">
                         <option value="">{{ t('common.select') }}</option>
                         <option value="Neuf">{{ t('cars.conditionNew') }}</option>
                         <option value="Bon">{{ t('cars.conditionGood') }}</option>
@@ -197,9 +206,9 @@
                       </select>
                     </div>
 
-                    <div class="form-group">
-                      <label>{{ t('cars.status') }}</label>
-                      <select v-model="form.statut" class="form-input">
+                    <div class="info-row">
+                      <label class="info-label">{{ t('cars.status') }}</label>
+                      <select v-model="form.statut" name="statut" class="form-input-inline">
                         <option value="">{{ t('common.select') }}</option>
                         <option value="En boutique">{{ t('cars.statusInShop') }}</option>
                         <option value="En location">{{ t('cars.statusRented') }}</option>
@@ -207,12 +216,13 @@
                       </select>
                     </div>
 
-                    <div class="form-group full-width">
-                      <label>{{ t('cars.userId') }}</label>
+                    <div class="info-row">
+                      <label class="info-label">{{ t('cars.userId') }}</label>
                       <input 
                         type="number" 
                         v-model="form.user_id" 
-                        class="form-input" 
+                        name="user_id"
+                        class="form-input-inline" 
                         :placeholder="t('cars.userIdPlaceholder')"
                       />
                     </div>
@@ -231,43 +241,79 @@
             </div>
           </div>
 
-          <!-- Tabs Section -->
-          <div class="tabs-section card">
-            <div class="tabs-header">
-              <button 
-                @click="activeTab = 'documents'" 
-                :class="{ active: activeTab === 'documents' }"
-                class="tab-btn"
-              >
-                {{ t('nav.documents') }}
-              </button>
-              <button 
-                @click="activeTab = 'historique'" 
-                :class="{ active: activeTab === 'historique' }"
-                class="tab-btn"
-              >
-                {{ t('nav.history') }}
-              </button>
-            </div>
-
-            <div class="tab-content">
-              <DocumentsVehicule v-if="activeTab === 'documents'" :voitureId="idVoiture" />
-              <HistoriqueVehicule v-if="activeTab === 'historique'" :voitureId="idVoiture" />
-            </div>
+          <!-- Documents Section -->
+          <div class="documents-section card">
+            <DocumentsVehicule :voitureId="idVoiture" />
           </div>
         </div>
 
         <!-- Error State -->
         <div v-else class="error-state card">
-          <i class="bi bi-exclamation-triangle"></i>
           <h3>{{ t('cars.vehicleNotFound') }}</h3>
           <p>{{ t('cars.vehicleNotFoundMessage') }}</p>
           <router-link to="/voitures/cataloguevoitures" class="btn-primary">
-            <i class="bi bi-arrow-left"></i>
             {{ t('cars.backToCatalog') }}
           </router-link>
         </div>
 
+      </div>
+    </div>
+    
+    <!-- Image Cropper Modal -->
+    <div v-if="showCropperModal" class="modal-overlay" @click.self="closeCropper">
+      <div class="cropper-modal">
+        <div class="cropper-header">
+          <h3>{{ t('cars.adjustImage') }}</h3>
+          <button class="btn-close" @click="closeCropper">
+            ×
+          </button>
+        </div>
+        
+        <div class="cropper-container">
+          <div class="image-cropper-wrapper">
+            <img 
+              ref="cropperImage" 
+              :src="selectedImagePreview" 
+              alt="Crop"
+              class="cropper-image"
+              @mousedown="startDrag"
+              @touchstart="startDrag"
+              :style="{
+                transform: `translate(${imagePosition.x}px, ${imagePosition.y}px) scale(${imageScale})`,
+                cursor: isDragging ? 'grabbing' : 'grab'
+              }"
+            />
+          </div>
+        </div>
+        
+        <div class="cropper-controls">
+          <div class="zoom-control">
+            <button @click="zoomOut" class="btn-zoom">
+              −
+            </button>
+            <input 
+              type="range" 
+              v-model="imageScale" 
+              name="image_zoom"
+              min="0.5" 
+              max="3" 
+              step="0.1"
+              class="zoom-slider"
+            />
+            <button @click="zoomIn" class="btn-zoom">
+              +
+            </button>
+          </div>
+          
+          <div class="action-buttons">
+            <button @click="closeCropper" class="btn-cancel">
+              {{ t('common.cancel') }}
+            </button>
+            <button @click="applyCrop" class="btn-apply" :disabled="uploadingImage">
+              {{ uploadingImage ? t('common.uploading') : t('common.apply') }}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -277,7 +323,6 @@
 import axios from "axios";
 import Sidebar from '../sidebar.vue';
 import DocumentsVehicule from './DocumentsVehicule.vue';
-import HistoriqueVehicule from './HistoriqueVehicule.vue';
 import { inject } from 'vue';
 import { useI18n } from 'vue-i18n';
 import alerts from '@/utils/alerts';
@@ -287,8 +332,7 @@ export default {
   props: ["idVoiture"],
   components: { 
     Sidebar,
-    DocumentsVehicule,
-    HistoriqueVehicule
+    DocumentsVehicule
   },
   setup() {
     const { t } = useI18n();
@@ -302,9 +346,17 @@ export default {
       loading: false,
       saving: false,
       deleting: false,
+      uploadingImage: false,
+      deletingImage: false,
+      showCropperModal: false,
+      selectedImageFile: null,
+      selectedImagePreview: null,
+      imageScale: 1,
+      imagePosition: { x: 0, y: 0 },
+      isDragging: false,
+      dragStart: { x: 0, y: 0 },
       user: null,
       username: "",
-      activeTab: 'documents',
       form: {
         idVoiture: "",
         marque: "",
@@ -317,7 +369,6 @@ export default {
         image: ""
       },
       menuItems: [
-        { label: this.t('nav.home'), to: "/" },
         { label: this.t('nav.dashboard'), to: "/admindashboard" },
         { label: this.t('nav.catalog'), to: "/voitures/cataloguevoitures" },
         { label: this.t('nav.interventions'), to: "/interventions/catalogue" },
@@ -473,6 +524,152 @@ export default {
       }
     },
 
+    async handleImageSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        await alerts.alertError(this.t('common.error'), this.t('cars.invalidImageType'));
+        return;
+      }
+
+      // Validate file size (10MB max)
+      if (file.size > 10 * 1024 * 1024) {
+        await alerts.alertError(this.t('common.error'), this.t('cars.imageTooLarge'));
+        return;
+      }
+
+      // Store file and create preview
+      this.selectedImageFile = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.selectedImagePreview = e.target.result;
+        this.showCropperModal = true;
+        this.resetCropperState();
+      };
+      reader.readAsDataURL(file);
+    },
+
+    resetCropperState() {
+      this.imageScale = 1;
+      this.imagePosition = { x: 0, y: 0 };
+      this.isDragging = false;
+    },
+
+    startDrag(e) {
+      e.preventDefault();
+      this.isDragging = true;
+      
+      const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+      const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+      
+      this.dragStart = {
+        x: clientX - this.imagePosition.x,
+        y: clientY - this.imagePosition.y
+      };
+
+      const moveHandler = (e) => {
+        if (!this.isDragging) return;
+        
+        const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+        
+        this.imagePosition = {
+          x: clientX - this.dragStart.x,
+          y: clientY - this.dragStart.y
+        };
+      };
+
+      const endHandler = () => {
+        this.isDragging = false;
+        document.removeEventListener('mousemove', moveHandler);
+        document.removeEventListener('mouseup', endHandler);
+        document.removeEventListener('touchmove', moveHandler);
+        document.removeEventListener('touchend', endHandler);
+      };
+
+      document.addEventListener('mousemove', moveHandler);
+      document.addEventListener('mouseup', endHandler);
+      document.addEventListener('touchmove', moveHandler);
+      document.addEventListener('touchend', endHandler);
+    },
+
+    zoomIn() {
+      this.imageScale = Math.min(3, this.imageScale + 0.1);
+    },
+
+    zoomOut() {
+      this.imageScale = Math.max(0.5, this.imageScale - 0.1);
+    },
+
+    closeCropper() {
+      this.showCropperModal = false;
+      this.selectedImageFile = null;
+      this.selectedImagePreview = null;
+      this.$refs.imageInput.value = '';
+    },
+
+    async applyCrop() {
+      if (!this.selectedImageFile) return;
+
+      this.uploadingImage = true;
+      try {
+        const token = localStorage.getItem("token");
+        const formData = new FormData();
+        formData.append('image', this.selectedImageFile);
+
+        const res = await axios.post(
+          `http://127.0.0.1:8000/api/voitures/${this.idVoiture}/image`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data'
+            }
+          }
+        );
+
+        this.voiture.image = res.data.image;
+        await alerts.alertSuccess(this.t('common.success'), this.t('cars.imageUpdateSuccess'));
+        this.closeCropper();
+      } catch (err) {
+        console.error("Upload image error:", err);
+        await alerts.alertError(this.t('common.error'), err.response?.data?.message || this.t('cars.imageUpdateError'));
+      } finally {
+        this.uploadingImage = false;
+      }
+    },
+
+    async deleteCarImage() {
+      const confirmed = await alerts.alertConfirm(
+        this.t('cars.deleteImageConfirm'),
+        this.t('cars.deleteImageMessage')
+      );
+      if (!confirmed) return;
+
+      this.deletingImage = true;
+      try {
+        const token = localStorage.getItem("token");
+        await axios.delete(
+          `http://127.0.0.1:8000/api/voitures/${this.idVoiture}/image`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        );
+
+        this.voiture.image = null;
+        await alerts.alertSuccess(this.t('common.success'), this.t('cars.imageDeleteSuccess'));
+      } catch (err) {
+        console.error("Delete image error:", err);
+        await alerts.alertError(this.t('common.error'), err.response?.data?.message || this.t('cars.imageDeleteError'));
+      } finally {
+        this.deletingImage = false;
+      }
+    },
+
     async logout() {
       try {
         await axios.post(
@@ -495,240 +692,304 @@ export default {
 };
 </script>
 
-<style scoped>
-/* Modern Action Buttons - Improved Size & Spacing */
-.btn-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  white-space: nowrap;
-  min-width: 120px;
-  justify-content: center;
-}
-
-.btn-action i {
-  font-size: 1rem;
-  transition: transform 0.3s;
-}
-
-.btn-action:hover i {
-  transform: scale(1.1);
-}
-
-.btn-edit {
-  background: #748BAA;
-  color: white;
-  box-shadow: 0 2px 8px rgba(116, 139, 170, 0.2);
-}
-
-.btn-edit:hover {
-  background: #546A88;
-  box-shadow: 0 4px 12px rgba(116, 139, 170, 0.3);
-  transform: translateY(-2px);
-}
-
-.btn-edit:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(116, 139, 170, 0.25);
-}
-
-.btn-delete {
-  background: #C85A54;
-  color: white;
-  box-shadow: 0 2px 8px rgba(200, 90, 84, 0.2);
-}
-
-.btn-delete:hover {
-  background: #B04944;
-  box-shadow: 0 4px 12px rgba(200, 90, 84, 0.3);
-  transform: translateY(-2px);
-}
-
-.btn-delete:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3);
-}
-
-.btn-action:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-.btn-action span {
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-/* Improved Header Card Layout */
-.car-details-header {
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-  border-radius: 16px;
-  padding: 24px 28px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e8edf4;
+.car-details-left {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  margin-top: 16px;
-  transition: all 0.3s;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.car-details-header:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  transform: translateY(-1px);
+.car-details-right {
+  height: 100%;
 }
 
-.header-main {
+.info-card,
+.edit-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.info-grid {
   flex: 1;
 }
 
-.car-title {
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: #344966;
-  margin: 0 0 8px 0;
-  line-height: 1.2;
-  letter-spacing: -0.3px;
-}
-
-.car-year {
-  font-size: 0.9rem;
-  color: #748BAA;
-  margin: 0;
-  font-weight: 400;
-}
-
-.header-badge {
-  display: flex;
-  align-items: center;
-}
-
-.status-badge-large {
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s;
-}
-
-.status-badge-large:hover {
-  transform: scale(1.03);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-}
-
-.status-available {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-  color: white;
-}
-
-.status-rented {
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-  color: white;
-}
-
-.status-maintenance {
-  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
-  color: white;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .car-details-header {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 20px;
-  }
-  
-  .header-main {
-    width: 100%;
-  }
-  
-  .header-badge {
-    width: 100%;
-  }
-  
-  .status-badge-large {
-    width: 100%;
-    text-align: center;
-  }
-  
-  .btn-action {
-    font-size: 14px;
-    padding: 9px 16px;
-    min-width: 110px;
-  }
-  
-  .btn-action span {
-    display: none;
-  }
-  
-  .btn-action i {
-    margin: 0;
-  }
-}
-
-/* Tabs Section */
-.tabs-section {
-  margin-top: 24px;
-  background: white;
-  border-radius: 12px;
+/* Image Card with Edit Mode */
+.image-card {
+  position: relative;
   overflow: hidden;
 }
 
-.tabs-header {
-  display: flex;
-  gap: 0;
-  border-bottom: 2px solid #eee;
-  background: #f8f9fa;
+.edit-mode-image {
+  cursor: pointer;
 }
 
-.tab-btn {
-  flex: 1;
-  padding: 16px 24px;
-  background: none;
-  border: none;
-  border-bottom: 3px solid transparent;
+.image-hover-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(220, 220, 220, 0);
+  backdrop-filter: blur(0px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  opacity: 0;
+  transition: all 0.4s ease;
   cursor: pointer;
-  font-size: 16px;
+}
+
+.edit-mode-image:hover .image-hover-overlay {
+  background: rgba(220, 220, 220, 0.3);
+  backdrop-filter: blur(8px);
+  opacity: 1;
+}
+
+.image-hover-overlay i {
+  font-size: 3rem;
+  color: #344966;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.image-hover-overlay span {
+  color: #344966;
+  font-size: 1.1rem;
   font-weight: 600;
-  color: #666;
-  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+/* Cropper Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  z-index: 9999;
+  padding: 1rem;
 }
 
-.tab-btn:hover {
-  background: #e8edf4;
-  color: #344966;
-}
-
-.tab-btn.active {
+.cropper-modal {
   background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.cropper-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.cropper-header h3 {
+  margin: 0;
   color: #344966;
-  border-bottom-color: #344966;
+  font-size: 1.25rem;
 }
 
-.tab-content {
-  padding: 0;
-  animation: fadeIn 0.3s;
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.btn-close:hover {
+  background: #f8f9fa;
+  color: #344966;
 }
-</style>
+
+.cropper-container {
+  flex: 1;
+  padding: 1.5rem;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+}
+
+.image-cropper-wrapper {
+  width: 100%;
+  height: 400px;
+  position: relative;
+  overflow: hidden;
+  background: white;
+  border-radius: 12px;
+  border: 2px dashed #dee2e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cropper-image {
+  max-width: 100%;
+  max-height: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+  touch-action: none;
+}
+
+.cropper-controls {
+  padding: 1.5rem;
+  border-top: 1px solid #dee2e6;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.zoom-control {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.btn-zoom {
+  background: #344966;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+}
+
+.btn-zoom:hover {
+  background: #546A88;
+  transform: translateY(-2px);
+}
+
+.zoom-slider {
+  flex: 1;
+  height: 6px;
+  border-radius: 5px;
+  background: #dee2e6;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #344966 0%, #546A88 100%);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.zoom-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #344966 0%, #546A88 100%);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-cancel,
+.btn-apply {
+  flex: 1;
+  padding: 0.875rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-cancel {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-cancel:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+}
+
+.btn-apply {
+  background: linear-gradient(135deg, #344966 0%, #546A88 100%);
+  color: white;
+}
+
+.btn-apply:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 73, 102, 0.3);
+}
+
+.btn-apply:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Inline Form Inputs for Edit Mode */
+.form-input-inline {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  background: white;
+  width: 100%;
+}
+
+.form-input-inline:focus {
+  outline: none;
+  border-color: #344966;
+  box-shadow: 0 0 0 3px rgba(52, 73, 102, 0.1);
+}
+
+.edit-form .info-row {
+  display: grid;
+  grid-template-columns: 35% 65%;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.edit-form .info-row:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 1024px) {
+

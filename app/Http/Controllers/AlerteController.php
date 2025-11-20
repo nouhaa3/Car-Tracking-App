@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Alerte;
 use App\Models\Voiture;
 use App\Services\AlerteService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -12,10 +13,12 @@ use Carbon\Carbon;
 class AlerteController extends Controller
 {
     protected $alerteService;
+    protected $notificationService;
 
-    public function __construct(AlerteService $alerteService)
+    public function __construct(AlerteService $alerteService, NotificationService $notificationService)
     {
         $this->alerteService = $alerteService;
+        $this->notificationService = $notificationService;
     }
 
     /**
@@ -218,12 +221,33 @@ class AlerteController extends Controller
      */
     public function generateAlerts()
     {
-        $count = $this->alerteService->generateAllAlerts();
+        try {
+            $count = $this->alerteService->generateAllAlerts();
+            
+            // Notify critical alerts (wrapped in try-catch to prevent blocking)
+            try {
+                $criticalAlerts = Alerte::with('voiture')->get()->filter(function ($alerte) {
+                    return $this->alerteService->calculatePriority($alerte) === 'critique';
+                });
+                
+                foreach ($criticalAlerts as $alerte) {
+                    $this->notificationService->notifyAlertGenerated($alerte);
+                }
+            } catch (\Exception $e) {
+                \Log::warning('Failed to send some notifications: ' . $e->getMessage());
+            }
 
-        return response()->json([
-            'message' => "Génération des alertes terminée",
-            'alertsGenerated' => $count
-        ]);
+            return response()->json([
+                'message' => "Génération des alertes terminée",
+                'alertsGenerated' => $count
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Alert generation failed: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Erreur lors de la génération des alertes',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

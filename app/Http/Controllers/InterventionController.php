@@ -3,11 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Intervention;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class InterventionController extends Controller
 {
+    protected $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
+
     public function index()
     {
         return Intervention::with('voiture', 'documents')->get();
@@ -25,6 +33,10 @@ class InterventionController extends Controller
         ]);
 
         $intervention = Intervention::create($validated);
+        $intervention->load('voiture');
+        
+        // Send notification
+        $this->notificationService->notifyInterventionCreated($intervention);
 
         return response()->json($intervention, 201);
     }
@@ -37,6 +49,7 @@ class InterventionController extends Controller
     public function update(Request $request, string $id)
     {
         $intervention = Intervention::findOrFail($id);
+        $wasCompleted = $intervention->statut === 'Terminée';
 
         $validated = $request->validate([
             'type' => 'sometimes|string|max:255',
@@ -44,10 +57,17 @@ class InterventionController extends Controller
             'cout' => 'sometimes|numeric',
             'garage' => 'sometimes|string|max:255',
             'remarques' => 'nullable|string',
+            'statut' => 'sometimes|in:En attente,En cours,Terminée',
             'voiture_id' => 'sometimes|exists:voitures,idVoiture',
         ]);
 
         $intervention->update($validated);
+        $intervention->load('voiture');
+        
+        // Send notification if intervention just completed
+        if (!$wasCompleted && $intervention->statut === 'Terminée') {
+            $this->notificationService->notifyInterventionCompleted($intervention);
+        }
 
         return response()->json($intervention);
     }
@@ -96,6 +116,18 @@ class InterventionController extends Controller
             ->count();
 
         return response()->json(['total' => $count]);
+    }
+
+    /**
+     * Retourne les interventions groupées par type
+     */
+    public function countByType()
+    {
+        $data = Intervention::select('type', \DB::raw('count(*) as total'))
+            ->groupBy('type')
+            ->get();
+
+        return response()->json($data);
     }
 
     /**

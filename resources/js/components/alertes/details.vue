@@ -13,7 +13,7 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
         />
 
-        <nav class="navbar mb-4">
+        <nav class="navbar mb-5">
           <router-link
             v-for="(item, index) in menuItems"
             :key="index"
@@ -41,7 +41,6 @@
 
         <!-- Error State -->
         <div v-else-if="error" class="error-container">
-          <i class="bi bi-exclamation-triangle"></i>
           <p>{{ error }}</p>
           <button @click="fetchAlerte" class="retry-btn">{{ t('common.retry') }}</button>
         </div>
@@ -180,7 +179,6 @@
 
                   <div class="info-row">
                     <span class="info-label">
-                      <i class="bi bi-exclamation-triangle"></i>
                       {{ t('alerts.priority') }}
                     </span>
                     <span class="info-value">
@@ -210,8 +208,6 @@
                   </div>
                 </div>
               </div>
-
-              <!-- Actions Card removed - Actions moved to header buttons only -->
             </div>
           </div>
         </div>
@@ -453,9 +449,9 @@ export default {
     };
 
     const formatCurrency = (amount) => {
-      return new Intl.NumberFormat("fr-FR", {
+      return new Intl.NumberFormat("fr-TN", {
         style: "currency",
-        currency: "MAD",
+        currency: "TND",
       }).format(amount);
     };
 
@@ -571,238 +567,3 @@ export default {
 };
 </script>
 
-<style scoped>
-/* Header Card Styling - Matching Vehicle Details */
-.car-details-header {
-  position: relative;
-  padding: 24px 28px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s;
-}
-
-.car-details-header:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-}
-
-.header-content {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-}
-
-.alert-type-display {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.type-icon-large {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  color: white;
-  flex-shrink: 0;
-}
-
-.priority-critique {
-  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-}
-
-.priority-haute {
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-}
-
-.priority-moyenne {
-  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-}
-
-.priority-faible {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-}
-
-.car-title {
-  font-size: 1.75rem;
-  font-weight: 600;
-  margin: 0;
-  color: #344966;
-  letter-spacing: -0.3px;
-}
-
-.car-year {
-  font-size: 0.9rem;
-  color: #748BAA;
-  margin: 0;
-  font-weight: 400;
-}
-
-/* Simple Status Text - Bottom Right */
-.status-text-simple {
-  position: absolute;
-  bottom: 16px;
-  right: 24px;
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.status-text-simple i {
-  font-size: 14px;
-}
-
-.status-pending-text {
-  color: #F59E0B;
-}
-
-.status-treated-text {
-  color: #10B981;
-}
-
-/* Remove old badge styles */
-.status-badge-large {
-  padding: 12px 24px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.status-badge-large:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.status-pending {
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-  color: white;
-}
-
-.status-treated {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-  color: white;
-}
-
-/* Action Buttons - Matching Vehicle Details */
-.btn-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  white-space: nowrap;
-  min-width: 120px;
-  justify-content: center;
-}
-
-.btn-action i {
-  font-size: 1rem;
-  transition: transform 0.3s;
-}
-
-.btn-action:hover i {
-  transform: scale(1.1);
-}
-
-.btn-edit {
-  background: #748BAA;
-  color: white;
-  box-shadow: 0 2px 8px rgba(116, 139, 170, 0.2);
-}
-
-.btn-edit:hover {
-  background: #546A88;
-  box-shadow: 0 4px 12px rgba(116, 139, 170, 0.3);
-  transform: translateY(-2px);
-}
-
-.btn-edit:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(116, 139, 170, 0.25);
-}
-
-.btn-delete {
-  background: #C85A54;
-  color: white;
-  box-shadow: 0 2px 8px rgba(200, 90, 84, 0.2);
-}
-
-.btn-delete:hover {
-  background: #B04944;
-  box-shadow: 0 4px 12px rgba(200, 90, 84, 0.3);
-  transform: translateY(-2px);
-}
-
-.btn-delete:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(200, 90, 84, 0.25);
-}
-
-.btn-success {
-  background: #BFCC94;
-  color: #0D1821;
-  box-shadow: 0 2px 8px rgba(191, 204, 148, 0.2);
-}
-
-.btn-success:hover {
-  background: #A8B880;
-  box-shadow: 0 4px 12px rgba(191, 204, 148, 0.3);
-  transform: translateY(-2px);
-}
-
-.btn-success:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(191, 204, 148, 0.25);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .car-details-header {
-    padding: 20px 20px 45px 20px;
-  }
-  
-  .status-text-simple {
-    bottom: 12px;
-    right: 20px;
-    font-size: 12px;
-  }
-  
-  .status-text-simple i {
-    font-size: 13px;
-  }
-  
-  .btn-action {
-    font-size: 14px;
-    padding: 9px 16px;
-    min-width: 110px;
-  }
-  
-  .btn-action span {
-    display: none;
-  }
-  
-  .btn-action i {
-    margin: 0;
-  }
-}
-</style>
