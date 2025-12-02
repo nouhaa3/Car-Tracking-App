@@ -37,6 +37,7 @@
 
 .layout {
   display: flex;
+  min-height: 100vh;
 }
 
 .main-content {
@@ -45,10 +46,12 @@
   margin-left: 70px;
   padding: 1.5rem;
   transition: margin-left 0.3s ease;
+  width: calc(100% - 70px);
 }
 
 .sidebar.expanded ~ .main-content {
   margin-left: 240px;
+  width: calc(100% - 240px);
 }
 
 /* ============================================
@@ -270,16 +273,19 @@ button:focus-visible,
 /* ==================== SUCCESS/RESOLVE ACTIONS ==================== */
 /* Used for: Resolve, Complete, Success */
 .btn-success,
+.btn-resolve,
 .action-btn-success {
-  background: linear-gradient(135deg, #BFCC94 0%, #A8B880 100%);
-  color: #0D1821;
-  box-shadow: 0 2px 8px rgba(191, 204, 148, 0.2);
+  background: linear-gradient(135deg, #8B9D83 0%, #7A8C72 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(139, 157, 131, 0.25);
+  font-weight: 500;
 }
 
 .btn-success:hover:not(:disabled),
+.btn-resolve:hover:not(:disabled),
 .action-btn-success:hover:not(:disabled) {
-  background: linear-gradient(135deg, #A8B880 0%, #93A46E 100%);
-  box-shadow: 0 4px 12px rgba(191, 204, 148, 0.3);
+  background: linear-gradient(135deg, #7A8C72 0%, #6B7D63 100%);
+  box-shadow: 0 4px 12px rgba(139, 157, 131, 0.35);
   transform: translateY(-2px);
 }
 
@@ -12776,12 +12782,14 @@ input[type="checkbox"]:disabled + .switch-label {
   margin: 0 0 0.5rem 0;
   font-size: 1.5rem;
   font-weight: 600;
+  text-decoration: none;
 }
 
 .empty-state p {
   margin: 0;
   font-size: 1rem;
   color: #94A3B8;
+  text-decoration: none;
 }
 
 /* Modern Empty State for Documents */
@@ -12867,119 +12875,136 @@ input[type="checkbox"]:disabled + .switch-label {
 .notifications-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
+  max-width: 100%;
 }
 
-/* Notification Card */
+/* Notification Card - Chat Style */
 .notification-card {
   background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  transition: all 0.2s;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 1.5rem;
-  border-left: 4px solid transparent;
+  align-items: flex-start;
+  gap: 1.25rem;
+  border: 1px solid rgba(52, 73, 102, 0.08);
+  position: relative;
+  width: 100%;
 }
 
 .notification-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-color: rgba(52, 73, 102, 0.15);
 }
 
 .notification-card.unread {
-  border-left-color: #344966;
-  background: linear-gradient(to right, rgba(52, 73, 102, 0.03) 0%, white 10%);
+  background: linear-gradient(to right, rgba(52, 73, 102, 0.04) 0%, white 8%);
+  border-left: 3px solid #344966;
 }
 
 .notification-content {
   flex: 1;
+  min-width: 0;
 }
 
 .notification-header {
   display: flex;
-  gap: 1.25rem;
+  gap: 1rem;
   align-items: flex-start;
+  width: 100%;
 }
 
 .notification-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   flex-shrink: 0;
+  background: #F3F4F6;
+  color: #546A88;
+  border: 1px solid #E5E7EB;
 }
 
-.notification-icon.alert {
-  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-  color: white;
-}
-
-.notification-icon.message {
-  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
-  color: white;
-}
-
-.notification-icon.system {
-  background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
-  color: white;
-}
-
-.notification-icon.success {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-  color: white;
-}
-
-.notification-icon.warning {
-  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-  color: white;
-}
-
-.notification-icon.maintenance {
-  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
-  color: white;
-}
-
-.notification-details {
+.notification-info {
   flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .notification-title {
   font-weight: 600;
-  color: #344966;
-  margin: 0 0 0.5rem 0;
-  font-size: 1.05rem;
+  color: #1a1a1a;
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.4;
 }
 
 .notification-message {
   color: #546A88;
-  margin: 0 0 0.75rem 0;
+  margin: 0;
   line-height: 1.5;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
 }
 
-.notification-meta {
-  display: flex;
+.notification-time {
+  display: inline-flex;
   align-items: center;
-  gap: 1rem;
-  font-size: 0.85rem;
-  color: #748BAA;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: #9CA3AF;
+  margin-top: 0.25rem;
 }
 
-.notification-meta i {
-  font-size: 0.9rem;
+.notification-time i {
+  font-size: 0.7rem;
+}
+
+.pending-user-info,
+.alert-info {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: #F9FAFB;
+  border-left: 3px solid #E5E7EB;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.pending-user-info p,
+.alert-info p {
+  margin: 0.25rem 0;
+  color: #374151;
+  font-size: 0.85rem;
+}
+
+.pending-user-info p:first-child,
+.alert-info p:first-child {
+  margin-top: 0;
+}
+
+.pending-user-info p:last-child,
+.alert-info p:last-child {
+  margin-bottom: 0;
 }
 
 .notification-actions {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: flex-end;
+  gap: 0.75rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.notification-actions .btn-action {
+  padding: 0.65rem 1.25rem;
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .btn-notification {
@@ -14802,6 +14827,27 @@ input[type="checkbox"]:disabled + .switch-label {
 .btn-delete:active {
   transform: translateY(0);
   box-shadow: 0 2px 6px rgba(200, 90, 84, 0.25);
+  border: none;
+}
+
+.btn-resolve {
+  background: #8B9D83;
+  color: white;
+  box-shadow: 0 2px 8px rgba(139, 157, 131, 0.2);
+  border: none;
+}
+
+.btn-resolve:hover {
+  background: #7A8C72;
+  color: white;
+  box-shadow: 0 4px 12px rgba(139, 157, 131, 0.3);
+  transform: translateY(-2px);
+  border: none;
+}
+
+.btn-resolve:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(139, 157, 131, 0.25);
   border: none;
 }
 

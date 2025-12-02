@@ -241,4 +241,20 @@ class ContactMessageController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get unread messages count
+     */
+    public function unreadCount()
+    {
+        try {
+            $count = DB::table('contact_messages')
+                ->where('is_read', false)
+                ->count();
+
+            return response()->json(['count' => $count]);
+        } catch (\Exception $e) {
+            return response()->json(['count' => 0]);
+        }
+    }
 }

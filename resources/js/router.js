@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import HomePage from './components/home.vue';
 import LoginPage from './components/login.vue';
 import RegisterPage from './components/register.vue';
+import PendingApproval from './components/PendingApproval.vue';
 import ForgotPassword from './components/ForgotPassword.vue';
 import ResetPassword from './components/ResetPassword.vue';
 import AjouterVoiture from './components/voitures/ajouter.vue';
@@ -40,6 +41,7 @@ const routes = [
   { path: '/faq', name: 'FAQ', component: FAQPage },
   { path: '/login', name: 'Login', component: LoginPage },
   { path: '/register', name: 'Register', component: RegisterPage },
+  { path: '/pending-approval', name: 'PendingApproval', component: PendingApproval },
   { path: '/forgot-password', name: 'ForgotPassword', component: ForgotPassword },
   { path: '/reset-password', name: 'ResetPassword', component: ResetPassword },
   { path: '/voitures/ajouter', name: 'AjouterVoiture', component: AjouterVoiture },

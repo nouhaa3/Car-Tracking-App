@@ -1,11 +1,11 @@
 <template>
   <div :class="['home-page', { dark: theme.isDark }]">
     <div class="layout">
-      <Sidebar :class="{ expanded: isExpanded }" />
+      <Sidebar />
 
       <div class="main-content">
         <router-link to="/profile" class="profile-float" v-if="user">
-          <img :src="user.avatar || '/images/avatar.png'" :alt="t('user.avatarAlt')" class="avatar" />
+          <img :src="user.avatar || '/images/avatar.png'" alt="Avatar" class="avatar" />
         </router-link>
 
         <link
@@ -116,8 +116,8 @@
 
             <!-- Right Side -->
             <div class="car-details-right">
-              <!-- Alert Information -->
-              <div class="info-card card">
+              <!-- Alert Information (View Mode) -->
+              <div v-if="!editMode" class="info-card card">
                 <div class="card-header-section">
                   <h3>
                     <i class="bi bi-info-circle-fill"></i>
@@ -126,20 +126,17 @@
                   <div class="header-actions">
                     <button 
                       v-if="alerte.statut === 'En attente'"
-                      class="btn-action btn-success" 
+                      class="btn-action btn-resolve" 
                       @click="resolveAlert" 
                       :disabled="isResolving"
                     >
-                      <i :class="isResolving ? 'bi bi-hourglass-split' : 'bi bi-check-circle-fill'"></i>
-                      <span>{{ isResolving ? t('common.processing') : t('alerts.resolve') }}</span>
+                      {{ isResolving ? t('common.processing') : t('alerts.resolve') }}
                     </button>
                     <button class="btn-action btn-edit" @click="editAlert" :disabled="isResolving || isDeleting">
-                      <i class="bi bi-pencil-square"></i>
-                      <span>{{ t('common.edit') }}</span>
+                      {{ t('common.edit') }}
                     </button>
                     <button class="btn-action btn-delete" @click="deleteAlert" :disabled="isDeleting">
-                      <i :class="isDeleting ? 'bi bi-hourglass-split' : 'bi bi-trash3'"></i>
-                      <span>{{ isDeleting ? t('common.deleting') : t('common.delete') }}</span>
+                      {{ isDeleting ? t('common.deleting') : t('common.delete') }}
                     </button>
                   </div>
                 </div>
@@ -208,6 +205,70 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Alert Information (Edit Mode) -->
+              <div v-else class="info-card card">
+                <div class="card-header-section">
+                  <h3>
+                    {{ t('alerts.editAlert') }}
+                  </h3>
+                </div>
+                
+                <form @submit.prevent="saveAlert">
+                  <div class="info-grid">
+                    <div class="info-row">
+                      <label class="info-label">{{ t('alerts.type') }} *</label>
+                      <select v-model="form.type" class="form-input-inline" required>
+                        <option value="">{{ t('common.select') }}</option>
+                        <option v-for="type in alertTypes" :key="type.value" :value="type.value">
+                          {{ type.label }}
+                        </option>
+                      </select>
+                    </div>
+
+                    <div class="info-row">
+                      <label class="info-label">{{ t('alerts.dueDate') }} *</label>
+                      <input 
+                        type="date" 
+                        v-model="form.dateEchance" 
+                        class="form-input-inline" 
+                        required
+                      />
+                    </div>
+
+                    <div class="info-row">
+                      <label class="info-label">{{ t('alerts.mileageDue') }}</label>
+                      <input 
+                        type="number" 
+                        v-model="form.kilometrageEchance" 
+                        class="form-input-inline" 
+                        :placeholder="t('alerts.mileageDuePlaceholder')"
+                        min="0"
+                      />
+                    </div>
+
+                    <div class="info-row">
+                      <label class="info-label">{{ t('alerts.priority') }} *</label>
+                      <select v-model="form.priorite" class="form-input-inline" required>
+                        <option value="">{{ t('common.select') }}</option>
+                        <option value="critique">{{ t('alerts.critical') }}</option>
+                        <option value="haute">{{ t('alerts.high') }}</option>
+                        <option value="moyenne">{{ t('alerts.medium') }}</option>
+                        <option value="faible">{{ t('alerts.low') }}</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-actions">
+                    <button type="submit" class="btn-primary" :disabled="saving">
+                      {{ saving ? t('common.saving') : t('common.save') }}
+                    </button>
+                    <button type="button" class="btn-secondary" @click="cancelEdit" :disabled="saving">
+                      {{ t('common.cancel') }}
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
@@ -220,7 +281,7 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import axios from "axios";
-import Sidebar from "../sidebar.vue";
+import Sidebar from '../sidebar.vue';
 import alerts from '@/utils/alerts';
 import { useI18n } from 'vue-i18n';
 
@@ -233,13 +294,21 @@ export default {
     const route = useRoute();
     const { t } = useI18n();
     const theme = ref("light");
-    const isExpanded = ref(true);
     const user = ref(null);
     const alerte = ref(null);
     const isLoading = ref(true);
     const error = ref(null);
     const isResolving = ref(false);
     const isDeleting = ref(false);
+    const editMode = ref(false);
+    const saving = ref(false);
+    const form = ref({
+      type: '',
+      dateEchance: '',
+      kilometrageEchance: null,
+      priorite: '',
+      voiture_id: null
+    });
 
     const alerteId = route.params.id;
 
@@ -374,8 +443,6 @@ export default {
     };
 
     const editAlert = () => {
-      // Navigate to edit alert page (when implemented)
-      // For now, show a message
       if (alerte.value.statut !== 'En attente') {
         alerts.alertWarning(
           t('common.notAvailable'),
@@ -383,10 +450,54 @@ export default {
         );
         return;
       }
-      alerts.alertInfo(
-        t('common.comingSoon'),
-        t('alerts.editFeatureComing')
-      );
+      // Populate form with current values
+      form.value = {
+        type: alerte.value.type,
+        dateEchance: alerte.value.dateEchance,
+        kilometrageEchance: alerte.value.kilometrageEchance,
+        priorite: alerte.value.priorite,
+        voiture_id: alerte.value.voiture_id
+      };
+      editMode.value = true;
+    };
+
+    const cancelEdit = () => {
+      editMode.value = false;
+      form.value = {
+        type: '',
+        dateEchance: '',
+        kilometrageEchance: null,
+        priorite: '',
+        voiture_id: null
+      };
+    };
+
+    const saveAlert = async () => {
+      saving.value = true;
+      try {
+        const token = localStorage.getItem("token");
+        await axios.put(
+          `http://127.0.0.1:8000/api/alertes/${alerteId}`,
+          form.value,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        await alerts.alertSuccess(
+          t('common.success'),
+          t('alerts.alertUpdatedSuccess')
+        );
+        
+        editMode.value = false;
+        await fetchAlerte();
+      } catch (err) {
+        console.error("Error updating alert:", err);
+        await alerts.alertError(
+          t('common.error'),
+          t('errors.updatingAlert')
+        );
+      } finally {
+        saving.value = false;
+      }
     };
 
     const generateIntervention = () => {
@@ -534,7 +645,6 @@ export default {
 
     return {
       theme,
-      isExpanded,
       user,
       menuItems,
       alerte,
@@ -542,11 +652,16 @@ export default {
       error,
       isResolving,
       isDeleting,
+      editMode,
+      saving,
+      form,
       vehicleName,
       alertTypes,
       fetchAlerte,
       resolveAlert,
       editAlert,
+      cancelEdit,
+      saveAlert,
       generateIntervention,
       deleteAlert,
       formatDate,

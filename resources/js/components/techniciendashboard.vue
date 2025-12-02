@@ -350,9 +350,10 @@ export default {
         const values = res.data.map(item => item.total);
 
         this.$nextTick(() => {
-          if (!this.$refs.interventionsByTypeChart) return;
+          const canvas = this.$refs.interventionsByTypeChart;
+          if (!canvas || !canvas.getContext) return;
           if (this.interventionsByTypeChart) this.interventionsByTypeChart.destroy();
-          this.interventionsByTypeChart = new Chart(this.$refs.interventionsByTypeChart, {
+          this.interventionsByTypeChart = new Chart(canvas, {
             type: "doughnut",
             data: {
               labels,
@@ -391,9 +392,10 @@ export default {
         const values = res.data.map(item => item.total);
 
         this.$nextTick(() => {
-          if (!this.$refs.interventionStatusChart) return;
+          const canvas = this.$refs.interventionStatusChart;
+          if (!canvas || !canvas.getContext) return;
           if (this.interventionStatusChart) this.interventionStatusChart.destroy();
-          this.interventionStatusChart = new Chart(this.$refs.interventionStatusChart, {
+          this.interventionStatusChart = new Chart(canvas, {
             type: "bar",
             data: {
               labels,
@@ -426,9 +428,10 @@ export default {
         const values = res.data.map(item => item.total);
 
         this.$nextTick(() => {
-          if (!this.$refs.monthlyTrendChart) return;
+          const canvas = this.$refs.monthlyTrendChart;
+          if (!canvas || !canvas.getContext) return;
           if (this.monthlyTrendChart) this.monthlyTrendChart.destroy();
-          this.monthlyTrendChart = new Chart(this.$refs.monthlyTrendChart, {
+          this.monthlyTrendChart = new Chart(canvas, {
             type: "line",
             data: {
               labels,

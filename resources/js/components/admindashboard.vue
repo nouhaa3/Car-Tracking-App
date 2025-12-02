@@ -307,9 +307,10 @@ export default {
         const values = res.data.map(item => item.total);
 
         this.$nextTick(() => {
-          if (!this.$refs.carsChart) return;
+          const canvas = this.$refs.carsChart;
+          if (!canvas || !canvas.getContext) return;
           if (this.carsChart) this.carsChart.destroy();
-          this.carsChart = new Chart(this.$refs.carsChart, {
+          this.carsChart = new Chart(canvas, {
             type: "doughnut",
             data: {
               labels,
@@ -348,9 +349,10 @@ export default {
         const values = res.data.map(item => item.total);
 
         this.$nextTick(() => {
-          if (!this.$refs.usersChart) return;
+          const canvas = this.$refs.usersChart;
+          if (!canvas || !canvas.getContext) return;
           if (this.usersChart) this.usersChart.destroy();
-          this.usersChart = new Chart(this.$refs.usersChart, {
+          this.usersChart = new Chart(canvas, {
             type: "doughnut",
             data: {
               labels,
@@ -400,9 +402,10 @@ export default {
         const values = res.data.map(item => item.total);
 
         this.$nextTick(() => {
-          if (!this.$refs.maintenanceCostChart) return;
+          const canvas = this.$refs.maintenanceCostChart;
+          if (!canvas || !canvas.getContext) return;
           if (this.maintenanceCostChart) this.maintenanceCostChart.destroy();
-          this.maintenanceCostChart = new Chart(this.$refs.maintenanceCostChart, {
+          this.maintenanceCostChart = new Chart(canvas, {
             type: "line",
             data: {
               labels,
@@ -438,9 +441,10 @@ export default {
         const values = res.data.map(item => item.total);
 
         this.$nextTick(() => {
-          if (!this.$refs.vehiclesByYearChart) return;
+          const canvas = this.$refs.vehiclesByYearChart;
+          if (!canvas || !canvas.getContext) return;
           if (this.vehiclesByYearChart) this.vehiclesByYearChart.destroy();
-          this.vehiclesByYearChart = new Chart(this.$refs.vehiclesByYearChart, {
+          this.vehiclesByYearChart = new Chart(canvas, {
             type: "bar",
             data: {
               labels,
@@ -473,9 +477,10 @@ export default {
         const values = res.data.map(item => item.total_cost);
 
         this.$nextTick(() => {
-          if (!this.$refs.topExpensiveCarsChart) return;
+          const canvas = this.$refs.topExpensiveCarsChart;
+          if (!canvas || !canvas.getContext) return;
           if (this.topExpensiveCarsChart) this.topExpensiveCarsChart.destroy();
-          this.topExpensiveCarsChart = new Chart(this.$refs.topExpensiveCarsChart, {
+          this.topExpensiveCarsChart = new Chart(canvas, {
             type: "bar",
             data: {
               labels,

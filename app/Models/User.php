@@ -11,7 +11,17 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    protected $fillable = ['nom', 'prenom', 'email', 'password', 'role_id', 'avatar'];
+    protected $fillable = [
+        'nom', 
+        'prenom', 
+        'email', 
+        'password', 
+        'role_id', 
+        'avatar',
+        'approval_status',
+        'approval_date',
+        'approved_by'
+    ];
 
     public function role() {
         return $this->belongsTo(Role::class, 'role_id');

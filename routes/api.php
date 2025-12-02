@@ -144,6 +144,10 @@ Route::middleware(['auth:sanctum', 'role:Admin'])->group(function () {
         Route::delete('/{id}', [UserController::class, 'destroy']);
         Route::post('/{id}/avatar', [UserController::class, 'uploadAvatar']);
         Route::delete('/{id}/avatar', [UserController::class, 'deleteAvatar']);
+        
+        // User Approval Routes
+        Route::post('/{id}/approve', [AuthController::class, 'approveUser']);
+        Route::post('/{id}/reject', [AuthController::class, 'rejectUser']);
     });
     
     // === ROLE MANAGEMENT ===
@@ -195,6 +199,7 @@ Route::middleware(['auth:sanctum', 'role:Admin'])->group(function () {
     // === CONTACT MESSAGES ===
     Route::prefix('contact-messages')->group(function () {
         Route::get('/', [ContactMessageController::class, 'index']);
+        Route::get('/unread-count', [ContactMessageController::class, 'unreadCount']);
         Route::get('/{id}', [ContactMessageController::class, 'show']);
         Route::patch('/{id}/read', [ContactMessageController::class, 'markAsRead']);
         Route::post('/{id}/reply', [ContactMessageController::class, 'reply']);

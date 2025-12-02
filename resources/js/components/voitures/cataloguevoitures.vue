@@ -300,7 +300,7 @@
 </template>
 
 <script>
-import Sidebar from '../sidebar.vue';
+import Sidebar from '../Sidebar.vue';
 import axios from "axios";
 import { inject } from 'vue';
 import { useI18n } from 'vue-i18n';

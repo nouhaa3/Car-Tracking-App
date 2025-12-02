@@ -28,7 +28,8 @@
         <!-- Breadcrumb -->
         <div class="breadcrumb-nav">
           <router-link to="/voitures/cataloguevoitures" class="breadcrumb-link">
-            {{ t('cars.backToCatalog') }}
+            <i class="bi bi-arrow-left"></i>
+            {{ t('vehicles.backToCatalog') }}
           </router-link>
         </div>
 
@@ -321,7 +322,7 @@
 
 <script>
 import axios from "axios";
-import Sidebar from '../sidebar.vue';
+import Sidebar from '../Sidebar.vue';
 import DocumentsVehicule from './DocumentsVehicule.vue';
 import { inject } from 'vue';
 import { useI18n } from 'vue-i18n';

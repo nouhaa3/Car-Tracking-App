@@ -15,6 +15,9 @@ class Kernel extends ConsoleKernel
         // Generate alerts daily at 6:00 AM
         $schedule->command('alerts:generate')->dailyAt('06:00');
         
+        // Check for urgent alerts and notify admins daily at 8:00 AM
+        $schedule->command('alerts:check-urgent')->dailyAt('08:00');
+        
         // Clean up old resolved alerts weekly on Sunday at 2:00 AM
         $schedule->command('alerts:generate --cleanup')->weeklyOn(0, '02:00');
         

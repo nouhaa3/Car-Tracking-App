@@ -159,37 +159,12 @@ export default {
           role_id: this.user.role_id,
         });
 
-        // sécuriser la récupération
-        const apiUser = response.data.user ?? response.data;
-        const token = response.data.token;
-
-        if (!apiUser) {
-          console.error(this.t('errors.unexpectedResponse'), response.data);
-          return;
-        }
-
-        // stocker et configurer axios
-        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        localStorage.setItem("user", JSON.stringify(apiUser));
-        if (token) localStorage.setItem("token", token);
-
-        // redirection selon role_id
-        switch (parseInt(apiUser.role_id)) {
-          case 1:
-            this.$router.push("/admindashboard");
-            break;
-          case 2:
-            this.$router.push("/agentdashboard");
-            break;
-          case 3:
-            this.$router.push("/techniciendashboard");
-            break;
-          default:
-            this.$router.push("/");
-        }
+        // Redirect to pending approval page (no token stored)
+        this.$router.push("/pending-approval");
+        
       } catch (err) {
         console.error(this.t('errors.registerError'), err);
-        this.errorMessage = this.t('auth.errors.registrationFailed');
+        this.errorMessage = err.response?.data?.message || this.t('auth.errors.registrationFailed');
       }
     }
   }

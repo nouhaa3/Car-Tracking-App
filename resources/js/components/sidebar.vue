@@ -9,7 +9,10 @@
     <ul class="sidebar-menu">
       <li v-for="(item, index) in mainMenu" :key="index">
         <router-link :to="item.to" class="menu-link">
-          <i :class="item.icon"></i>
+          <span style="position: relative; display: inline-block;">
+            <i :class="item.icon"></i>
+            <span v-if="item.to === '/chats' && unreadMessagesCount > 0" class="red-dot"></span>
+          </span>
           <span v-if="isExpanded">{{ item.label }}</span>
         </router-link>
       </li>
@@ -21,7 +24,10 @@
     <ul class="sidebar-menu">
       <li v-for="(item, index) in personalMenu" :key="index">
         <router-link :to="item.to" class="menu-link">
-          <i :class="item.icon"></i>
+          <span style="position: relative; display: inline-block;">
+            <i :class="item.icon"></i>
+            <span v-if="item.to === '/notifications' && unreadCount > 0" class="red-dot"></span>
+          </span>
           <span v-if="isExpanded">{{ item.label }}</span>
         </router-link>
       </li>
@@ -98,6 +104,8 @@ export default {
     return {
       isExpanded: false,
       user: null,
+      unreadCount: 0,
+      unreadMessagesCount: 0,
     };
   },
   methods: {
@@ -109,13 +117,87 @@ export default {
       localStorage.removeItem("user");
       this.$router.push("/login");
     },
+    async fetchUnreadCount() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        
+        const response = await fetch('/api/notifications/unread-count', {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          this.unreadCount = data.count || 0;
+        }
+      } catch (error) {
+        console.error('Error fetching unread count:', error);
+      }
+    },
+    async fetchUnreadMessagesCount() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        
+        const response = await fetch('/api/contact-messages/unread-count', {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          this.unreadMessagesCount = data.count || 0;
+        }
+      } catch (error) {
+        console.error('Error fetching unread messages count:', error);
+      }
+    },
   },
   mounted() {
     // restore user (saved at login)
     const savedUser = localStorage.getItem("user");
     if (savedUser) this.user = JSON.parse(savedUser);
+    
+    // Fetch unread notifications count
+    this.fetchUnreadCount();
+    this.fetchUnreadMessagesCount();
+    
+    // Refresh count every 30 seconds
+    this.unreadInterval = setInterval(() => {
+      this.fetchUnreadCount();
+      this.fetchUnreadMessagesCount();
+    }, 30000);
   },
-};
+  beforeUnmount() {
+    if (this.unreadInterval) {
+      clearInterval(this.unreadInterval);
+    }
+  },
+};  
 </script>
 
+<style scoped>
+.red-dot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 8px;
+  height: 8px;
+  background: #EF4444 !important;
+  border-radius: 50%;
+  border: 1.5px solid white;
+  z-index: 10;
+  box-shadow: 0 0 0 1px #EF4444;
+  pointer-events: none;
+}
+
+.sidebar.dark .red-dot {
+  border-color: #1a1a1a;
+}
+</style>
 

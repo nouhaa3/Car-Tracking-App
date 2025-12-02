@@ -132,11 +132,9 @@
                   <h3>{{ t('interventions.interventionDetails') }}</h3>
                   <div class="header-actions">
                     <button class="btn-action btn-edit" @click="editMode = true" :disabled="saving">
-                      <i class="bi bi-pencil-square"></i>
                       <span>{{ t('common.edit') }}</span>
                     </button>
                     <button class="btn-action btn-delete" @click="deleteIntervention" :disabled="deleting">
-                      <i :class="deleting ? 'bi bi-hourglass-split' : 'bi bi-trash3'"></i>
                       <span>{{ deleting ? t('common.deleting') : t('common.delete') }}</span>
                     </button>
                   </div>

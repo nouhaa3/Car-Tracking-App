@@ -44,13 +44,16 @@
   // Notifications System
   notifications: {
     title: 'Notifications',
+    subtitle: 'Notifications système et mises à jour',
     unreadMessages: 'messages non lus',
     loading: 'Chargement...',
     noNotifications: 'Aucune notification',
-    noNotificationsDesc: 'Vous êtes à jour !',
+    noNotificationsDesc: 'Vous êtes à jour ! Aucune nouvelle notification.',
     markRead: 'Marquer comme lu',
     markAllRead: 'Tout marquer comme lu',
     allMarkedRead: 'Toutes les notifications marquées comme lues',
+    markAsRead: 'Marquer comme lu',
+    markAsUnread: 'Marquer comme non lu',
     viewDetails: 'Voir les détails',
     delete: 'Supprimer',
     confirmDelete: 'Supprimer la notification ?',
@@ -67,6 +70,20 @@
     minutesAgo: 'Il y a {count} min',
     hoursAgo: 'Il y a {count}h',
     daysAgo: 'Il y a {count}j',
+    // Pending Registration Approvals
+    email: 'Email',
+    approve: 'Approuver',
+    reject: 'Refuser',
+    approveConfirm: 'Approuver cet utilisateur ?',
+    approveConfirmText: 'Voulez-vous approuver {name} ? Il pourra se connecter au système.',
+    rejectConfirm: 'Refuser cet utilisateur ?',
+    rejectConfirmText: 'Voulez-vous refuser {name} ? Il sera notifié par email.',
+    userApproved: 'Utilisateur approuvé',
+    userApprovedText: '{name} a été approuvé et peut maintenant se connecter.',
+    userRejected: 'Utilisateur refusé',
+    userRejectedText: '{name} a été refusé et notifié par email.',
+    errorApproving: 'Erreur lors de l\'approbation de l\'utilisateur',
+    errorRejecting: 'Erreur lors du refus de l\'utilisateur',
   },
 
   // Common
@@ -456,6 +473,7 @@
     registerError: 'Erreur lors de l\'inscription',
     resetPasswordError: 'Erreur lors de la réinitialisation du mot de passe',
     resolvingAlert: 'Erreur lors de la résolution de l\'alerte',
+    updatingAlert: 'Erreur lors de la mise à jour de l\'alerte',
     restoreError: 'Erreur lors de la restauration',
     serverError: 'Erreur serveur',
     sessionExpired: 'Session expirée',
@@ -771,6 +789,9 @@
     editFeatureComing: 'Fonctionnalité d\'édition à venir',
     editingComingSoon: 'Fonctionnalité d\'édition à venir',
     editDescription: 'Vous pourrez modifier la date d\'échéance et la priorité.',
+    editAlert: 'Modifier l\'alerte',
+    alertUpdatedSuccess: 'Alerte modifiée avec succès',
+    mileageDuePlaceholder: 'Kilométrage d\'échéance',
     generateAlerts: 'Générer des alertes',
     generate: 'Générer Alertes',
     generateNew: 'Générer des alertes',
@@ -1012,6 +1033,12 @@
     clickToReset: 'Cliquer ici pour réinitialiser votre mot de passe',
     copyLink: 'Ou copiez le lien ci-dessous',
     passwordMinLength: 'Le mot de passe doit contenir au moins 6 caractères',
+    // Pending Approval
+    pendingApproval: {
+      title: 'Compte en attente d\'approbation',
+      message: 'Votre demande d\'inscription a été soumise avec succès. Un administrateur examinera votre demande sous peu.',
+      info: 'Vous recevrez une notification par email une fois votre compte approuvé.',
+    },
     // Success messages
     resetSuccess: 'Votre mot de passe a été réinialisé avec succès',
     // Roles
@@ -1217,7 +1244,7 @@
 
   // Home Page
   home: {
-    brandName: 'FleetManager',
+    brandName: 'ACMSystem',
     getStarted: 'Commencer',
     
     // Navigation
@@ -1420,6 +1447,8 @@
     userId: 'ID Utilisateur',
     oldPassword: 'Ancien mot de passe',
     newPassword: 'Nouveau mot de passe',
+    currentPassword: 'Mot de passe actuel',
+    changePassword: 'Changer le mot de passe',
     confirmPassword: 'Confirmer le mot de passe',
     changePasswordOptional: 'Changer le mot de passe (optionnel)',
     saveChanges: 'Enregistrer les modifications',
@@ -1836,6 +1865,29 @@
     minutesAgo: 'Il y a {count} min',
     hoursAgo: 'Il y a {count}h',
     daysAgo: 'Il y a {count}j',
+    // Pending Registration Approvals
+    email: 'Email',
+    approve: 'Approuver',
+    reject: 'Refuser',
+    approveConfirm: 'Approuver cet utilisateur ?',
+    approveConfirmText: 'Voulez-vous approuver {name} ? Il pourra se connecter au système.',
+    rejectConfirm: 'Refuser cet utilisateur ?',
+    rejectConfirmText: 'Voulez-vous refuser {name} ? Il sera notifié par email.',
+    userApproved: 'Utilisateur approuvé',
+    userApprovedText: '{name} a été approuvé et peut maintenant se connecter.',
+    userRejected: 'Utilisateur refusé',
+    userRejectedText: '{name} a été refusé et notifié par email.',
+    errorApproving: 'Erreur lors de l\'approbation de l\'utilisateur',
+    errorRejecting: 'Erreur lors du refus de l\'utilisateur',
+    alreadyApproved: 'Déjà approuvé',
+    alreadyRejected: 'Déjà refusé',
+    userApprovedStatus: 'Utilisateur approuvé',
+    userRejectedStatus: 'Utilisateur refusé',
+    approved: 'Approuvé',
+    rejected: 'Refusé',
+    vehicle: 'Véhicule',
+    priority: 'Priorité',
+    viewAlert: 'Voir l\'alerte',
     types: {
       all: 'Toutes',
       system: 'Système',

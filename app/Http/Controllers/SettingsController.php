@@ -27,7 +27,7 @@ class SettingsController extends Controller
     /**
      * Save user settings
      */
-    public function store(Request $request)
+    public function update(Request $request)
     {
         $user = Auth::user();
         
